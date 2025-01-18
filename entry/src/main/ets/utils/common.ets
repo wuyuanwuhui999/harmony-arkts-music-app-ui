@@ -1,7 +1,7 @@
-import {LoopMode, MusicStorageInterface} from'../music/interface';
+import {LoopMode, MusicStorageInterface} from '../interface';
 import {HOST, MUSIC_STORAGE} from '../common/constant';
-import { MusicInterface } from '../music/interface/Index';
-import {getMusicListByClassifyIdService} from '../music/service/Index';
+import { MusicInterface } from '../interface/Index';
+import {getMusicListByClassifyIdService} from '../service/Index';
 import router from '@ohos.router';
 
 export const zerofull=(value:number):string|number=>{
