@@ -10,7 +10,7 @@ import OptionDialogComponent from '../components/OptionDialogComponent';
 
 @Entry
 @Component
-struct MovieUserPage {
+struct UserPage {
   @StorageLink(USER_DATA) userData: UserDataInterface = null;
   title: string = '';
   @State field: string = '';

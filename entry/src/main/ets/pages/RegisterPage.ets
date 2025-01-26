@@ -96,7 +96,7 @@ struct RegisterPage {
         httpRequest.setToken(res.token);
         AppStorage.SetOrCreate<UserDataInterface>(USER_DATA, res.data)
         router.replaceUrl({
-          url: 'movie/pages/Index', // 目标url
+          url: 'pages/MusicIndexPage', // 目标url
         }, router.RouterMode.Single, (err) => {
           if (err) {
             console.error(`Invoke showAlertBeforeBackPage failed, code is ${err.code}, message is ${err.message}`);

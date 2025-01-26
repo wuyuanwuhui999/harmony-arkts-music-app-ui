@@ -71,7 +71,7 @@ struct LoginPage {
       httpRequest.setToken(res.token);
       AppStorage.SetOrCreate<UserDataInterface>(USER_DATA, res.data)
       router.replaceUrl({
-        url: 'movie/pages/IndexPage', // 目标url
+        url: 'pages/MusicIndexPage', // 目标url
       });
     }).catch((e) => {
       promptAction.showToast({
@@ -159,7 +159,30 @@ struct LoginPage {
           .margin({ top: size.pagePadding })
           .onClick(() => {
             router.replaceUrl({
-              url: 'pages/MovieRegisterPage', // 目标url
+              url: 'pages/RegisterPage', // 目标url
+            }, router.RouterMode.Single, (err) => {
+              if (err) {
+                console.error(`Invoke showAlertBeforeBackPage failed, code is ${err.code}, message is ${err.message}`);
+              }
+            });
+            router.clear();// 清除历史页面
+          })
+
+        Text('忘记密码')
+          .padding(size.smallPadding)
+          .border({
+            width: 1,
+            color: colors.borderColor,
+            style: BorderStyle.Solid
+          })
+          .borderRadius(size.blockBorderRaduis * 2)
+          .width('100%')
+          .padding(size.pagePadding)
+          .textAlign(TextAlign.Center)
+          .margin({ top: size.pagePadding })
+          .onClick(() => {
+            router.replaceUrl({
+              url: 'pages/ForgetPassword', // 目标url
             }, router.RouterMode.Single, (err) => {
               if (err) {
                 console.error(`Invoke showAlertBeforeBackPage failed, code is ${err.code}, message is ${err.message}`);

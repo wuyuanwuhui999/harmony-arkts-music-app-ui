@@ -271,3 +271,24 @@ export const verifyUserIdService = (userId:string):Promise<MyAwesomeData<number>
 export const updateUserDataService = (userData:types.UserDataInterface):Promise<MyAwesomeData<number>>=>{
   return httpRequest.put<number>(api.updateUser,userData)
 };
+
+
+/**
+ * @description: 找回密码
+ * @date: 2025-01-19 22:59
+ * @author wuwenqiang
+ */
+export const getBackPasswordService = (email:string):Promise<MyAwesomeData<String>>=>{
+  return httpRequest.post<string>(api.getBackPasswordByEmail,{email})
+};
+
+
+/**
+ * @description: 重置密码
+ * @date: 2025-01-26 22:21
+ * @author wuwenqiang
+ */
+export const resetPasswordService = (email:string,password:string,code:number):Promise<MyAwesomeData<types.UserDataInterface>>=>{
+  password = CryptoJS.MD5(password).toString();// 使用md5加密
+  return httpRequest.post<types.UserDataInterface>(api.resetPassword,{email,password,code})
+};
