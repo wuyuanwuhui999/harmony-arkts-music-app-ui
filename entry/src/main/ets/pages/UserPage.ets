@@ -7,6 +7,7 @@ import { USER_DATA } from '../common/constant';
 import { updateUserDataService } from '../service/Index';
 import preference from '../utils/PreferenceModel';
 import OptionDialogComponent from '../components/OptionDialogComponent';
+import NavigatorTitleComponent from '../components/NavigatorTitleComponent';
 
 @Entry
 @Component
@@ -116,94 +117,117 @@ struct UserPage {
 
   build() {
     Column() {
-      Column() {
-        Row() {
-          Text('头像').flexGrow(1)
-          Image(this.userData?.avater ? HOST + this.userData.avater : $r('app.media.default_avater'))
-            .height(size.bigAvaterSize)
-            .width(size.bigAvaterSize)
-            .borderRadius(size.bigAvaterSize)
-          Image($r('app.media.icon_arrow')).arrowStyle()
-        }.rowStyle().justifyContent(FlexAlign.Center)
+      NavigatorTitleComponent({title:"用户信息"})
+      Scroll(){
+        Column(){
+          Column() {
+            Row() {
+              Text('头像').flexGrow(1)
+              Image(this.userData?.avater ? HOST + this.userData.avater : $r('app.media.default_avater'))
+                .height(size.bigAvaterSize)
+                .width(size.bigAvaterSize)
+                .borderRadius(size.bigAvaterSize)
+              Image($r('app.media.icon_arrow')).arrowStyle()
+            }.rowStyle().justifyContent(FlexAlign.Center)
 
-        Row() {
-          Text('昵称').flexGrow(1)
-          Text(this.userData.username)
-          Image($r('app.media.icon_arrow')).arrowStyle()
-        }.rowStyle().justifyContent(FlexAlign.Center).onClick(() => {
-          this.useShowDialog('昵称', 'username')
-        })
+            Row() {
+              Text('昵称').flexGrow(1)
+              Text(this.userData.username)
+              Image($r('app.media.icon_arrow')).arrowStyle()
+            }.rowStyle().justifyContent(FlexAlign.Center).onClick(() => {
+              this.useShowDialog('昵称', 'username')
+            })
 
-        Row() {
-          Text('性别').flexGrow(1)
-          Text(this.userData.sex)
-          Image($r('app.media.icon_arrow')).arrowStyle()
-        }.rowStyle().justifyContent(FlexAlign.Center).onClick(() => {
-          this.useShowDialog('性别', 'sex')
-        })
+            Row() {
+              Text('性别').flexGrow(1)
+              Text(this.userData.sex)
+              Image($r('app.media.icon_arrow')).arrowStyle()
+            }.rowStyle().justifyContent(FlexAlign.Center).onClick(() => {
+              this.useShowDialog('性别', 'sex')
+            })
 
-        Row() {
-          Text('电话').flexGrow(1)
-          Text(this.userData.telephone)
-          Image($r('app.media.icon_arrow')).arrowStyle()
-        }.rowStyle().justifyContent(FlexAlign.Center).onClick(() => {
-          this.useShowDialog('电话', 'telephone')
-        })
+            Row() {
+              Text('电话').flexGrow(1)
+              Text(this.userData.telephone)
+              Image($r('app.media.icon_arrow')).arrowStyle()
+            }.rowStyle().justifyContent(FlexAlign.Center).onClick(() => {
+              this.useShowDialog('电话', 'telephone')
+            })
 
-        Row() {
-          Text('邮箱').flexGrow(1)
-          Text(this.userData.email)
-          Image($r('app.media.icon_arrow')).arrowStyle()
-        }.rowStyle().justifyContent(FlexAlign.Center).onClick(() => {
-          this.useShowDialog('邮箱', 'email')
-        })
+            Row() {
+              Text('邮箱').flexGrow(1)
+              Text(this.userData.email)
+              Image($r('app.media.icon_arrow')).arrowStyle()
+            }.rowStyle().justifyContent(FlexAlign.Center).onClick(() => {
+              this.useShowDialog('邮箱', 'email')
+            })
 
-        Row() {
-          Text('生日').flexGrow(1)
-          Text(this.userData.birthday)
-          Image($r('app.media.icon_arrow')).arrowStyle()
-        }.rowStyle().justifyContent(FlexAlign.Center).onClick(() => {
-          DatePickerDialog.show({
-            start: new Date("1970-1-1"),
-            end: new Date("2100-12-31"),
-            selected: new Date(this.userData.birthday),
-            onChange: (value: DatePickerResult) => {
-              this.userData.birthday = `${value.year}-${value.month}-${value.day}`;
-            }
-          })
-        })
+            Row() {
+              Text('生日').flexGrow(1)
+              Text(this.userData.birthday)
+              Image($r('app.media.icon_arrow')).arrowStyle()
+            }.rowStyle().justifyContent(FlexAlign.Center).onClick(() => {
+              DatePickerDialog.show({
+                start: new Date("1970-1-1"),
+                end: new Date("2100-12-31"),
+                selected: new Date(this.userData.birthday),
+                onChange: (value: DatePickerResult) => {
+                  this.userData.birthday = `${value.year}-${value.month}-${value.day}`;
+                }
+              })
+            })
 
-        Row() {
-          Text('个性签名').flexGrow(1)
-          Text(this.userData.sign)
-          Image($r('app.media.icon_arrow')).arrowStyle()
-        }.rowStyle().justifyContent(FlexAlign.Center).onClick(() => {
-          this.useShowDialog('个性签名', 'sign')
-        })
+            Row() {
+              Text('个性签名').flexGrow(1)
+              Text(this.userData.sign)
+              Image($r('app.media.icon_arrow')).arrowStyle()
+            }.rowStyle().justifyContent(FlexAlign.Center).onClick(() => {
+              this.useShowDialog('个性签名', 'sign')
+            })
 
-        Row() {
-          Text('区域').flexGrow(1)
-          Text(this.userData.region)
-          Image($r('app.media.icon_arrow')).arrowStyle()
-        }.rowStyle().border({ width: 0 }).justifyContent(FlexAlign.Center).onClick(() => {
-          this.useShowDialog('区域', 'region')
-        })
+            Row() {
+              Text('区域').flexGrow(1)
+              Text(this.userData.region)
+              Image($r('app.media.icon_arrow')).arrowStyle()
+            }.rowStyle().border({ width: 0 }).justifyContent(FlexAlign.Center).onClick(() => {
+              this.useShowDialog('区域', 'region')
+            })
 
-      }.blockStyle().padding({ top: 0, left: size.pagePadding, right: size.pagePadding })
+          }.blockStyle().padding({ top: 0, left: size.pagePadding, right: size.pagePadding })
 
-      Button('退出登录')
-        .width('100%')
-        .padding(size.pagePadding)
-        .backgroundColor(colors.warnColor)
-        .margin({ top: size.pagePadding })
-        .fontColor(Color.White)
-        .borderRadius(size.blockBorderRaduis * 2)
-        .onClick(() => {
-          this.useShowDialog('logout', '');
-        })
+          Button('退出登录')
+            .width('100%')
+            .padding(size.pagePadding)
+            .backgroundColor(colors.warnColor)
+            .margin({ top: size.pagePadding })
+            .fontColor(Color.White)
+            .borderRadius(size.blockBorderRaduis * 2)
+            .onClick(() => {
+              this.useShowDialog('logout', '');
+            })
+
+          Text('修改密码')
+            .padding(size.smallPadding)
+            .border({
+              width: 1,
+              color: colors.borderColor,
+              style: BorderStyle.Solid
+            })
+            .borderRadius(size.blockBorderRaduis * 2)
+            .width('100%')
+            .padding(size.pagePadding)
+            .textAlign(TextAlign.Center)
+            .margin({ top: size.pagePadding,bottom:size.pagePadding })
+            .onClick(() => {
+              router.pushUrl({
+                url: 'pages/UpdatePasswordPage', // 目标url
+              });
+            })
+        }.padding({left:size.pagePadding,right:size.pagePadding})
+      }.layoutWeight(1).scrollable(ScrollDirection.Vertical).align(Alignment.Top)
+
     }
     .width('100%')
-    .padding({ left: size.pagePadding, right: size.pagePadding, bottom: size.pagePadding })
     .height('100%')
     .justifyContent(FlexAlign.Start)
     .backgroundColor(colors.pageBackgroundColor)

@@ -63,8 +63,12 @@ export default struct MusicMyComponent {
           Column() {
             Text(this.userData?.username).fontWeight(FontWeight.Bold)
             Text(this.userData?.sign).fontColor(colors.disableTextColor)
-          }.alignItems(HorizontalAlign.Start).margin({ left: size.pagePadding })
-        }.blockStyle()
+          }.layoutWeight(1).alignItems(HorizontalAlign.Start).margin({ left: size.pagePadding })
+          Image($r('app.media.icon_edit'))
+            .height(size.bigIconSize)
+            .width(size.bigIconSize)
+            .onClick(() => router.pushUrl({ url: 'pages/UserPage'}))
+        }.blockStyle().alignItems(VerticalAlign.Center)
 
         Row() {
           Column() {

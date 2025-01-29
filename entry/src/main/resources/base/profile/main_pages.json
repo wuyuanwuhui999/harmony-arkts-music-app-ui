@@ -14,6 +14,7 @@
     "pages/MusicAuthorMusicListPage",
     "pages/MusicCategoryPage",
     "pages/ForgetPasswordPage",
-    "pages/ResetPasswordPage"
+    "pages/ResetPasswordPage",
+    "pages/UpdatePasswordPage"
   ]
 }
