@@ -121,7 +121,7 @@ struct ResetPasswordPage {
                 this.code = value;
               })
           }
-          Divider().height(size.pagePadding).color(Color.borderColor)
+          Divider().height(size.pagePadding).color(colors.borderColor)
           Row() {
             Text("*").fontColor(colors.warnColor)
             TextInput({ placeholder: "请输入密码" })
@@ -132,7 +132,7 @@ struct ResetPasswordPage {
                 this.password = value;
               })
           }
-          Divider().height(size.pagePadding).color(Color.borderColor)
+          Divider().height(size.pagePadding).color(colors.borderColor)
           Row() {
             Text("*").fontColor(colors.warnColor)
             TextInput({ placeholder: "请输入确认密码" })
