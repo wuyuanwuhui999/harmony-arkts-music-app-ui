@@ -4,6 +4,9 @@
     "pages/UserPage",
     "pages/LoginPage",
     "pages/RegisterPage",
+    "pages/ForgetPasswordPage",
+    "pages/ResetPasswordPage",
+    "pages/UpdatePasswordPage",
     "pages/MusicIndexPage",
     "pages/MusicPlayerPage",
     "pages/MusicSearchPage",
@@ -12,9 +15,6 @@
     "pages/MusicClassifyListPage",
     "pages/MusicAuthorCategoryPage",
     "pages/MusicAuthorMusicListPage",
-    "pages/MusicCategoryPage",
-    "pages/ForgetPasswordPage",
-    "pages/ResetPasswordPage",
-    "pages/UpdatePasswordPage"
+    "pages/MusicCategoryPage"
   ]
 }

@@ -26,6 +26,67 @@ export const getUserDataService = (token:string):Promise<MyAwesomeData<types.Use
 }
 
 /**
+ * @description: 注册
+ * @date: 2024-01-21 14:48
+ * @author wuwenqiang
+ */
+export const registerService = (userData:types.UserDataInterface):Promise<MyAwesomeData<types.UserDataInterface>>=>{
+  userData = {...userData};
+  userData.password = CryptoJS.MD5(userData.password).toString();// 使用md5加密
+  return httpRequest.post<types.UserDataInterface>(api.register,userData)
+};
+
+/**
+ * @description: 注册
+ * @date: 2024-01-21 14:48
+ * @author wuwenqiang
+ */
+export const verifyUserService = (userId:string|undefined,email:string|undefined):Promise<MyAwesomeData<number>>=>{
+  return httpRequest.post<number>(api.vertifyUser,{userId,email})
+};
+
+/**
+ * @description: 修改用户信息
+ * @date: 2024-01-10 23:01
+ * @author wuwenqiang
+ */
+export const updateUserDataService = (userData:types.UserDataInterface):Promise<MyAwesomeData<number>>=>{
+  return httpRequest.put<number>(api.updateUser,userData)
+};
+
+
+/**
+ * @description: 找回密码
+ * @date: 2025-01-19 22:59
+ * @author wuwenqiang
+ */
+export const getBackPasswordService = (email:string):Promise<MyAwesomeData<String>>=>{
+  return httpRequest.post<string>(api.getBackPasswordByEmail,{email})
+};
+
+
+/**
+ * @description: 重置密码
+ * @date: 2025-01-26 22:21
+ * @author wuwenqiang
+ */
+export const resetPasswordService = (email:string,password:string,code:string):Promise<MyAwesomeData<types.UserDataInterface>>=>{
+  password = CryptoJS.MD5(password).toString();// 使用md5加密
+  return httpRequest.post<types.UserDataInterface>(api.resetPassword,{email,password,code})
+};
+
+/**
+ * @description: 更新密码
+ * @date: 2025-01-28 14:22
+ * @author wuwenqiang
+ */
+export const updatePasswordService = (oldPassword:string,newPassword:string):Promise<MyAwesomeData<number>>=>{
+  oldPassword = CryptoJS.MD5(oldPassword).toString();// 使用md5加密
+  newPassword = CryptoJS.MD5(newPassword).toString();// 使用md5加密
+  return httpRequest.put<number>(api.updatePassword,{oldPassword,newPassword})
+};
+
+/**
  * @description: 获取推荐的音乐
  * @date: 2024-03-02 22:44
  * @author wuwenqiang
@@ -242,65 +303,4 @@ export const getMusicListByAuthorIdService = (authorId:number,pageNum:number,pag
 export const getTopCommentListService = (relationId:number,type:string,pageNum:number,pageSize:number):Promise<MyAwesomeData<Array<CommentInterface>>> => {
   return httpRequest.get<Array<CommentInterface>>(`${api.getTopCommentList}?relationId=${relationId}&type=${type}&pageSize=${pageSize}&pageNum=${pageNum}`);
 }
-
-/**
- * @description: 注册
- * @date: 2024-01-21 14:48
- * @author wuwenqiang
- */
-export const registerService = (userData:types.UserDataInterface):Promise<MyAwesomeData<types.UserDataInterface>>=>{
-  userData = {...userData};
-  userData.password = CryptoJS.MD5(userData.password).toString();// 使用md5加密
-  return httpRequest.post<types.UserDataInterface>(api.register,userData)
-};
-
-/**
- * @description: 注册
- * @date: 2024-01-21 14:48
- * @author wuwenqiang
- */
-export const verifyUserService = (userId:string|undefined,email:string|undefined):Promise<MyAwesomeData<number>>=>{
-  return httpRequest.post<number>(api.vertifyUser,{userId,email})
-};
-
-/**
- * @description: 修改用户信息
- * @date: 2024-01-10 23:01
- * @author wuwenqiang
- */
-export const updateUserDataService = (userData:types.UserDataInterface):Promise<MyAwesomeData<number>>=>{
-  return httpRequest.put<number>(api.updateUser,userData)
-};
-
-
-/**
- * @description: 找回密码
- * @date: 2025-01-19 22:59
- * @author wuwenqiang
- */
-export const getBackPasswordService = (email:string):Promise<MyAwesomeData<String>>=>{
-  return httpRequest.post<string>(api.getBackPasswordByEmail,{email})
-};
-
-
-/**
- * @description: 重置密码
- * @date: 2025-01-26 22:21
- * @author wuwenqiang
- */
-export const resetPasswordService = (email:string,password:string,code:string):Promise<MyAwesomeData<types.UserDataInterface>>=>{
-  password = CryptoJS.MD5(password).toString();// 使用md5加密
-  return httpRequest.post<types.UserDataInterface>(api.resetPassword,{email,password,code})
-};
-
-/**
- * @description: 更新密码
- * @date: 2025-01-28 14:22
- * @author wuwenqiang
- */
-export const updatePasswordService = (oldPassword:string,newPassword:string):Promise<MyAwesomeData<number>>=>{
-  oldPassword = CryptoJS.MD5(oldPassword).toString();// 使用md5加密
-  newPassword = CryptoJS.MD5(newPassword).toString();// 使用md5加密
-  return httpRequest.put<number>(api.updatePassword,{oldPassword,newPassword})
-};
 
