@@ -27,7 +27,7 @@ export default struct MusicCategoryComponent{
       .alignItems(HorizontalAlign.Center)
       .onClick(()=>{
         router.pushUrl({
-          url: 'music/pages/MusicAuthorCategoryPage', // 目标url
+          url: 'pages/MusicAuthorCategoryPage', // 目标url
         });
       })
       Column(){
@@ -37,7 +37,7 @@ export default struct MusicCategoryComponent{
       .alignItems(HorizontalAlign.Center)
       .onClick(()=>{
         router.pushUrl({
-          url: 'music/pages/MusicCategoryPage', // 目标url
+          url: 'pages/MusicCategoryPage', // 目标url
         });
       })
       Column(){

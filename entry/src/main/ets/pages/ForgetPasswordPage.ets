@@ -63,7 +63,14 @@ struct LoginPage {
           bottom: px2vp(display.getDefaultDisplaySync().height) / 2
         });
         router.pushUrl({
-          url: 'pages/UserPage', // 目标url
+          url: 'pages/ResetPasswordPage', // 目标url
+          params: {
+            email: this.email
+          }
+        }, router.RouterMode.Single, (err) => {
+          if (err) {
+            console.error(`Invoke showAlertBeforeBackPage failed, code is ${err.code}, message is ${err.message}`);
+          }
         });
       }).finally(()=>{
         // prompt.hideLoading()
@@ -75,21 +82,18 @@ struct LoginPage {
 
   build() {
     Column() {
-      NavigatorTitleComponent({ title: "重置密码" })
+      NavigatorTitleComponent({ title: "忘记密码" })
       Column() {
-        Column({space:size.pagePadding}){
-          Row() {
-            Text("*").fontColor(colors.warnColor)
-            TextInput({ placeholder: "请输入验证码" })
-              .layoutWeight(1)
-              .backgroundColor(Color.Transparent)
-              .onChange((value) => {
-                this.email = value;
-              })
-          }
-          .alignItems(VerticalAlign.Center)
+        Row() {
+          Text("*").fontColor(colors.warnColor)
+          TextInput({ placeholder: "请输入邮箱" })
+            .layoutWeight(1)
+            .backgroundColor(Color.Transparent)
+            .onChange((value) => {
+              this.email = value;
+            })
         }
-
+        .alignItems(VerticalAlign.Center)
         .blockStyle()
 
         Text('提交')

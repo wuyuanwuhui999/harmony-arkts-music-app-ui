@@ -377,7 +377,7 @@ struct MusicPlayerPage {
    */
   useShare = () => {
     router.pushUrl({
-      url: 'music/pages/MusicSharePage', // 目标url
+      url: 'pages/MusicSharePage', // 目标url
       params: {
         musicItem: this.musicStorage.musicItem
       }

@@ -110,7 +110,7 @@ export default struct MusicSearchPage {
       useUpdateStorage(this.musicStorage);
     }
     router.pushUrl({
-      url: 'music/pages/MusicPlayerPage', // 目标url
+      url: 'pages/MusicPlayerPage', // 目标url
     });
   }
 

@@ -181,8 +181,8 @@ struct LoginPage {
           .textAlign(TextAlign.Center)
           .margin({ top: size.pagePadding })
           .onClick(() => {
-            router.replaceUrl({
-              url: 'pages/ForgetPassword', // 目标url
+            router.pushUrl({
+              url: 'pages/ForgetPasswordPage', // 目标url
             }, router.RouterMode.Single, (err) => {
               if (err) {
                 console.error(`Invoke showAlertBeforeBackPage failed, code is ${err.code}, message is ${err.message}`);

@@ -251,7 +251,7 @@ export const getTopCommentListService = (relationId:number,type:string,pageNum:n
 export const registerService = (userData:types.UserDataInterface):Promise<MyAwesomeData<types.UserDataInterface>>=>{
   userData = {...userData};
   userData.password = CryptoJS.MD5(userData.password).toString();// 使用md5加密
-  return httpRequest.put<types.UserDataInterface>(api.register,userData)
+  return httpRequest.post<types.UserDataInterface>(api.register,userData)
 };
 
 /**
@@ -259,8 +259,8 @@ export const registerService = (userData:types.UserDataInterface):Promise<MyAwes
  * @date: 2024-01-21 14:48
  * @author wuwenqiang
  */
-export const verifyUserIdService = (userId:string):Promise<MyAwesomeData<number>>=>{
-  return httpRequest.get<number>(`${api.verifyUserId}?userId=${userId}`)
+export const verifyUserService = (userId:string|undefined,email:string|undefined):Promise<MyAwesomeData<number>>=>{
+  return httpRequest.post<number>(api.vertifyUser,{userId,email})
 };
 
 /**
@@ -288,7 +288,7 @@ export const getBackPasswordService = (email:string):Promise<MyAwesomeData<Strin
  * @date: 2025-01-26 22:21
  * @author wuwenqiang
  */
-export const resetPasswordService = (email:string,password:string,code:number):Promise<MyAwesomeData<types.UserDataInterface>>=>{
+export const resetPasswordService = (email:string,password:string,code:string):Promise<MyAwesomeData<types.UserDataInterface>>=>{
   password = CryptoJS.MD5(password).toString();// 使用md5加密
   return httpRequest.post<types.UserDataInterface>(api.resetPassword,{email,password,code})
 };

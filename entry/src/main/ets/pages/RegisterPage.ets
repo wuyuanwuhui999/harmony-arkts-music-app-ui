@@ -3,14 +3,14 @@ import * as colors from '../theme/color';
 import * as size from '../theme/size';
 import { UserDataInterface } from '../interface/Index';
 import promptAction from '@ohos.promptAction'
-import { registerService, verifyUserIdService } from '../service/Index';
+import { registerService, verifyUserService } from '../service/Index';
 import httpRequest from '../utils/HttpUtil';
 import preference from '../utils/PreferenceModel';
 import display from '@ohos.display';
 import OptionDialogComponent from '../components/OptionDialogComponent';
 import { zerofull } from '../utils/common';
 import { USER_DATA } from '../common/constant';
-
+import NavigatorTitleComponent from '../components/NavigatorTitleComponent';
 @Entry
 @Component
 struct RegisterPage {
@@ -83,13 +83,25 @@ struct RegisterPage {
     return true;
   }
 
-  useRegister=()=>{
+  useRegister=async ()=>{
     if (
       this.verify(this.userData.userId, '账号') &&
-      this.verify(this.userData.userId, '密码') &&
-      this.verify(this.userData.userId, '确认密码') &&
-      this.verify(this.userData.userId, '昵称')
+      this.verify(this.userData.password, '密码') &&
+      this.verify(this.comfirmPassword, '确认密码') &&
+      this.verify(this.userData.username, '昵称') &&
+      this.verify(this.userData.email, '邮箱')
     ) {
+      if(this.loading)return;
+      this.loading = true;
+      const {data,msg} = await verifyUserService(this.userData.userId,this.userData.email)
+      if(data > 0){
+        promptAction.showToast({
+          message: msg,
+          duration: 2000,
+          bottom: px2vp(display.getDefaultDisplaySync().height) / 2
+        });
+        return this.loading = false;
+      }
       registerService(this.userData).then(async res => {
         preference.setPassword(this.userData.userId, this.userData.password)
         preference.setToke(res.token);
@@ -103,201 +115,221 @@ struct RegisterPage {
           }
         });
         router.clear()
+      }).finally(()=>{
+        this.loading = false;
       })
     }
   }
 
   build() {
     Column() {
-      Column() {
-        Row() {
-          Row() {
-            Text("*").fontColor(colors.warnColor)
-            Text("账号:")
-          }.width('20%')
+      NavigatorTitleComponent({title:"注册"})
+      Scroll(){
+        Column(){
+          Column() {
+            Row() {
+              Row() {
+                Text("*").fontColor(colors.warnColor)
+                Text("账号:")
+              }.width('20%')
 
-          TextInput({ placeholder: "请输入6-18位数的账号", text: this.userData.userId })
-            .inputStyle()
-            .maxLength(18)
-            .onChange((value) => {
-              this.userData.userId = value;
-            }).onBlur(() => {
-            if (this.verify(this.userData.userId, '账号')) {
-              if (this.loading) return;
-              this.loading = true;
-              verifyUserIdService(this.userData.userId).then((res) => {
-                if (res.data > 0) {
-                  promptAction.showToast({
-                    message: '该账号已经存在',
-                    duration: 2000,
-                    bottom: px2vp(display.getDefaultDisplaySync().height) / 2
-                  });
+              TextInput({ placeholder: "请输入6-18位数的账号", text: this.userData.userId })
+                .inputStyle()
+                .maxLength(18)
+                .onChange((value) => {
+                  this.userData.userId = value;
+                }).onBlur(() => {
+                if (this.verify(this.userData.userId, '账号')) {
+                  if (this.loading) return;
+                  this.loading = true;
+                  verifyUserService(this.userData.userId,undefined).then((res) => {
+                    if (res.data > 0) {
+                      promptAction.showToast({
+                        message: '该账号已经存在',
+                        duration: 2000,
+                        bottom: px2vp(display.getDefaultDisplaySync().height) / 2
+                      });
+                    }
+                  }).finally(() => this.loading = false);
                 }
-              }).finally(() => this.loading = false);
+              })
             }
-          })
-        }
 
-        Row() {
-          Row() {
-            Text("*").fontColor(colors.warnColor)
-            Text("密码:")
-          }.width('20%')
+            Row() {
+              Row() {
+                Text("*").fontColor(colors.warnColor)
+                Text("密码:")
+              }.width('20%')
 
-          TextInput({ placeholder: "请输入6-18位数的密码", text: this.userData.password })
-            .type(InputType.Password)
-            .maxLength(18)
-            .inputStyle()
-            .onChange((value) => {
-              this.userData.password = value;
+              TextInput({ placeholder: "请输入6-18位数的密码", text: this.userData.password })
+                .type(InputType.Password)
+                .maxLength(18)
+                .inputStyle()
+                .onChange((value) => {
+                  this.userData.password = value;
+                })
+                .onBlur(() => {
+                  this.verify(this.userData.password, '密码')
+                })
+            }.margin({ top: size.pagePadding })
+
+            Row() {
+              Row() {
+                Text("*").fontColor(colors.warnColor)
+                Text("确认密码:")
+              }.width('20%')
+
+              TextInput({ placeholder: "请输入6-18位数的确认密码", text: this.comfirmPassword })
+                .type(InputType.Password)
+                .maxLength(18)
+                .inputStyle()
+                .onChange((value) => {
+                  this.comfirmPassword = value;
+                })
+                .onBlur(() => {
+                  this.verify(this.comfirmPassword, '确认密码');
+                })
+            }.margin({ top: size.pagePadding })
+
+            Row() {
+              Row() {
+                Text("*").fontColor(colors.warnColor)
+                Text("昵称:")
+              }.width('20%')
+
+              TextInput({ placeholder: "请输入昵称", text: this.userData.username })
+                .inputStyle()
+                .onChange((value) => {
+                  this.userData.username = value;
+                }).onBlur(() => {
+                this.verify(this.userData.username, '昵称');
+              })
+            }.margin({ top: size.pagePadding })
+
+            Row() {
+              Row() {
+                Text("性别:")
+              }.width('20%')
+
+              TextInput({
+                placeholder: "请选择性别",
+                text: this.userData.sex,
+                controller: this.birthdayController
+              }).fontColor(colors.tabNormalColor).enabled(false).inputStyle()
+            }.margin({ top: size.pagePadding }).onClick(() => {
+              this.useShowDialog()
             })
-            .onBlur(() => {
-              this.verify(this.userData.password, '密码')
+
+            Row() {
+              Row() {
+                Text("出生日期:")
+              }.width('20%')
+
+              TextInput({
+                placeholder: "请选择出生日期",
+                text: this.userData.birthday,
+                controller: this.birthdayController
+              })
+                .enabled(false)
+                .inputStyle()
+                .fontColor(colors.tabNormalColor)
+                .onChange((value) => {
+                  this.userData.birthday = value;
+                })
+            }.margin({ top: size.pagePadding }).onClick(() => {
+              DatePickerDialog.show({
+                start: new Date("1970-1-1"),
+                end: new Date("2100-12-31"),
+                selected: new Date(this.userData.birthday || '1990-1-1'),
+                onChange: (value: DatePickerResult) => {
+                  this.userData.birthday = `${value.year}-${zerofull(value.month + 1)}-${zerofull(value.day)}`;
+                }
+              })
             })
-        }.margin({ top: size.pagePadding })
 
-        Row() {
-          Row() {
-            Text("*").fontColor(colors.warnColor)
-            Text("确认密码:")
-          }.width('20%')
+            Row() {
+              Row() {
+                Text("手机号码:")
+              }.width('20%')
 
-          TextInput({ placeholder: "请输入6-18位数的确认密码", text: this.comfirmPassword })
-            .type(InputType.Password)
-            .maxLength(18)
-            .inputStyle()
-            .onChange((value) => {
-              this.comfirmPassword = value;
-            })
-            .onBlur(() => {
-              this.verify(this.comfirmPassword, '确认密码');
-            })
-        }.margin({ top: size.pagePadding })
+              TextInput({ placeholder: "请输入手机号码", text: this.userData.telephone })
+                .inputStyle()
+                .onChange((value) => {
+                  this.userData.telephone = value;
+                })
+            }.margin({ top: size.pagePadding })
 
-        Row() {
-          Row() {
-            Text("*").fontColor(colors.warnColor)
-            Text("昵称:")
-          }.width('20%')
+            Row() {
+              Row() {
+                Text("*").fontColor(colors.warnColor)
+                Text("邮箱:")
+              }.width('20%')
 
-          TextInput({ placeholder: "请输入6-18位数的确认昵称", text: this.userData.username })
-            .inputStyle()
-            .onChange((value) => {
-              this.userData.username = value;
-            }).onBlur(() => {
-            this.verify(this.userData.username, '昵称');
-          })
-        }.margin({ top: size.pagePadding })
+              TextInput({ placeholder: "请输入邮箱", text: this.userData.email })
+                .inputStyle()
+                .onChange((value) => {
+                  this.userData.email = value;
+                }).onBlur(() => {
+                if (this.verify(this.userData.email, '邮箱')) {
+                  if (this.loading) return;
+                  this.loading = true;
+                  verifyUserService(undefined,this.userData.email).then((res) => {
+                    if (res.data > 0) {
+                      promptAction.showToast({
+                        message: '邮箱已经存在',
+                        duration: 2000,
+                        bottom: px2vp(display.getDefaultDisplaySync().height) / 2
+                      });
+                    }
+                  }).finally(() => this.loading = false);
+                }
+              })
+            }.margin({ top: size.pagePadding })
 
-        Row() {
-          Row() {
-            Text("*").fontColor(colors.warnColor)
-            Text("性别:")
-          }.width('20%')
+            Row() {
+              Row() {
+                Text("地区:")
+              }.width('20%')
 
-          TextInput({
-            placeholder: "请选择性别",
-            text: this.userData.sex,
-            controller: this.birthdayController
-          }).fontColor(colors.tabNormalColor).enabled(false).inputStyle()
-        }.margin({ top: size.pagePadding }).onClick(() => {
-          this.useShowDialog()
-        })
+              TextInput({ placeholder: "请输入地区", text: this.userData.region })
+                .inputStyle()
+                .onChange((value) => {
+                  this.userData.region = value;
+                })
+            }.margin({ top: size.pagePadding })
 
-        Row() {
-          Row() {
-            Text("*").fontColor(colors.warnColor)
-            Text("出生日期:")
-          }.width('20%')
+            Row() {
+              Row() {
+                Text("个性签名:")
+              }.width('20%')
 
-          TextInput({
-            placeholder: "请选择出生日期",
-            text: this.userData.birthday,
-            controller: this.birthdayController
-          })
-            .enabled(false)
-            .inputStyle()
-            .fontColor(colors.tabNormalColor)
-            .onChange((value) => {
-              this.userData.birthday = value;
-            })
-        }.margin({ top: size.pagePadding }).onClick(() => {
-          DatePickerDialog.show({
-            start: new Date("1970-1-1"),
-            end: new Date("2100-12-31"),
-            selected: new Date(this.userData.birthday || '1990-1-1'),
-            onChange: (value: DatePickerResult) => {
-              this.userData.birthday = `${value.year}-${zerofull(value.month + 1)}-${zerofull(value.day)}`;
-            }
-          })
-        })
+              TextInput({ placeholder: "请输入个性签名", text: this.userData.sign })
+                .inputStyle()
+                .onChange((value) => {
+                  this.userData.sign = value;
+                })
+            }.margin({ top: size.pagePadding })
 
-        Row() {
-          Row() {
-            Text("手机号码:")
-          }.width('20%')
+          }.blockStyle()
+          Text('注册')
+            .width('100%')
+            .padding(size.pagePadding)
+            .textAlign(TextAlign.Center)
+            .backgroundColor(colors.warnColor)
+            .margin({ top: size.pagePadding })
+            .fontColor(Color.White)
+            .borderRadius(size.blockBorderRaduis * 2)
+            .onClick(this.useRegister)
+        }.justifyContent(FlexAlign.Start)
+      }
+      .align(Alignment.Top)
+      .scrollable(ScrollDirection.Vertical)
+      .layoutWeight(1)
+      .padding({left:size.pagePadding,right:size.pagePadding})
 
-          TextInput({ placeholder: "请输入手机号码", text: this.userData.telephone })
-            .inputStyle()
-            .onChange((value) => {
-              this.userData.telephone = value;
-            })
-        }.margin({ top: size.pagePadding })
-
-        Row() {
-          Row() {
-            Text("*").fontColor(colors.warnColor)
-            Text("邮箱:")
-          }.width('20%')
-
-          TextInput({ placeholder: "请输入邮箱", text: this.userData.email })
-            .inputStyle()
-            .onChange((value) => {
-              this.userData.email = value;
-            })
-        }.margin({ top: size.pagePadding })
-
-        Row() {
-          Row() {
-            Text("*").fontColor(colors.warnColor)
-            Text("地区:")
-          }.width('20%')
-
-          TextInput({ placeholder: "请输入地区", text: this.userData.region })
-            .inputStyle()
-            .onChange((value) => {
-              this.userData.region = value;
-            })
-        }.margin({ top: size.pagePadding })
-
-        Row() {
-          Row() {
-            Text("*").fontColor(colors.warnColor)
-            Text("个性签名:")
-          }.width('20%')
-
-          TextInput({ placeholder: "请输入个性签名", text: this.userData.sign })
-            .inputStyle()
-            .onChange((value) => {
-              this.userData.sign = value;
-            })
-        }.margin({ top: size.pagePadding })
-
-      }.blockStyle()
-
-      Text('注册')
-        .width('100%')
-        .padding(size.pagePadding)
-        .textAlign(TextAlign.Center)
-        .backgroundColor(colors.warnColor)
-        .margin({ top: size.pagePadding })
-        .fontColor(Color.White)
-        .borderRadius(size.blockBorderRaduis * 2)
-        .onClick(this.useRegister)
     }
     .width('100%')
     .height('100%')
-    .padding({ left: size.pagePadding, right: size.pagePadding })
     .backgroundColor(colors.pageBackgroundColor)
   }
 

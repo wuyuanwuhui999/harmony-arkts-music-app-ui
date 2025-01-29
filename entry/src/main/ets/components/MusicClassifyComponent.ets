@@ -70,7 +70,7 @@ export default struct MusicClassifyComponent {
         Text(this.classifyName).margin({ left: size.pagePadding }).layoutWeight(1)
         Text("更多").onClick(()=>{
           router.pushUrl({
-            url: 'music/pages/MusicClassifyListPage',
+            url: 'pages/MusicClassifyListPage',
             params: {
               musicClassify: {id:this.classifyId,classifyName:this.classifyName}
             }

@@ -68,7 +68,7 @@ export const usePlayerRouter = (musicStorage:MusicStorageInterface,musicList:Arr
     }
     useUpdateStorage(musicStorage);
   }
-  router.pushUrl({url: 'music/pages/MusicPlayerPage'});
+  router.pushUrl({url: 'pages/MusicPlayerPage'});
 }
 
 export const useAppStorage = ():MusicStorageInterface => {

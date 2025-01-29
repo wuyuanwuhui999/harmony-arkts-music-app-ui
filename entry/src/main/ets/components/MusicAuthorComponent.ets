@@ -38,7 +38,7 @@ export default struct MusicAuthorComponent {
         Text("推荐歌手").margin({ left: size.pagePadding }).layoutWeight(1)
         Text("更多").onClick(()=>{
           router.pushUrl({
-            url: 'music/pages/MusicAuthorCategoryPage', // 目标url
+            url: 'pages/MusicAuthorCategoryPage', // 目标url
           })
         })
       }.alignItems(VerticalAlign.Center).margin({ bottom: size.pagePadding })

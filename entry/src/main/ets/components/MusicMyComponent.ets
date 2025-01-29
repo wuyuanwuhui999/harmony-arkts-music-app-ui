@@ -40,7 +40,7 @@ export default struct MusicMyComponent {
    */
   useMusicFavoriteList(item:FavoriteDirectoryInterface){
     router.pushUrl({
-      url: 'music/pages/MusicFavoriteListPage', // 目标url
+      url: 'pages/MusicFavoriteListPage', // 目标url
       params: {
         favoriteDirectory: item
       }

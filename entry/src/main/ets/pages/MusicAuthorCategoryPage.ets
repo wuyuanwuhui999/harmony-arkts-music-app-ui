@@ -119,7 +119,7 @@ export default struct MusicAuthorCategoryPage {
                   .height(size.smallIconSize)
               }.onClick(()=>{
                 router.pushUrl({
-                  url: 'music/pages/MusicAuthorMusicListPage',
+                  url: 'pages/MusicAuthorMusicListPage',
                   params: {
                     musicAuthor: item
                   }
