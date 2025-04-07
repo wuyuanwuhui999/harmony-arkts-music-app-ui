@@ -32,7 +32,7 @@ export default struct LikeComponent {
    * @author wuwenqiang
    */
   getLikeIndex():number{
-    return this.mLikeList.findIndex((item:LikeInterface) => item.userId === this.userData.userId);
+    return this.mLikeList.findIndex((item:LikeInterface) => item.userId === this.userData.userAccount);
   }
 
   useLike():void{

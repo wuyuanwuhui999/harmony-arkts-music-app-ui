@@ -4,6 +4,8 @@ export default {
   updateUser: '/service/user-getway/updateUser',//更新用户信息
   register: '/service/user/register',//注册
   vertifyUser: '/service/user/vertifyUser',// 校验账号是否存在
+  sendEmailVertifyCode: '/service/user/sendEmailVertifyCode',// 找回密码
+  loginByEmail: '/service/user/loginByEmail',//邮箱登录
   getBackPasswordByEmail: '/service/user/getBackPasswordByEmail',// 找回密码
   resetPassword: '/service/user/resetPassword',// 重置密码
   updateAvater:'/service/user-getway/updateAvater',//更新头像

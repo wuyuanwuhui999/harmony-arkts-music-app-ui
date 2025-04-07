@@ -17,7 +17,8 @@ export interface DeviceInterface{
 }
 
 export interface UserDataInterface {
-  userId:     string;
+  id: string;
+  userAccount: string;
   createDate?: string;
   updateDate?: string;
   username:   string;
