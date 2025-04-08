@@ -72,17 +72,6 @@ export const updateUserDataService = (userData:types.UserDataInterface):Promise<
   return httpRequest.put<number>(api.updateUser,userData)
 };
 
-
-/**
- * @description: 找回密码
- * @date: 2025-01-19 22:59
- * @author wuwenqiang
- */
-export const getBackPasswordService = (email:string):Promise<MyAwesomeData<String>>=>{
-  return httpRequest.post<string>(api.getBackPasswordByEmail,{email})
-};
-
-
 /**
  * @description: 重置密码
  * @date: 2025-01-26 22:21
@@ -190,8 +179,26 @@ export const getMusicPlayMenuService = ():Promise<MyAwesomeData<Array<types.Muis
  * @date: 2024-03-17 22:12
  * @author wuwenqiang
  */
-export const getMyLikeMusicAuthorService = (pageNum:number,pageSize:number):Promise<MyAwesomeData<Array<types.MusicAuthorInterface>>> => {
-  return httpRequest.get<Array<types.MusicAuthorInterface>>(`${api.getMyLikeMusicAuthor}?pageNum=${pageNum}&pageSize=${pageSize}`);
+export const getFavoriteAuthorService = (pageNum:number,pageSize:number):Promise<MyAwesomeData<Array<types.MusicAuthorInterface>>> => {
+  return httpRequest.get<Array<types.MusicAuthorInterface>>(`${api.getFavoriteAuthor}?pageNum=${pageNum}&pageSize=${pageSize}`);
+}
+
+/**
+ * @description: 新增我关注的歌手
+ * @date: 2024-08-27 21:43
+ * @author wuwenqiang
+ */
+export const insertFavoriteAuthorService = (authorId:number):Promise<MyAwesomeData<number>> => {
+  return httpRequest.post<number>(`${api.insertFavoriteAuthor}${authorId}`);
+}
+
+/**
+ * @description: 新增我关注的歌手
+ * @date: 2024-08-27 21:43
+ * @author wuwenqiang
+ */
+export const deleteFavoriteAuthorService = (authorId:number):Promise<MyAwesomeData<number>> => {
+  return httpRequest.delete<number>(`${api.deleteFavoriteAuthor}${authorId}`);
 }
 
 /**

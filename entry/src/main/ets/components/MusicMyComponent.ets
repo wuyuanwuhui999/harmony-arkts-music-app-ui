@@ -2,7 +2,7 @@ import * as colors from '../theme/color';
 import * as size from '../theme/size';
 import AvaterComponent from '../components/AvaterComponent';
 import { HOST, USER_DATA } from '../common/constant';
-import { getMyLikeMusicAuthorService, getMusicPlayMenuService, getMusicRecordService, getFavoriteDirectoryService } from '../service/Index';
+import { getFavoriteAuthorService, getMusicPlayMenuService, getMusicRecordService, getFavoriteDirectoryService } from '../service/Index';
 import { MusicAuthorInterface } from '../interface';
 import { FavoriteDirectoryInterface, MusicInterface,UserDataInterface } from '../interface/Index';
 import router from '@ohos.router';
@@ -13,17 +13,15 @@ export default struct MusicMyComponent {
   scroller: Scroller = new Scroller()
   @StorageLink(USER_DATA) userData: UserDataInterface = null;
   @State dimensions: number = size.middleAvaterSize; // 导入的值不能直接传给组件
-  @State myMusicMenuList: Array<FavoriteDirectoryInterface> = []; // 我的歌单
-  @State mySingerList: Array<MusicAuthorInterface> = []; // 我关注的歌手列表
+  @State myFavoriteDirectoryList: Array<FavoriteDirectoryInterface> = []; // 我的歌单
+  @State myFavoriteAuthorList: Array<MusicAuthorInterface> = []; // 我关注的歌手列表
   @State myRecordMusicList: Array<MusicInterface> = []; // 我听过的歌曲
   @State myCreateMusicList: Array<MusicInterface> = []; // 我创作的歌曲
-  @State isFoldMyMusicMenu: boolean = false; // 是否折叠我的歌单
+  @State isFoldFavoriteDirectory: boolean = false; // 是否折叠我的歌单
   @State isFoldRecordMusic: boolean = false; // 是否折叠我听过的歌曲
-  @State isFoldMySinger: boolean = false; // 是否折叠我关注的歌手
-  @State isFoldMyCreateMusic: boolean = false; // 是否折叠我创作的歌曲
-  @State mySingerTotal: number = 0; // 我关注的歌手总数
+  @State isFoldFavoriteAuthor: boolean = false; // 是否折叠我关注的歌手
+  @State myFavoriteAuthorTotal: number = 0; // 我关注的歌手总数
   @State myRecordMusicTotal: number = 0; // 我听过的歌曲总数
-  @State myCreateMusicTotal: number = 0; // 我创作的歌曲总数
 
   @Styles blockStyle(){
     .backgroundColor(colors.blockColor)
@@ -48,11 +46,17 @@ export default struct MusicMyComponent {
   }
 
   aboutToAppear() {
-    getMyLikeMusicAuthorService(1, 5).then((res) => {
-      this.mySingerList = res.data;
+    getFavoriteAuthorService(1, 5).then((res) => {
+      this.myFavoriteAuthorTotal = res.total;
+      this.myFavoriteAuthorList = res.data;
     });
-    getFavoriteDirectoryService(0).then(res => this.myMusicMenuList = res.data);
-    getMusicRecordService(1, 5).then(res => this.myRecordMusicList = res.data);
+    getFavoriteDirectoryService(0).then(res =>{
+      this.myFavoriteDirectoryList = res.data;
+    });
+    getMusicRecordService(1, 10).then(res => {
+      this.myRecordMusicTotal = res.total;
+      this.myRecordMusicList = res.data;
+    });
   }
 
   build() {
@@ -70,65 +74,31 @@ export default struct MusicMyComponent {
             .onClick(() => router.pushUrl({ url: 'pages/UserPage'}))
         }.blockStyle().alignItems(VerticalAlign.Center)
 
-        Row() {
-          Column() {
-            Image($r("app.media.icon_menu_board"))
-              .width(size.middlIconSize)
-              .height(size.middlIconSize)
-              .margin({ bottom: size.pagePadding })
-            Text("播放清单")
-          }.width('25%')
-
-          Column() {
-            Image($r("app.media.icon_menu_like"))
-              .width(size.middlIconSize)
-              .height(size.middlIconSize)
-              .margin({ bottom: size.pagePadding })
-            Text("喜欢")
-          }.width('25%')
-
-          Column() {
-            Image($r("app.media.icon_menu_collect"))
-              .width(size.middlIconSize)
-              .height(size.middlIconSize)
-              .margin({ bottom: size.pagePadding })
-            Text("收藏")
-          }.width('25%')
-
-          Column() {
-            Image($r("app.media.icon_menu_history"))
-              .width(size.middlIconSize)
-              .height(size.middlIconSize)
-              .margin({ bottom: size.pagePadding })
-            Text("历史播放")
-          }.width('25%')
-        }.blockStyle()
-
         Column() {
           Row() {
             Image($r("app.media.icon_down"))
               .width(size.smallIconSize)
               .height(size.smallIconSize)
+              .colorFilter(colors.borderColor)
               .onClick(() => {
-                this.isFoldMyMusicMenu = !this.isFoldMyMusicMenu;
+                this.isFoldFavoriteDirectory = !this.isFoldFavoriteDirectory;
                 getMusicPlayMenuService().then(res => {
-                  this.myMusicMenuList = res.data;
+                  this.myFavoriteDirectoryList = res.data;
                 });
-              }).rotate({ angle: this.isFoldMyMusicMenu ? 90 : 0 })
+              }).rotate({ angle: this.isFoldFavoriteDirectory ? 90 : 0 })
             Text("我的歌单").margin({ left: size.pagePadding })
             Blank()
             Image($r("app.media.icon_add")).width(size.smallIconSize).height(size.smallIconSize)
           }.width('100%')
-
-          if (!this.isFoldMyMusicMenu) {
-            ForEach(this.myMusicMenuList, (item: FavoriteDirectoryInterface) => {
+          if (!this.isFoldFavoriteDirectory) {
+            Blank().height(size.pagePadding)
+            ForEach(this.myFavoriteDirectoryList, (item: FavoriteDirectoryInterface,index:number) => {
               Row({space:size.pagePadding}) {
                 MusicAvaterComponent({avater:item.cover?.toString(),title:item.name[0],dimension:Number(size.middleAvaterSize),type:'music'})
                 Column() {
                   Text(item.name)
                   Text(item.total.toString() + '首').fontColor(colors.disableTextColor)
                 }.alignItems(HorizontalAlign.Start)
-
                 Blank()
                 Image($r("app.media.icon_music_play"))
                   .width(size.smallIconSize)
@@ -138,8 +108,12 @@ export default struct MusicMyComponent {
                   .height(size.smallIconSize)
               }
               .width('100%')
-              .margin({ top: size.pagePadding })
               .onClick(() => this.useMusicFavoriteList(item))
+              if(index !== this.myFavoriteDirectoryList.length - 1){
+                Blank().height(size.pagePadding)
+                Divider().height(1).color(colors.borderColor)
+                Blank().height(size.pagePadding)
+              }
             })
           }
         }.blockStyle()
@@ -149,24 +123,32 @@ export default struct MusicMyComponent {
             Image($r("app.media.icon_down"))
               .width(size.smallIconSize)
               .height(size.smallIconSize)
+              .colorFilter(colors.borderColor)
               .onClick(() => {
-                this.isFoldMySinger = !this.isFoldMySinger;
-                if (!this.isFoldMySinger) {
-                  getMyLikeMusicAuthorService(1, 5).then((res) => {
-                    this.mySingerTotal = res.total;
-                    this.mySingerList = res.data;
+                this.isFoldFavoriteAuthor = !this.isFoldFavoriteAuthor;
+                if (!this.isFoldFavoriteAuthor) {
+                  getFavoriteAuthorService(1, 5).then((res) => {
+                    this.myFavoriteAuthorTotal = res.total;
+                    this.myFavoriteAuthorList = res.data;
                   });
                 }
-              }).rotate({ angle: this.isFoldMySinger ? 90 : 0 })
+              }).rotate({ angle: this.isFoldFavoriteAuthor ? 90 : 0 })
             Text("我关注的歌手").margin({ left: size.pagePadding })
-            Blank()
-            if (this.mySingerTotal) {
-              Text("更多").fontColor(colors.disableTextColor)
+            if (this.myFavoriteAuthorTotal > 5) {
+              Blank()
+              Text("更多").fontColor(colors.disableTextColor).decoration({
+                type: TextDecorationType.Underline,
+                color: colors.disableTextColor
+              }).onClick(()=>{
+
+              })
             }
+            Blank()
           }.width('100%')
 
-          if (!this.isFoldMySinger) {
-            ForEach(this.mySingerList, (item: MusicAuthorInterface) => {
+          if (!this.isFoldFavoriteAuthor) {
+            Blank().height(size.pagePadding)
+            ForEach(this.myFavoriteAuthorList, (item: MusicAuthorInterface,index:number) => {
               Row() {
                 Image(item.avatar ? (/http[s]?:\/\//.test(item.avatar) ? item.avatar.replace('{size}', '480') : HOST + item.avatar) : $r("app.media.default_avater"))
                   .width(size.middleAvaterSize)
@@ -186,7 +168,12 @@ export default struct MusicMyComponent {
                   .width(size.smallIconSize)
                   .height(size.smallIconSize)
                   .margin({ left: size.pagePadding })
-              }.width('100%').margin({ top: size.pagePadding })
+              }.width('100%')
+              if(index !== this.myFavoriteAuthorList.length - 1){
+                Blank().height(size.pagePadding)
+                Divider().height(1).color(colors.borderColor)
+                Blank().height(size.pagePadding)
+              }
             })
           }
         }.blockStyle()
@@ -196,24 +183,31 @@ export default struct MusicMyComponent {
             Image($r("app.media.icon_down"))
               .width(size.smallIconSize)
               .height(size.smallIconSize)
+              .colorFilter(colors.borderColor)
               .onClick(() => {
                 this.isFoldRecordMusic = !this.isFoldRecordMusic;
                 if (!this.isFoldRecordMusic) {
-                  getMusicRecordService(1, 5).then(res => {
+                  getMusicRecordService(1, 10).then(res => {
                     this.myRecordMusicTotal = res.total;
                     this.myRecordMusicList = res.data;
                   });
                 }
               }).rotate({ angle: this.isFoldRecordMusic ? 90 : 0 })
             Text("我听过的歌曲").margin({ left: size.pagePadding })
-            Blank()
-            if (this.myRecordMusicTotal) {
-              Text("更多").fontColor(colors.disableTextColor)
+            if (this.myRecordMusicTotal > 10) {
+              Blank()
+              Text("更多").fontColor(colors.disableTextColor).decoration({
+                type: TextDecorationType.Underline,
+                color: colors.disableTextColor
+              }).onClick(()=>{
+                router.pushUrl({ url: 'pages/RecordMusicPage'})
+              })
             }
           }.width('100%')
 
           if (!this.isFoldRecordMusic) { // 如果是展开状态
-            ForEach(this.myRecordMusicList, (item: MusicInterface) => {
+            Blank().height(size.pagePadding)
+            ForEach(this.myRecordMusicList, (item: MusicInterface,index:number) => {
               Row() {
                 Image(item.cover ? (/http[s]?:\/\//.test(item.cover) ? item.cover.replace('{size}', '480') : HOST + item.cover) : $r("app.media.default_avater"))
                   .width(size.middleAvaterSize)
@@ -233,49 +227,15 @@ export default struct MusicMyComponent {
                   .width(size.smallIconSize)
                   .height(size.smallIconSize)
                   .margin({ left: size.pagePadding })
-              }.width('100%').margin({ top: size.pagePadding })
+              }.width('100%')
+              if(index !== this.myRecordMusicList.length - 1){
+                Blank().height(size.pagePadding)
+                Divider().height(1).color(colors.borderColor)
+                Blank().height(size.pagePadding)
+              }
             })
           }
         }.blockStyle()
-
-        Column() {
-          Row() {
-            Image($r("app.media.icon_down"))
-              .width(size.smallIconSize)
-              .height(size.smallIconSize)
-              .onClick(() => {
-                this.isFoldMyCreateMusic = !this.isFoldMyCreateMusic;
-              }).rotate({ angle: this.isFoldMyCreateMusic ? 90 : 0 })
-            Text("我创作的歌曲").margin({ left: size.pagePadding })
-            Blank()
-            Text("更多").fontColor(colors.disableTextColor)
-          }.width('100%')
-
-          if (!this.isFoldMyCreateMusic) { // 如果是展开状态
-            ForEach(this.myCreateMusicList, (item: MusicInterface) => {
-              Row() {
-                Image(item.cover ? (/http[s]?:\/\//.test(item.cover) ? item.cover.replace('{size}', '480') : HOST + item.cover) : $r("app.media.default_avater"))
-                  .width(size.middleAvaterSize)
-                  .height(size.middleAvaterSize)
-                  .borderRadius(size.middleAvaterSize)
-                Column() {
-                  Text(item.songName)
-                }.margin({ left: size.pagePadding }).alignItems(HorizontalAlign.Start)
-
-                Blank()
-                Image($r("app.media.icon_music_play"))
-                  .width(size.smallIconSize)
-                  .height(size.smallIconSize)
-                  .margin({ left: size.pagePadding })
-                Image($r("app.media.icon_music_menu"))
-                  .width(size.smallIconSize)
-                  .height(size.smallIconSize)
-                  .margin({ left: size.pagePadding })
-              }.width('100%').margin({ top: size.pagePadding })
-            })
-          }
-        }.blockStyle()
-
         Blank().height(size.pagePadding)
       }
     }

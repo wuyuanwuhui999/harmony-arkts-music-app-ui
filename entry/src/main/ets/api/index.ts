@@ -16,9 +16,9 @@ export default {
   getMusicAuthorListByCategoryId: '/service/myMusic/getMusicAuthorListByCategoryId',// 获取歌手列表
   getCircleListByType: '/service/circle/getCircleListByType',// 获取歌手列表
   getMusicPlayMenu: '/service/myMusic-getway/getMusicPlayMenu',// 获取我的歌单
-  getMyLikeMusicAuthor: '/service/myMusic-getway/getMyLikeMusicAuthor',// 获取我关注的歌手
-  insertMyLikeMusicAuthor: '/service/myMusic-getway/insertMyLikeMusicAuthor/',// 添加我关注的歌手
-  deleteMyLikeMusicAuthor: '/service/myMusic-getway/deleteMyLikeMusicAuthor/',// 添加我关注的歌手
+  getFavoriteAuthor: '/service/myMusic-getway/getFavoriteAuthor',// 获取我关注的歌手
+  insertFavoriteAuthor: '/service/myMusic-getway/insertFavoriteAuthor/',// 添加我关注的歌手
+  deleteFavoriteAuthor: '/service/myMusic-getway/deleteFavoriteAuthor/',// 删除我关注的歌手
   getMusicRecord: '/service/myMusic-getway/getMusicRecord',// 获取播放记录
   insertMusicRecord: '/service/myMusic-getway/insertMusicRecord',// 记录播放日志
   insertMusicLike: '/service/myMusic-getway/insertMusicLike/',// 插入收藏

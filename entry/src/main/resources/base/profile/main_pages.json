@@ -15,6 +15,7 @@
     "pages/MusicClassifyListPage",
     "pages/MusicAuthorCategoryPage",
     "pages/MusicAuthorMusicListPage",
-    "pages/MusicCategoryPage"
+    "pages/MusicCategoryPage",
+    "pages/RecordMusicPage"
   ]
 }
