@@ -7,6 +7,8 @@ import { MusicAuthorInterface } from '../interface';
 import { FavoriteDirectoryInterface, MusicInterface,UserDataInterface } from '../interface/Index';
 import router from '@ohos.router';
 import MusicAvaterComponent from './MusicAvaterComponent';
+import BottomDialogComponent from './BottomDialogComponent';
+import CreateFavoriteDirectory from './CreateFavoriteDirectory';
 
 @Component
 export default struct MusicMyComponent {
@@ -22,6 +24,8 @@ export default struct MusicMyComponent {
   @State isFoldFavoriteAuthor: boolean = false; // 是否折叠我关注的歌手
   @State myFavoriteAuthorTotal: number = 0; // 我关注的歌手总数
   @State myRecordMusicTotal: number = 0; // 我听过的歌曲总数
+  @State isShowAddDirectory: boolean = false;// 是否显示添加收藏夹弹窗
+  private favoriteDialogController: CustomDialogController;
 
   @Styles blockStyle(){
     .backgroundColor(colors.blockColor)
@@ -45,6 +49,64 @@ export default struct MusicMyComponent {
     });
   }
 
+  /**
+   * @description: 跳转到歌单列表页
+   * @date: 2024-07-16 22:37
+   * @author wuwenqiang
+   */
+  useAddDirectory(){
+    this.favoriteDialogController = new CustomDialogController({
+      customStyle: true,
+      builder: BottomDialogComponent({
+        dialogHeight: '80%',
+        builder: this.favoriteBuilder.bind(this)
+      }),
+      alignment: DialogAlignment.Bottom,
+    })
+    this.favoriteDialogController.open()
+  }
+
+  /**
+   * @author: wuwenqiang
+   * @description: 收藏夹
+   * @date: 2024-07-01 21:45
+   */
+  @Builder favoriteBuilder(){
+    Column(){
+      Row(){
+        Blank()
+          .width(size.smallIconSize)
+          .height(size.smallIconSize)
+          .margin({right:size.pagePadding})
+        Text('创建收藏夹')
+          .padding(size.pagePadding)
+          .textAlign(TextAlign.Center)
+          .border({
+            width: { bottom: 1 },
+            color: { bottom: colors.borderColor },
+            style: { bottom: BorderStyle.Solid }
+          }).layoutWeight(1)
+        Image($r("app.media.icon_close"))
+          .width(size.smallIconSize)
+          .height(size.smallIconSize)
+          .opacity(0.5)
+          .onClick(()=>{
+            this.favoriteDialogController.close()
+          }).margin({right:size.pagePadding})
+      }.justifyContent(FlexAlign.Center)
+
+      CreateFavoriteDirectory({
+        onCreateDirectory:(favoriteDirectory:FavoriteDirectoryInterface)=>{
+          this.favoriteDialogController.close();
+          this.myFavoriteDirectoryList.unshift(favoriteDirectory);
+        },
+        onCancleCreateDirectory:()=>{
+          this.favoriteDialogController.close()
+        }
+      })
+    }
+  }
+
   aboutToAppear() {
     getFavoriteAuthorService(1, 5).then((res) => {
       this.myFavoriteAuthorTotal = res.total;
@@ -62,6 +124,7 @@ export default struct MusicMyComponent {
   build() {
     Scroll(this.scroller) {
       Column() {
+
         Row() {
           AvaterComponent({ dimensions: this.dimensions })
           Column() {
@@ -88,7 +151,10 @@ export default struct MusicMyComponent {
               }).rotate({ angle: this.isFoldFavoriteDirectory ? 90 : 0 })
             Text("我的歌单").margin({ left: size.pagePadding })
             Blank()
-            Image($r("app.media.icon_add")).width(size.smallIconSize).height(size.smallIconSize)
+            Image($r("app.media.icon_add"))
+              .width(size.smallIconSize)
+              .height(size.smallIconSize)
+              .onClick(this.useAddDirectory.bind(this))
           }.width('100%')
           if (!this.isFoldFavoriteDirectory) {
             Blank().height(size.pagePadding)

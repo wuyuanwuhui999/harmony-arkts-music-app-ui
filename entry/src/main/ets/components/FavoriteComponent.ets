@@ -5,6 +5,7 @@ import {  getFavoriteDirectoryService, insertMusicFavoriteService,insertFavorite
 import promptAction from '@ohos.promptAction';
 import display from '@ohos.display';
 import MusicAvaterComponent from './MusicAvaterComponent';
+import CreateFavoriteDirectory from './CreateFavoriteDirectory';
 
 @Extend(Row) function roundedSquareStyle  () {
   .alignItems(VerticalAlign.Center)
@@ -61,73 +62,15 @@ export default struct FavoriteComponent {
           style: { bottom: BorderStyle.Solid }
         }).width('100%')
       if(this.isCreateFavoriteDirectory){
-        Column({space:size.pagePadding}){
-          Row(){
-            Text('*').fontColor(Color.Red)
-            Text('名称')
-            TextInput({ text: this.favoriteName, placeholder: '请输入收藏夹名称' })
-              .height(size.middleAvaterSize)
-              .backgroundColor(colors.pageBackgroundColor)
-              .borderRadius(size.smallBorderRaduis)
-              .margin({left:size.pagePadding})
-              .onChange((value) => {
-                this.favoriteName = value.trim();
-              }).layoutWeight(1)
+        CreateFavoriteDirectory({
+          onCreateDirectory:(favoriteDirectory:FavoriteDirectoryInterface)=>{
+            this.isCreateFavoriteDirectory = false;
+            this.favoriteDirectoryList.unshift(favoriteDirectory);
+          },
+          onCancleCreateDirectory:()=>{
+            this.isCreateFavoriteDirectory = false;
           }
-          .width('100%')
-
-          Row(){
-            Text('*').visibility(Visibility.Hidden)
-            Text('封面')
-            Row(){
-              Image($r('app.media.icon_add'))
-                .width(size.middlIconSize)
-                .aspectRatio(1)
-            }
-            .justifyContent(FlexAlign.Center)
-            .alignItems(VerticalAlign.Center)
-            .backgroundColor(colors.pageBackgroundColor)
-            .borderRadius(size.smallBorderRaduis)
-            .margin({left:size.pagePadding})
-            .width(size.bigAvaterSize)
-            .aspectRatio(1)
-          }
-          .width('100%')
-          .justifyContent(FlexAlign.Start)
-
-          Button('创建')
-            .width('100%')
-            .padding(size.pagePadding)
-            .backgroundColor(colors.warnColor)
-            .fontColor(Color.White)
-            .borderRadius(size.blockBorderRaduis * 2)
-            .onClick(() => {
-              const favoriteDirectory:FavoriteDirectoryInterface = {
-                name:this.favoriteName,
-                cover: null
-              }
-              insertFavoriteDirectoryService(favoriteDirectory).then(res => {
-                this.isCreateFavoriteDirectory = false;
-                this.favoriteDirectoryList.unshift(res.data);
-                promptAction.showToast({
-                  message: '创建收藏夹成功',
-                  duration: 2000,
-                  bottom: px2vp(display.getDefaultDisplaySync().height) / 2
-                })
-              });
-            })
-
-          Button('取消')
-            .width('100%')
-            .padding(size.pagePadding)
-            .border({width:1,color:colors.borderColor})
-            .backgroundColor(Color.Transparent)
-            .fontColor(Color.Black)
-            .borderRadius(size.blockBorderRaduis * 2)
-            .onClick(() => {
-              this.isCreateFavoriteDirectory = false
-            })
-        }.padding(size.pagePadding)
+        })
       }else{
         Scroll() {
           Column(){
@@ -141,8 +84,8 @@ export default struct FavoriteComponent {
             }.width('100%').onClick(() => this.isCreateFavoriteDirectory = true)
             .justifyContent(FlexAlign.SpaceBetween)
             .alignItems(VerticalAlign.Center)
-            ForEach(this.favoriteDirectoryList,(item:FavoriteDirectoryInterface)=>{
-              Blank().height(size.pagePadding)
+            .margin({bottom:size.pagePadding})
+            ForEach(this.favoriteDirectoryList,(item:FavoriteDirectoryInterface,index:number)=>{
               Row(){
                 MusicAvaterComponent({avater:item.cover?.toString(),title:item.name[0],dimension:Number(size.middleAvaterSize),type:'music'})
                 Column({space:size.smallPadding}){
@@ -163,6 +106,11 @@ export default struct FavoriteComponent {
               .width('100%')
               .justifyContent(FlexAlign.SpaceBetween)
               .alignItems(VerticalAlign.Center)
+              if(index !== this.favoriteDirectoryList.length - 1){
+                Blank().height(size.pagePadding)
+                Divider().height(1).color(colors.borderColor)
+                Blank().height(size.pagePadding)
+              }
             })
           }
         }
