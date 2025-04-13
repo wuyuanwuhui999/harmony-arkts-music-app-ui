@@ -8,6 +8,7 @@ import { updateUserDataService } from '../service/Index';
 import preference from '../utils/PreferenceModel';
 import OptionDialogComponent from '../components/OptionDialogComponent';
 import NavigatorTitleComponent from '../components/NavigatorTitleComponent';
+import DialogComponent from '../components/DialogComponent';
 
 @Entry
 @Component
@@ -62,7 +63,8 @@ struct UserPage {
     } else if (title === 'logout') {
       this.dialogController = new CustomDialogController({
         customStyle: false,
-        builder: LogoutDialogComponent({
+        builder: DialogComponent({
+          title:"是否退出登录？",
           cancel: () => this.onCancel(),
           confirm: () => this.onLogout(),
         }),
@@ -302,67 +304,6 @@ struct CustomDialogComponent {
       })
       .width('100%')
     }
-    .backgroundColor(colors.blockColor)
-    .borderRadius(size.blockBorderRaduis)
-    .margin({ left: size.pagePadding, right: size.pagePadding })
-  }
-}
-
-
-/**
- * @description: 退出登录弹窗
- * @date: 2024-01-14 21:47
- * @author wuwenqiang
- */
-@CustomDialog
-struct LogoutDialogComponent {
-  controller: CustomDialogController
-  cancel: () => void
-  confirm: () => void
-  title: string
-
-  build() {
-    Column() {
-      Text("是否退出登录？")
-        .padding(size.pagePadding * 2)
-      Row() {
-        Text('取消')
-          .onClick(() => {
-            this.controller.close()
-            this.cancel()
-          })
-          .flexGrow(1)
-          .textAlign(TextAlign.Center)
-          .backgroundColor(colors.blockColor)
-          .fontColor(Color.Black)
-          .onClick(() => {
-            this.cancel()
-          })
-        Divider().height('100%').width(1).backgroundColor(colors.pageBackgroundColor)
-        Text('确定')
-          .onClick(() => {
-            this.confirm()
-          })
-          .flexGrow(1)
-          .textAlign(TextAlign.Center)
-          .backgroundColor(colors.blockColor)
-          .fontColor(Color.Red)
-          .onClick(() => {
-            this.confirm()
-          })
-      }.border({
-        width: {
-          top: 1,
-        },
-        color: {
-          top: colors.pageBackgroundColor
-        },
-        style: {
-          top: BorderStyle.Solid
-        }
-      }).alignItems(VerticalAlign.Center).width('100%').height(size.dialogBtnHeight)
-    }
-    .width('100%')
     .backgroundColor(colors.blockColor)
     .borderRadius(size.blockBorderRaduis)
     .margin({ left: size.pagePadding, right: size.pagePadding })
