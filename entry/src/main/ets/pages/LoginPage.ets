@@ -18,14 +18,14 @@ struct LoginPage {
   userAccount: string = '';
   password: string = '';
   loading: boolean = false;
-  email: string = "";// 邮箱
+  email: string = "405873717@qq.com";// 邮箱
   code: string = "";// 验证码
   @State activeIndex:number = 0
   private loadingController:LoadingController = new LoadingController()
 
   async aboutToAppear(){
-    this.userAccount = this.userData?.userAccount || "";
-    this.password = <string> await preference.getPassword(this.userData?.userAccount) || "";
+    this.userAccount = this.userData?.userAccount || "吴时吴刻";
+    this.password = <string> await preference.getPassword(this.userData?.userAccount) || "123456";
   }
 
   @Styles blockStyle(){
@@ -201,7 +201,7 @@ struct LoginPage {
                 .width(size.smallIconSize)
                 .height(size.smallIconSize)
                 .margin({ left: size.smallPadding, right: size.smallPadding })
-              TextInput({ placeholder: "请输入密码", text: '' })
+              TextInput({ placeholder: "请输入密码", text: this.password })
                 .type(InputType.Password)
                 .layoutWeight(1)
                 .backgroundColor(Color.Transparent)
