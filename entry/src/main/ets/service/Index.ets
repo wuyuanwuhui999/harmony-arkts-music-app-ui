@@ -2,7 +2,6 @@ import api from '../api/index';
 import httpRequest from '../utils/HttpUtil';
 import * as types from '../interface/Index'
 import { SocialEnum } from '../common/enum';
-import { MusicInterface,DeviceInterface,MyAwesomeData,CommentInterface } from '../interface/Index';
 import { DEVICE_INFO } from '../common/constant';
 import CryptoJS from '@ohos/crypto-js';
 /**
@@ -10,9 +9,9 @@ import CryptoJS from '@ohos/crypto-js';
  * @date: 2024-01-15 21:32
  * @author wuwenqiang
  */
-export const loginService = (userAccount:string,password:string):Promise<MyAwesomeData<types.UserDataInterface>>=> {
+export const loginService = (userAccount:string,password:string):Promise<types.MyAwesomeData<types.UserDataInterface>>=> {
   password = CryptoJS.MD5(password).toString(); // 使用md5加密
-  const params: types.LoginParams = { userAccount, password };
+  const params: types.LoginParamsInterface = { userAccount, password };
   return httpRequest.post<types.UserDataInterface>(api.login, params)
 }
 
@@ -21,7 +20,7 @@ export const loginService = (userAccount:string,password:string):Promise<MyAweso
  * @date: 2023-12-1 23:39
  * @author wuwenqiang
  */
-export const getUserDataService = (token:string):Promise<MyAwesomeData<types.UserDataInterface>>=> {
+export const getUserDataService = (token:string):Promise<types.MyAwesomeData<types.UserDataInterface>>=> {
   httpRequest.setToken(token);
   return httpRequest.get<types.UserDataInterface>(api.getUserData);
 }
@@ -31,7 +30,7 @@ export const getUserDataService = (token:string):Promise<MyAwesomeData<types.Use
  * @date: 2024-01-21 14:48
  * @author wuwenqiang
  */
-export const registerService = (userData:types.UserDataInterface):Promise<MyAwesomeData<types.UserDataInterface>>=>{
+export const registerService = (userData:types.UserDataInterface):Promise<types.MyAwesomeData<types.UserDataInterface>>=>{
   userData = JSON.parse(JSON.stringify(userData));
   userData.password = CryptoJS.MD5(userData.password).toString();// 使用md5加密
   return httpRequest.post<types.UserDataInterface>(api.register,userData)
@@ -42,8 +41,8 @@ export const registerService = (userData:types.UserDataInterface):Promise<MyAwes
  * @date: 2024-01-21 14:48
  * @author wuwenqiang
  */
-export const verifyUserService = (userAccount:string|undefined,email:string|undefined):Promise<MyAwesomeData<number>>=>{
-  const params: types.VerifyUserParams = { userAccount, email };
+export const verifyUserService = (userAccount:string|undefined,email:string|undefined):Promise<types.MyAwesomeData<number>>=>{
+  const params: types.VerifyUserParamsInterface = { userAccount, email };
   return httpRequest.post<number>(api.vertifyUser,params)
 };
 
@@ -52,8 +51,8 @@ export const verifyUserService = (userAccount:string|undefined,email:string|unde
  * @date: 2025-01-19 22:59
  * @author wuwenqiang
  */
-export const sendEmailVertifyCodeService = (email:string):Promise<MyAwesomeData<number>>=>{
-  const params: types.EmailParams = { email };
+export const sendEmailVertifyCodeService = (email:string):Promise<types.MyAwesomeData<number>>=>{
+  const params: types.EmailParamsInterface = { email };
   return httpRequest.post<number>(api.sendEmailVertifyCode,params)
 };
 
@@ -62,8 +61,8 @@ export const sendEmailVertifyCodeService = (email:string):Promise<MyAwesomeData<
  * @date: 2025-01-28 14:22
  * @author wuwenqiang
  */
-export const loginByEmailService = (email:string,code:string):Promise<MyAwesomeData<types.UserDataInterface>>=>{
-  const params: types.EmailCodeParams = { email,code };
+export const loginByEmailService = (email:string,code:string):Promise<types.MyAwesomeData<types.UserDataInterface>>=>{
+  const params: types.EmailCodeParamsInterface = { email,code };
   return httpRequest.post<types.UserDataInterface>(api.loginByEmail,params)
 };
 
@@ -72,7 +71,7 @@ export const loginByEmailService = (email:string,code:string):Promise<MyAwesomeD
  * @date: 2024-01-10 23:01
  * @author wuwenqiang
  */
-export const updateUserDataService = (userData:types.UserDataInterface):Promise<MyAwesomeData<number>>=>{
+export const updateUserDataService = (userData:types.UserDataInterface):Promise<types.MyAwesomeData<number>>=>{
   return httpRequest.put<number>(api.updateUser,userData)
 };
 
@@ -81,9 +80,9 @@ export const updateUserDataService = (userData:types.UserDataInterface):Promise<
  * @date: 2025-01-26 22:21
  * @author wuwenqiang
  */
-export const resetPasswordService = (email:string,password:string,code:string):Promise<MyAwesomeData<types.UserDataInterface>>=>{
+export const resetPasswordService = (email:string,password:string,code:string):Promise<types.MyAwesomeData<types.UserDataInterface>>=>{
   password = CryptoJS.MD5(password).toString();// 使用md5加密
-  const params: types.ResetPasswordParams = {email,password,code};
+  const params: types.ResetPasswordParamsInterface = {email,password,code};
   return httpRequest.post<types.UserDataInterface>(api.resetPassword,params)
 };
 
@@ -92,10 +91,10 @@ export const resetPasswordService = (email:string,password:string,code:string):P
  * @date: 2025-01-28 14:22
  * @author wuwenqiang
  */
-export const updatePasswordService = (oldPassword:string,newPassword:string):Promise<MyAwesomeData<number>>=>{
+export const updatePasswordService = (oldPassword:string,newPassword:string):Promise<types.MyAwesomeData<number>>=>{
   oldPassword = CryptoJS.MD5(oldPassword).toString();// 使用md5加密
   newPassword = CryptoJS.MD5(newPassword).toString();// 使用md5加密
-  const params: types.UpdatePasswordParams = {oldPassword,newPassword};
+  const params: types.UpdatePasswordParamsInterface = {oldPassword,newPassword};
   return httpRequest.put<number>(api.updatePassword,params)
 };
 
@@ -104,7 +103,7 @@ export const updatePasswordService = (oldPassword:string,newPassword:string):Pro
  * @date: 2024-03-02 22:44
  * @author wuwenqiang
  */
-export const getKeyWordMusicService = ():Promise<MyAwesomeData<types.MusicInterface>> => {
+export const getKeyWordMusicService = ():Promise<types.MyAwesomeData<types.MusicInterface>> => {
   return httpRequest.get<types.MusicInterface>(api.getKeywordMusic);
 }
 
@@ -113,7 +112,7 @@ export const getKeyWordMusicService = ():Promise<MyAwesomeData<types.MusicInterf
  * @date: 2024-03-02 22:44
  * @author wuwenqiang
  */
-export const getMusicClassifyService = ():Promise<MyAwesomeData<Array<types.MusicClassifyInterface>>> => {
+export const getMusicClassifyService = ():Promise<types.MyAwesomeData<Array<types.MusicClassifyInterface>>> => {
   return httpRequest.get<Array<types.MusicClassifyInterface>>(api.getMusicClassify);
 }
 
@@ -122,7 +121,7 @@ export const getMusicClassifyService = ():Promise<MyAwesomeData<Array<types.Musi
  * @date: 2024-03-03 11:50
  * @author wuwenqiang
  */
-export const getMusicListByClassifyIdService = (classifyId:number,pageNum:number,pageSize:number):Promise<MyAwesomeData<Array<types.MusicInterface>>> => {
+export const getMusicListByClassifyIdService = (classifyId:number,pageNum:number,pageSize:number):Promise<types.MyAwesomeData<Array<types.MusicInterface>>> => {
   return httpRequest.get<Array<types.MusicInterface>>(`${api.getMusicListByClassifyId}?classifyId=${classifyId}&pageNum=${pageNum}&pageSize=${pageSize}`);
 }
 
@@ -131,7 +130,7 @@ export const getMusicListByClassifyIdService = (classifyId:number,pageNum:number
  * @date: 2024-03-03 18:23
  * @author wuwenqiang
  */
-export const getMusicAuthorListByCategoryIdService = (categoryId:number,pageNum:number,pageSize:number):Promise<MyAwesomeData<Array<types.MusicAuthorInterface>>> => {
+export const getMusicAuthorListByCategoryIdService = (categoryId:number,pageNum:number,pageSize:number):Promise<types.MyAwesomeData<Array<types.MusicAuthorInterface>>> => {
   return httpRequest.get<Array<types.MusicAuthorInterface>>(`${api.getMusicAuthorListByCategoryId}?categoryId=${categoryId}&pageNum=${pageNum}&pageSize=${pageSize}`);
 }
 
@@ -140,7 +139,7 @@ export const getMusicAuthorListByCategoryIdService = (categoryId:number,pageNum:
  * @date: 2024-03-03 18:23
  * @author wuwenqiang
  */
-export const getCircleListByTypeService = (type:string,pageNum:number,pageSize:number):Promise<MyAwesomeData<Array<types.CircleInterface>>> => {
+export const getCircleListByTypeService = (type:string,pageNum:number,pageSize:number):Promise<types.MyAwesomeData<Array<types.CircleInterface>>> => {
   return httpRequest.get<Array<types.CircleInterface>>(`${api.getCircleListByType}?type=${type}&pageNum=${pageNum}&pageSize=${pageSize}`);
 }
 
@@ -149,7 +148,7 @@ export const getCircleListByTypeService = (type:string,pageNum:number,pageSize:n
  * @date: 2024-03-12 23:25
  * @author wuwenqiang
  */
-export const saveLikeService = (likeItem:types.LikeInterface):Promise<MyAwesomeData<types.LikeInterface>> => {
+export const saveLikeService = (likeItem:types.LikeInterface):Promise<types.MyAwesomeData<types.LikeInterface>> => {
   return httpRequest.post<types.LikeInterface>(api.saveLike,likeItem);
 }
 
@@ -158,7 +157,7 @@ export const saveLikeService = (likeItem:types.LikeInterface):Promise<MyAwesomeD
  * @date: 2024-03-12 23:25
  * @author wuwenqiang
  */
-export const deleteLikeService = (relationId:number,type:SocialEnum):Promise<MyAwesomeData<number>> => {
+export const deleteLikeService = (relationId:number,type:SocialEnum):Promise<types.MyAwesomeData<number>> => {
   return httpRequest.delete<number>(`${api.deleteLike}?relationId=${relationId}&type=${type}`);
 }
 
@@ -167,7 +166,7 @@ export const deleteLikeService = (relationId:number,type:SocialEnum):Promise<MyA
  * @date: 2024-03-12 23:25
  * @author wuwenqiang
  */
-export const insertCommentService = (commentItem:types.CommentInterface):Promise<MyAwesomeData<types.CommentInterface>> => {
+export const insertCommentService = (commentItem:types.CommentInterface):Promise<types.MyAwesomeData<types.CommentInterface>> => {
   return httpRequest.post<types.CommentInterface>(api.insertComment,commentItem);
 }
 
@@ -176,7 +175,7 @@ export const insertCommentService = (commentItem:types.CommentInterface):Promise
  * @date: 2024-03-16 23:25
  * @author wuwenqiang
  */
-export const getMusicPlayMenuService = ():Promise<MyAwesomeData<Array<types.MuiscPlayMenuInterface>>> => {
+export const getMusicPlayMenuService = ():Promise<types.MyAwesomeData<Array<types.MuiscPlayMenuInterface>>> => {
   return httpRequest.get<Array<types.MuiscPlayMenuInterface>>(api.getMusicPlayMenu);
 }
 
@@ -185,7 +184,7 @@ export const getMusicPlayMenuService = ():Promise<MyAwesomeData<Array<types.Muis
  * @date: 2024-03-17 22:12
  * @author wuwenqiang
  */
-export const getFavoriteAuthorService = (pageNum:number,pageSize:number):Promise<MyAwesomeData<Array<types.MusicAuthorInterface>>> => {
+export const getFavoriteAuthorService = (pageNum:number,pageSize:number):Promise<types.MyAwesomeData<Array<types.MusicAuthorInterface>>> => {
   return httpRequest.get<Array<types.MusicAuthorInterface>>(`${api.getFavoriteAuthor}?pageNum=${pageNum}&pageSize=${pageSize}`);
 }
 
@@ -194,7 +193,7 @@ export const getFavoriteAuthorService = (pageNum:number,pageSize:number):Promise
  * @date: 2024-08-27 21:43
  * @author wuwenqiang
  */
-export const insertFavoriteAuthorService = (authorId:number):Promise<MyAwesomeData<number>> => {
+export const insertFavoriteAuthorService = (authorId:number):Promise<types.MyAwesomeData<number>> => {
   return httpRequest.post<number>(`${api.insertFavoriteAuthor}${authorId}`);
 }
 
@@ -203,7 +202,7 @@ export const insertFavoriteAuthorService = (authorId:number):Promise<MyAwesomeDa
  * @date: 2024-08-27 21:43
  * @author wuwenqiang
  */
-export const deleteFavoriteAuthorService = (authorId:number):Promise<MyAwesomeData<number>> => {
+export const deleteFavoriteAuthorService = (authorId:number):Promise<types.MyAwesomeData<number>> => {
   return httpRequest.delete<number>(`${api.deleteFavoriteAuthor}${authorId}`);
 }
 
@@ -212,7 +211,7 @@ export const deleteFavoriteAuthorService = (authorId:number):Promise<MyAwesomeDa
  * @date: 2024-03-17 22:12
  * @author wuwenqiang
  */
-export const getMusicRecordService = (pageNum:number,pageSize:number):Promise<MyAwesomeData<Array<types.MusicInterface>>> => {
+export const getMusicRecordService = (pageNum:number,pageSize:number):Promise<types.MyAwesomeData<Array<types.MusicInterface>>> => {
   return httpRequest.get<Array<types.MusicInterface>>(`${api.getMusicRecord}?pageNum=${pageNum}&pageSize=${pageSize}`);
 }
 
@@ -221,10 +220,10 @@ export const getMusicRecordService = (pageNum:number,pageSize:number):Promise<My
  * @date: 2024-03-17 22:12
  * @author wuwenqiang
  */
-export const insertMusicRecordService = (musicId:number):Promise<MyAwesomeData<number>> => {
-  const deviceInterface:DeviceInterface = AppStorage.Get<DeviceInterface>(DEVICE_INFO) as DeviceInterface
+export const insertMusicRecordService = (musicId:number):Promise<types.MyAwesomeData<number>> => {
+  const deviceInterface:types.DeviceInterface = AppStorage.Get<types.DeviceInterface>(DEVICE_INFO) as types.DeviceInterface
   // 手动合并对象属性，避免使用展开运算符
-  const params:DeviceInterface = {
+  const params:types.DeviceInterface = {
     musicId: musicId,
     version: deviceInterface.version,
     platform: deviceInterface.platform,
@@ -238,7 +237,7 @@ export const insertMusicRecordService = (musicId:number):Promise<MyAwesomeData<n
  * @date: 2024-05-12 12:21
  * @author wuwenqiang
  */
-export const getMusicLikeService = (pageNum:number,pageSize:number):Promise<MyAwesomeData<Array<types.MusicInterface>>> => {
+export const getMusicLikeService = (pageNum:number,pageSize:number):Promise<types.MyAwesomeData<Array<types.MusicInterface>>> => {
   return httpRequest.get<Array<types.MusicInterface>>(`${api.getMusicLike}?pageNum=${pageNum}&pageSize=${pageSize}`);
 }
 
@@ -248,7 +247,7 @@ export const getMusicLikeService = (pageNum:number,pageSize:number):Promise<MyAw
  * @date: 2024-05-12 12:21
  * @author wuwenqiang
  */
-export const insertMusicLikeService = (musicId:number):Promise<MyAwesomeData<number>> => {
+export const insertMusicLikeService = (musicId:number):Promise<types.MyAwesomeData<number>> => {
   return httpRequest.post<number>(api.insertMusicLike + musicId);
 }
 
@@ -257,7 +256,7 @@ export const insertMusicLikeService = (musicId:number):Promise<MyAwesomeData<num
  * @date: 2024-05-12 12:21
  * @author wuwenqiang
  */
-export const deleteMusicLikeService = (musicId:number):Promise<MyAwesomeData<number>> => {
+export const deleteMusicLikeService = (musicId:number):Promise<types.MyAwesomeData<number>> => {
   return httpRequest.delete<number>(api.deleteMusicLike + musicId);
 }
 
@@ -267,7 +266,7 @@ export const deleteMusicLikeService = (musicId:number):Promise<MyAwesomeData<num
  * @date: 2024-06-25 22:02
  * @author wuwenqiang
  */
-export const isMusicFavoriteService = (musicId:number):Promise<MyAwesomeData<number>> => {
+export const isMusicFavoriteService = (musicId:number):Promise<types.MyAwesomeData<number>> => {
   return httpRequest.get<number>(api.isMusicFavorite + musicId);
 }
 
@@ -276,7 +275,7 @@ export const isMusicFavoriteService = (musicId:number):Promise<MyAwesomeData<num
  * @date: 2024-06-25 22:02
  * @author wuwenqiang
  */
-export const getFavoriteDirectoryService = (musicId:number):Promise<MyAwesomeData<Array<types.FavoriteDirectoryInterface>>> => {
+export const getFavoriteDirectoryService = (musicId:number):Promise<types.MyAwesomeData<Array<types.FavoriteDirectoryInterface>>> => {
   return httpRequest.get<Array<types.FavoriteDirectoryInterface>>(`${api.getFavoriteDirectory}?musicId=${musicId}`);
 }
 
@@ -285,7 +284,7 @@ export const getFavoriteDirectoryService = (musicId:number):Promise<MyAwesomeDat
  * @date: 2024-06-29 11:26
  * @author wuwenqiang
  */
-export const insertMusicFavoriteService = (musicId:number,favoriteList:Array<types.FavoriteMusicInterface>):Promise<MyAwesomeData<number>> => {
+export const insertMusicFavoriteService = (musicId:number,favoriteList:Array<types.FavoriteMusicInterface>):Promise<types.MyAwesomeData<number>> => {
   return httpRequest.post<number>(api.insertMusicFavorite+ musicId,favoriteList);
 }
 
@@ -294,7 +293,7 @@ export const insertMusicFavoriteService = (musicId:number,favoriteList:Array<typ
  * @date: 2024-06-29 11:26
  * @author wuwenqiang
  */
-export const insertFavoriteDirectoryService = (favoriteDirectory:types.FavoriteDirectoryInterface):Promise<MyAwesomeData<types.FavoriteDirectoryInterface>> => {
+export const insertFavoriteDirectoryService = (favoriteDirectory:types.FavoriteDirectoryInterface):Promise<types.MyAwesomeData<types.FavoriteDirectoryInterface>> => {
   return httpRequest.post<types.FavoriteDirectoryInterface>(api.insertFavoriteDirectory,favoriteDirectory);
 }
 
@@ -303,7 +302,7 @@ export const insertFavoriteDirectoryService = (favoriteDirectory:types.FavoriteD
  * @date: 2024-06-29 11:26
  * @author wuwenqiang
  */
-export const deleteFavoriteDirectoryService = (favoriteId:number):Promise<MyAwesomeData<number>> => {
+export const deleteFavoriteDirectoryService = (favoriteId:number):Promise<types.MyAwesomeData<number>> => {
   return httpRequest.delete<number>(api.deleteFavoriteDirectory + favoriteId);
 }
 
@@ -312,8 +311,8 @@ export const deleteFavoriteDirectoryService = (favoriteId:number):Promise<MyAwes
  * @date: 2024-07-06 09:01
  * @author wuwenqiang
  */
-export const searchMusicService = (keyword:string,pageNum:number,pageSize:number):Promise<MyAwesomeData<Array<MusicInterface>>> => {
-  return httpRequest.get<Array<MusicInterface>>(`${api.searchMusic}?keyword=${keyword}&pageNum=${pageNum}&pageSize=${pageSize}`);
+export const searchMusicService = (keyword:string,pageNum:number,pageSize:number):Promise<types.MyAwesomeData<Array<types.MusicInterface>>> => {
+  return httpRequest.get<Array<types.MusicInterface>>(`${api.searchMusic}?keyword=${keyword}&pageNum=${pageNum}&pageSize=${pageSize}`);
 }
 
 /**
@@ -321,7 +320,7 @@ export const searchMusicService = (keyword:string,pageNum:number,pageSize:number
  * @date: 2024-07-08 23:05
  * @author wuwenqiang
  */
-export const saveCircleService = (circle:types.CircleInterface):Promise<MyAwesomeData<number>> => {
+export const saveCircleService = (circle:types.CircleInterface):Promise<types.MyAwesomeData<number>> => {
   return httpRequest.post<number>(api.insertCircle,circle);
 }
 
@@ -330,7 +329,7 @@ export const saveCircleService = (circle:types.CircleInterface):Promise<MyAwesom
  * @date: 2024-07-16 23:39
  * @author wuwenqiang
  */
-export const getMusicListByFavoriteIdService = (favoriteId:number,pageNum:number,pageSize:number):Promise<MyAwesomeData<Array<types.MusicInterface>>> => {
+export const getMusicListByFavoriteIdService = (favoriteId:number,pageNum:number,pageSize:number):Promise<types.MyAwesomeData<Array<types.MusicInterface>>> => {
   return httpRequest.get<Array<types.MusicInterface>>(`${api.getMusicListByFavoriteId}?favoriteId=${favoriteId}&pageNum=${pageNum}&pageSize=${pageSize}`);
 }
 
@@ -339,7 +338,7 @@ export const getMusicListByFavoriteIdService = (favoriteId:number,pageNum:number
  * @date: 2024-08-19 23:17
  * @author wuwenqiang
  */
-export const getMusicAuthorCategoryService = ():Promise<MyAwesomeData<Array<types.MusicAuthorCategoryInterface>>> => {
+export const getMusicAuthorCategoryService = ():Promise<types.MyAwesomeData<Array<types.MusicAuthorCategoryInterface>>> => {
   return httpRequest.get<Array<types.MusicAuthorCategoryInterface>>(api.getMusicAuthorCategory);
 }
 
@@ -348,7 +347,7 @@ export const getMusicAuthorCategoryService = ():Promise<MyAwesomeData<Array<type
  * @date: 2024-08-29 21:45
  * @author wuwenqiang
  */
-export const getMusicListByAuthorIdService = (authorId:number,pageNum:number,pageSize:number):Promise<MyAwesomeData<Array<types.MusicInterface>>> => {
+export const getMusicListByAuthorIdService = (authorId:number,pageNum:number,pageSize:number):Promise<types.MyAwesomeData<Array<types.MusicInterface>>> => {
   return httpRequest.get<Array<types.MusicInterface>>(`${api.getMusicListByAuthorId}?authorId=${authorId}&pageNum=${pageNum}&pageSize=${pageSize}`);
 }
 
@@ -357,7 +356,19 @@ export const getMusicListByAuthorIdService = (authorId:number,pageNum:number,pag
  * @date: 2024-05-12 12:21
  * @author wuwenqiang
  */
-export const getTopCommentListService = (relationId:number,type:string,pageNum:number,pageSize:number):Promise<MyAwesomeData<Array<CommentInterface>>> => {
-  return httpRequest.get<Array<CommentInterface>>(`${api.getTopCommentList}?relationId=${relationId}&type=${type}&pageSize=${pageSize}&pageNum=${pageNum}`);
+export const getTopCommentListService = (relationId:number,type:string,pageNum:number,pageSize:number):Promise<types.MyAwesomeData<Array<types.CommentInterface>>> => {
+  return httpRequest.get<Array<types.CommentInterface>>(`${api.getTopCommentList}?relationId=${relationId}&type=${type}&pageSize=${pageSize}&pageNum=${pageNum}`);
 }
 
+export const getModelListService = ():Promise<types.MyAwesomeData<Array<types.ChatModelInterface>>> => {
+  return httpRequest.get<Array<types.ChatModelInterface>>(api.getModelList)
+}
+
+/**
+ * @description: 获取聊天对话历史记录
+ * @date: 2025-05-16 00:19
+ * @author wuwenqiang
+ */
+export const getChatHistoryService = (pageNum:number,pageSize:number):Promise<types.MyAwesomeData<Array<types.ChatHistoryType>>> => {
+  return httpRequest.get<Array<types.ChatHistoryType>>(`${api.getChatHistory}?pageNum=${pageNum}&pageSize=${pageSize}`);
+}

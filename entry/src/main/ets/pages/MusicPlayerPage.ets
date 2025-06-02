@@ -387,143 +387,155 @@ struct MusicPlayerPage {
   }
 
   build(){
-    Column({space:size.pagePadding}){
-      Text(this.musicStorage.musicItem?.songName)
-        .margin({top:size.pagePadding,bottom:size.pagePadding})
-        .fontColor(colors.blockColor)
-        .fontSize(size.bigFontSize)
-      Row(){
+    Stack(){
+      Column({space:size.pagePadding}){
+        Text(this.musicStorage.musicItem?.songName)
+          .margin({top:size.pagePadding,bottom:size.pagePadding})
+          .fontColor(colors.blockColor)
+          .fontSize(size.bigFontSize)
         Row(){
-          Image(HOST + this.musicStorage.musicItem?.cover)
-            .width('100%')
-            .aspectRatio(1)
-            .borderRadius(this.circleSize - size.smallPadding * 12)
-        }.linearGradient({
-          direction: GradientDirection.Top, // 渐变方向
-          repeating: true, // 渐变颜色是否重复
-          colors: [[0x000000, 0.0], [0x333333, 0.5], [0x000000, 1]] // 数组末尾元素占比小于1时满足重复着色效果
-        })
-        .width(this.circleSize - size.smallPadding * 2)
-        .aspectRatio(1)
-        .rotate({ angle: this.angle })
-        .padding(size.smallPadding * 5)
-        .borderRadius(this.circleSize - size.smallPadding * 2)
-      }
-      .border({
-        width: size.smallPadding,
-        color: colors.playerOuterCircleColor,
-        style: BorderStyle.Solid
-      })
-      .borderRadius(this.circleSize)
-      .width('80%')
-      .aspectRatio(1)
-
-      // 歌词
-      if(this.lyric?.lines?.length??0 > 0){
-        // 歌词列表
-        List({space:size.miniPadding,scroller:this.scroller}) {
-          ForEach(this.lyric?.lines, (item: LineInterface, index: number) => {
-            ListItem(){
-              Text(item.txt)
-                .fontColor(colors.blockColor)
-                .opacity(this.currentLineNum === index ? 1 : size.opacity)
-                .alignSelf(ItemAlign.Center)
-            }.width('100%')
+          Row(){
+            Image(HOST + this.musicStorage.musicItem?.cover)
+              .width('100%')
+              .aspectRatio(1)
+              .borderRadius(this.circleSize - size.smallPadding * 12)
+          }.linearGradient({
+            direction: GradientDirection.Top, // 渐变方向
+            repeating: true, // 渐变颜色是否重复
+            colors: [[0x000000, 0.0], [0x333333, 0.5], [0x000000, 1]] // 数组末尾元素占比小于1时满足重复着色效果
           })
+          .width(this.circleSize - size.smallPadding * 2)
+          .aspectRatio(1)
+          .rotate({ angle: this.angle })
+          .padding(size.smallPadding * 5)
+          .borderRadius(this.circleSize - size.smallPadding * 2)
         }
-        .width('100%')
-        .layoutWeight(1)
-      }else{
-        Row(){
-          Text("暂无歌词").fontColor(colors.blockColor).opacity(size.opacity)
-        }
-        .width('100%')
-        .layoutWeight(1)
-        .justifyContent(FlexAlign.Center)
-        .alignItems(VerticalAlign.Center)
-      }
-      Text(this.musicStorage.musicItem?.authorName).width('80%').fontColor(colors.blockColor)
-      Row(){
-        Image(this.musicModel.isLike ? $r('app.media.icon_collection_active') : $r('app.media.icon_music_collect'))
-          .width(size.middlIconSize)
-          .aspectRatio(1)
-          .onClick(this.useLike)
-        Image($r('app.media.icon_share_music'))
-          .width(size.middlIconSize)
-          .aspectRatio(1)
-          .onClick(this.useShare)
-        Image($r('app.media.icon_music_comments'))
-          .width(size.middlIconSize)
-          .aspectRatio(1)
-          .onClick(this.useComment)
-        Image(this.isFavorite ? $r('app.media.icon_full_star') : $r('app.media.icon_favorite'))
-          .width(size.middlIconSize)
-          .aspectRatio(1)
-          .onClick(this.useFavorite)
-      }.width('80%').justifyContent(FlexAlign.SpaceBetween)
-      Row({space:size.smallPadding}){
-        Text(this.currentTime ? formatSecond(this.currentTime/1000) : '00:00').fontColor(colors.blockColor)
-        Slider({value:this.progress})
-          .selectedColor(colors.blockColor)
-          .layoutWeight(1)
-          .onChange((value:number) => this.useChangeProgress(value))
-        Text(this.duration ? formatSecond(this.duration/1000) : '00:00').fontColor(colors.blockColor)
-      }.width('80%').alignItems(VerticalAlign.Center)
-
-      Row(){
-        Image(this.loopMode[this.musicStorage.loop])
-          .width(size.middlIconSize)
-          .aspectRatio(1)
-          .onClick(()=>{
-            this.showPopupLoopMode = true;
-          }).bindPopup(this.showPopupLoopMode, {
-          builder: this.popupBuilder,
-          placement: Placement.Top,
-          popupColor: colors.blackBackgroundColor,
-          enableArrow: true,
-          showInSubWindow: false,
-          onStateChange: (e) => {
-            if (!e.isVisible) {
-              this.showPopupLoopMode = false
-            }
-          }
-        })
-        Image($r('app.media.icon_music_prev'))
-          .width(size.middlIconSize)
-          .aspectRatio(1)
-          .onClick(this.useTabPrevMusic)
-        Row(){
-          Image(this.musicStorage.isPlaying ? $r('app.media.icon_music_playing') : $r('app.media.icon_music_play_white')).width(size.middlIconSize).aspectRatio(1)
-        }
-        .justifyContent(FlexAlign.Center)
-        .alignItems(VerticalAlign.Center)
-        .width(size.bigAvaterSize)
-        .aspectRatio(1)
-        .borderRadius(size.bigAvaterSize)
         .border({
-          width: 2,
-          color: colors.blockColor,
+          width: size.smallPadding,
+          color: colors.playerOuterCircleColor,
           style: BorderStyle.Solid
-        }).onClick(()=>{
-          this.musicStorage.isPlaying = !this.musicStorage.isPlaying;
-          this.musicStorage.isPlaying ? this.musicStorage.audio?.play() : this.musicStorage.audio?.pause()
         })
-        Image($r('app.media.icon_music_next'))
-          .width(size.middlIconSize)
+        .borderRadius(this.circleSize)
+        .width('80%')
+        .aspectRatio(1)
+
+        // 歌词
+        if(this.lyric?.lines?.length??0 > 0){
+          // 歌词列表
+          List({space:size.miniPadding,scroller:this.scroller}) {
+            ForEach(this.lyric?.lines, (item: LineInterface, index: number) => {
+              ListItem(){
+                Text(item.txt)
+                  .fontColor(colors.blockColor)
+                  .opacity(this.currentLineNum === index ? 1 : size.opacity)
+                  .alignSelf(ItemAlign.Center)
+              }.width('100%')
+            })
+          }
+          .width('100%')
+          .layoutWeight(1)
+        }else{
+          Row(){
+            Text("暂无歌词").fontColor(colors.blockColor).opacity(size.opacity)
+          }
+          .width('100%')
+          .layoutWeight(1)
+          .justifyContent(FlexAlign.Center)
+          .alignItems(VerticalAlign.Center)
+        }
+        Text(this.musicStorage.musicItem?.authorName).width('80%').fontColor(colors.blockColor)
+        Row(){
+          Image(this.musicModel.isLike ? $r('app.media.icon_collection_active') : $r('app.media.icon_music_collect'))
+            .width(size.middlIconSize)
+            .aspectRatio(1)
+            .onClick(this.useLike)
+          Image($r('app.media.icon_share_music'))
+            .width(size.middlIconSize)
+            .aspectRatio(1)
+            .onClick(this.useShare)
+          Image($r('app.media.icon_music_comments'))
+            .width(size.middlIconSize)
+            .aspectRatio(1)
+            .onClick(this.useComment)
+          Image(this.isFavorite ? $r('app.media.icon_full_star') : $r('app.media.icon_favorite'))
+            .width(size.middlIconSize)
+            .aspectRatio(1)
+            .onClick(this.useFavorite)
+        }.width('80%').justifyContent(FlexAlign.SpaceBetween)
+        Row({space:size.smallPadding}){
+          Text(this.currentTime ? formatSecond(this.currentTime/1000) : '00:00').fontColor(colors.blockColor)
+          Slider({value:this.progress})
+            .selectedColor(colors.blockColor)
+            .layoutWeight(1)
+            .onChange((value:number) => this.useChangeProgress(value))
+          Text(this.duration ? formatSecond(this.duration/1000) : '00:00').fontColor(colors.blockColor)
+        }.width('80%').alignItems(VerticalAlign.Center)
+
+        Row(){
+          Image(this.loopMode[this.musicStorage.loop])
+            .width(size.middlIconSize)
+            .aspectRatio(1)
+            .onClick(()=>{
+              this.showPopupLoopMode = true;
+            }).bindPopup(this.showPopupLoopMode, {
+            builder: this.popupBuilder,
+            placement: Placement.Top,
+            popupColor: colors.blackBackgroundColor,
+            enableArrow: true,
+            showInSubWindow: false,
+            onStateChange: (e) => {
+              if (!e.isVisible) {
+                this.showPopupLoopMode = false
+              }
+            }
+          })
+          Image($r('app.media.icon_music_prev'))
+            .width(size.middlIconSize)
+            .aspectRatio(1)
+            .onClick(this.useTabPrevMusic)
+          Row(){
+            Image(this.musicStorage.isPlaying ? $r('app.media.icon_music_playing') : $r('app.media.icon_music_play_white')).width(size.middlIconSize).aspectRatio(1)
+          }
+          .justifyContent(FlexAlign.Center)
+          .alignItems(VerticalAlign.Center)
+          .width(size.bigAvaterSize)
           .aspectRatio(1)
-          .onClick(this.useTabNextMusic)
-        Image($r('app.media.icon_music_play_menu')).width(size.middlIconSize).aspectRatio(1)
+          .borderRadius(size.bigAvaterSize)
+          .border({
+            width: 2,
+            color: colors.blockColor,
+            style: BorderStyle.Solid
+          }).onClick(()=>{
+            this.musicStorage.isPlaying = !this.musicStorage.isPlaying;
+            this.musicStorage.isPlaying ? this.musicStorage.audio?.play() : this.musicStorage.audio?.pause()
+          })
+          Image($r('app.media.icon_music_next'))
+            .width(size.middlIconSize)
+            .aspectRatio(1)
+            .onClick(this.useTabNextMusic)
+          Image($r('app.media.icon_music_play_menu')).width(size.middlIconSize).aspectRatio(1)
+        }
+        .width('100%')
+        .justifyContent(FlexAlign.SpaceAround)
+        .margin({bottom:size.pagePadding})
       }
+      .backgroundImage(HOST + this.musicStorage.musicItem?.cover,ImageRepeat.NoRepeat)
+      .backgroundImagePosition({x:0,y:0})
+      .backgroundImageSize({width:'100%',height:'100%'})
+      .backdropBlur(200)
+      .alignItems(HorizontalAlign.Center)
+      .height('100%')
       .width('100%')
-      .justifyContent(FlexAlign.SpaceAround)
-      .margin({bottom:size.pagePadding})
-    }
-    .backgroundImage(HOST + this.musicStorage.musicItem?.cover,ImageRepeat.NoRepeat)
-    .backgroundImagePosition({x:0,y:0})
-    .backgroundImageSize({width:'100%',height:'100%'})
-    .backdropBlur(200)
-    .alignItems(HorizontalAlign.Center)
-    .height('100%')
-    .width('100%')
+
+      Image($r("app.media.icon_back"))
+        .width(size.smallIconSize)
+        .height(size.smallIconSize)
+        .position({x:size.pagePadding,y:size.pagePadding})
+        .opacity(size.opacity)
+        .onClick(()=>{
+        router.back()
+      })
+    }.width("100%").height("100%")
+
   }
 }

@@ -1,5 +1,5 @@
 // 歌曲字段
-import { SocialEnum } from '../common/enum';
+import { PositionEnum, SocialEnum } from '../common/enum';
 import media from '@ohos.multimedia.media';
 
 export interface MyAwesomeData<T> {
@@ -245,32 +245,32 @@ export interface MusicAuthorCategoryInterface{
 }
 
 // 添加以下接口
-export interface LoginParams {
+export interface LoginParamsInterface {
   userAccount: string;
   password: string;
 }
 
-export interface EmailParams {
+export interface EmailParamsInterface {
   email: string;
 }
 
-export interface EmailCodeParams {
+export interface EmailCodeParamsInterface {
   email: string;
   code: string;
 }
 
-export interface ResetPasswordParams {
+export interface ResetPasswordParamsInterface {
   email: string;
   password: string;
   code: string;
 }
 
-export interface UpdatePasswordParams {
+export interface UpdatePasswordParamsInterface {
   oldPassword: string;
   newPassword: string;
 }
 
-export interface VerifyUserParams {
+export interface VerifyUserParamsInterface {
   userAccount?: string;
   email?: string;
 }
@@ -289,4 +289,36 @@ export interface MusicAuthorParamsInterface{
 
 export interface MusicItemParamsInterface{
   musicItem:MusicInterface
+}
+
+export interface ChatModelInterface{
+  id:number,
+  modelName:string,
+  updateTime:string,
+  createTime:string
+}
+// 聊天气泡
+export interface ChatType {
+  text:string,
+  position:PositionEnum,
+  thinkContent?:string,
+  responseContent?:string,
+  start?:boolean
+}
+// 聊天气泡
+export interface ChatHistoryType {
+  id: number;          // 主键
+  userId: string;      // 用户id
+  files?: string;       // 文件（
+  chatId: string;      // 会话id
+  prompt: string;      // 提示词
+  content: string;     // 内容
+  createTime: string;  // 创建时间
+  timeAgo:string;// xx分钟、小时、天、月前
+}
+
+// 主体数据结构，键是时间前缀，值是该时间前缀下的消息组
+export interface ChatStructure {
+  timeAgo:string,
+  list:Array<Array<ChatHistoryType>>
 }

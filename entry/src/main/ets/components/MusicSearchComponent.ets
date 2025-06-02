@@ -35,7 +35,7 @@ export default struct MusicSearchComponent {
   }
 
   build() {
-    Row() {
+    Row({space:size.pagePadding}) {
       AvaterComponent({ dimensions: this.dimensions })
       Row() {
         Text(this.musicItem?.songName)
@@ -45,7 +45,6 @@ export default struct MusicSearchComponent {
       .height(size.middleAvaterSize)
       .borderRadius(size.middleAvaterSize)
       .backgroundColor(colors.pageBackgroundColor)
-      .margin({ left: size.pagePadding })
       .padding({ left: size.pagePadding })
       .flexGrow(1)
       .onClick(() => {
@@ -60,6 +59,14 @@ export default struct MusicSearchComponent {
           }
         });
       })
+      Image($r("app.media.icon_ai"))
+        .width(size.middlIconSize)
+        .height(size.middlIconSize)
+        .onClick(()=>{
+          router.pushUrl({
+            url:"pages/ChatPage"
+          })
+        })
     }.blockStyle()
   }
 }

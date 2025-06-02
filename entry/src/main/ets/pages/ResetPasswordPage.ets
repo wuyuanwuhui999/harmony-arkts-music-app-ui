@@ -1,7 +1,7 @@
 import * as colors from '../theme/color';
 import * as size from '../theme/size';
 import { resetPasswordService } from '../service/Index';
-import { EmailParams, UserDataInterface } from '../interface/Index';
+import { EmailParamsInterface, UserDataInterface } from '../interface/Index';
 import { USER_DATA } from '../common/constant';
 import promptAction from '@ohos.promptAction'
 import display from '@ohos.display';
@@ -16,7 +16,7 @@ struct ResetPasswordPage {
   code: string = '';
   password: string = "";
   comfirmPassword: string = ""
-  email: string = (router.getParams() as EmailParams).email;
+  email: string = (router.getParams() as EmailParamsInterface).email;
   loading: boolean = false;
 
   @Styles

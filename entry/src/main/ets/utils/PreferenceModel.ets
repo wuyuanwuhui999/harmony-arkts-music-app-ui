@@ -83,7 +83,7 @@ class PreferenceModel {
 
   // 获取 token
   async getToken() {
-    return 'eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MTk4NDE4NjUsInN1YiI6IntcImF2YXRlclwiOlwiL3N0YXRpYy91c2VyL2F2YXRlci_lkLTmgKjlkLTmgpQuanBnXCIsXCJiaXJ0aGRheVwiOlwiMTk5MC0xMC04XCIsXCJjcmVhdGVEYXRlXCI6MTU2NTcwMTMxNjAwMCxcImRpc2FibGVkXCI6MCxcImVtYWlsXCI6XCIyNzUwMTg3MjNAcXEuY29tXCIsXCJwZXJtaXNzaW9uXCI6MCxcInJvbGVcIjpcInB1YmxpY1wiLFwic2V4XCI6XCLnlLdcIixcInNpZ25cIjpcIuaXoOaAqO-8jOacieaClFwiLFwidGVsZXBob25lXCI6XCIxNTMwMjY4Njk0N1wiLFwidXBkYXRlRGF0ZVwiOjE1NjU3MDEzMjIwMDAsXCJ1c2VySWRcIjpcIuWQtOW_p-WQtOiZkVwiLFwidXNlcm5hbWVcIjpcIuWQtOW_p-WQtOiZkVwifSIsImV4cCI6MTcyMjQzMzg2NX0.GbEsgtlPl4SaN9ccE9L1EDlmHDZ3cyWyJbtqlsUas0E';
+    return this.getPreference('token');
   }
 
   // 写入 token

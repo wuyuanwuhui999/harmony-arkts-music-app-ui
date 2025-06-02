@@ -16,6 +16,7 @@
     "pages/MusicAuthorCategoryPage",
     "pages/MusicAuthorMusicListPage",
     "pages/MusicCategoryPage",
-    "pages/RecordMusicPage"
+    "pages/RecordMusicPage",
+    "pages/ChatPage"
   ]
 }

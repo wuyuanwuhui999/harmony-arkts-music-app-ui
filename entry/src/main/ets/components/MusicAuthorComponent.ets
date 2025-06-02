@@ -54,7 +54,17 @@ export default struct MusicAuthorComponent {
               type: 'author'
             })
             Text(item.authorName).margin({ top: size.smallPadding })
-          }.width('25%').alignItems(HorizontalAlign.Center)
+          }
+          .width('25%')
+          .alignItems(HorizontalAlign.Center)
+          .onClick(()=>{
+            router.pushUrl({
+              url: 'pages/MusicAuthorMusicListPage', // 目标url
+              params:{
+                musicAuthor:item
+              }
+            })
+          })
         })
       }
     }.blockStyle()

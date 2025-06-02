@@ -79,7 +79,7 @@ export default struct MusicAuthorMusicListPage {
           this.useMusicListByAuthorId()
         }
       }) // 滚动方向纵向
-      .padding(size.pagePadding)
+      .padding({left:size.pagePadding,right:size.pagePadding,bottom:size.pagePadding})
       .align(Alignment.Top)
       .scrollable(ScrollDirection.Vertical)
       .layoutWeight(1)

@@ -63,7 +63,7 @@ class HttpRequest {
       method: options.method ?? defaultOptions.method,
       connectTimeout: options.connectTimeout ?? defaultOptions.connectTimeout,
       readTimeout: options.readTimeout ?? defaultOptions.readTimeout,
-      header: options.header ?? defaultOptions.header
+      header: options.header ?? defaultOptions.header,
     };
     let httpRequest = http.createHttp();
     return new Promise((resolve, reject) => {
@@ -81,12 +81,14 @@ class HttpRequest {
         }
       }).catch((err: Error) => {
         reject(err);
-        promptAction.showToast({
-          message: `请求错误，地址：${HOST + url}${options.extraData ?
-            '，请求参数：' + JSON.stringify(options.extraData) : '' },错误信息： ${JSON.stringify(err)}`,
-          duration: 2000,
-          bottom: px2fp(display.getDefaultDisplaySync().height) / 2
-        });
+        if(!url.includes("getUserData")){
+          promptAction.showToast({
+            message: `请求错误，地址：${HOST + url}${options.extraData ?
+              '，请求参数：' + JSON.stringify(options.extraData) : '' },错误信息： ${JSON.stringify(err)}`,
+            duration: 2000,
+            bottom: px2fp(display.getDefaultDisplaySync().height) / 2
+          });
+        }
       }).finally(() => {
         // 当该请求使用完毕时，调用destroy方法主动销毁。
         httpRequest.destroy();

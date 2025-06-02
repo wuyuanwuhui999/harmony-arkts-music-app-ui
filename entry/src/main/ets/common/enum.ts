@@ -4,3 +4,8 @@ export const enum SocialEnum { // 社交类型
   MOVIE = "MOVIE",
   MOVIE_CIRCLE = "MOVIE_CIRCLE"
 }
+
+export enum PositionEnum {
+  LEFT="LEFT",
+  RIGHT="RIGHT"
+}

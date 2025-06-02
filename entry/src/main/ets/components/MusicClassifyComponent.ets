@@ -68,6 +68,7 @@ export default struct MusicClassifyComponent {
         Image($r('app.media.icon_down'))
           .width(size.smallIconSize)
           .height(size.smallIconSize)
+          .opacity(0.5)
         Text(this.classifyName).margin({ left: size.pagePadding }).layoutWeight(1)
         Text("更多").onClick(() => {
           router.pushUrl({
