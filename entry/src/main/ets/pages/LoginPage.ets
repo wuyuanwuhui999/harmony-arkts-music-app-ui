@@ -11,24 +11,26 @@ import httpRequest from '../utils/HttpUtil';
 import { strictEmailRegex } from '../utils/common';
 import GlobalLoading from "../components/GlobalLoading";
 import LoadingController from '../controller/LoadingController';
+
 @Entry
 @Component
 struct LoginPage {
-  @StorageLink(USER_DATA) userData: UserDataInterface = null;
+  @StorageLink(USER_DATA) userData: UserDataInterface | null = null;
   userAccount: string = '';
   password: string = '';
   loading: boolean = false;
-  email: string = "405873717@qq.com";// 邮箱
-  code: string = "";// 验证码
-  @State activeIndex:number = 0
-  private loadingController:LoadingController = new LoadingController()
+  email: string = "405873717@qq.com"; // 邮箱
+  code: string = ""; // 验证码
+  @State activeIndex: number = 0
+  private loadingController: LoadingController = new LoadingController()
 
-  async aboutToAppear(){
+  async aboutToAppear() {
     this.userAccount = this.userData?.userAccount || "吴时吴刻";
-    this.password = <string> await preference.getPassword(this.userData?.userAccount) || "123456";
+    this.password = await preference.getPassword(this.userData?.userAccount!) as string || "123456";
   }
 
-  @Styles blockStyle(){
+  @Styles
+  blockStyle(){
     .backgroundColor(colors.blockColor)
     .borderRadius(size.blockBorderRaduis)
     .padding(size.pagePadding)
@@ -36,7 +38,8 @@ struct LoginPage {
     .margin({ top: size.pagePadding })
   }
 
-  @Styles rowStyle(){
+  @Styles
+  rowStyle(){
     .border({
       width: {
         bottom: 1,
@@ -52,9 +55,9 @@ struct LoginPage {
     .padding({ top: size.pagePadding, bottom: size.pagePadding })
   }
 
-  useLogin=()=>{
+  useLogin = () => {
     this.loadingController.showLoading();
-    if(this.activeIndex === 0){
+    if (this.activeIndex === 0) {
       if (!this.userAccount) {
         return promptAction.showToast({
           message: "账号不能为空",
@@ -75,13 +78,13 @@ struct LoginPage {
           duration: 2000,
           bottom: px2vp(display.getDefaultDisplaySync().height) / 2
         })
-        await preference.setToke(res.token);
+        await preference.setToken(res.token);
         httpRequest.setToken(res.token);
         AppStorage.SetOrCreate<UserDataInterface>(USER_DATA, res.data)
         router.replaceUrl({
           url: 'pages/MusicIndexPage', // 目标url
         });
-      }).catch((e) => {
+      }).catch((e: Error) => {
         promptAction.showToast({
           message: "账号或密码错误，请重登录",
           duration: 2000,
@@ -90,39 +93,39 @@ struct LoginPage {
       }).finally(() => {
         this.loadingController.showLoading();
       })
-    }else{
-      if(!strictEmailRegex.test(this.email)){
-        return  promptAction.showToast({
+    } else {
+      if (!strictEmailRegex.test(this.email)) {
+        return promptAction.showToast({
           message: "请输入正确的邮箱格式",
           duration: 2000,
           bottom: px2vp(display.getDefaultDisplaySync().height) / 2
         })
-      }else if(this.code.length !== 4){
-        return  promptAction.showToast({
+      } else if (this.code.length !== 4) {
+        return promptAction.showToast({
           message: "请输入4位数的验证码",
           duration: 2000,
           bottom: px2vp(display.getDefaultDisplaySync().height) / 2
         })
       }
-      loginByEmailService(this.email,this.code).then(async (res)=>{
+      loginByEmailService(this.email, this.code).then(async (res) => {
         promptAction.showToast({
           message: "登录成功",
           duration: 2000,
           bottom: px2vp(display.getDefaultDisplaySync().height) / 2
         })
-        await preference.setToke(res.token);
+        await preference.setToken(res.token);
         httpRequest.setToken(res.token);
         AppStorage.SetOrCreate<UserDataInterface>(USER_DATA, res.data)
         router.replaceUrl({
           url: 'pages/MusicIndexPage', // 目标url
         });
-      }).catch(()=>{
+      }).catch(() => {
         promptAction.showToast({
           message: "邮箱或者验证码错误",
           duration: 2000,
           bottom: px2vp(display.getDefaultDisplaySync().height) / 2
         })
-      }).finally(()=>{
+      }).finally(() => {
         this.loadingController.hideLoading();
       })
     }
@@ -131,20 +134,20 @@ struct LoginPage {
 
   build() {
     Column() {
-      GlobalLoading({controller:this.loadingController})
+      GlobalLoading({ controller: this.loadingController })
       Column() {
         Image($r("app.media.logo"))
           .width(size.bigIconSize * 3)
           .height(size.bigIconSize * 3)
           .margin({ top: size.pagePadding * 2, bottom: size.pagePadding * 2 })
         Row() {
-          Row(){
+          Row() {
             Text("账号密码登录").border({
               width: {
                 bottom: 2,
               },
               color: {
-                bottom: this.activeIndex === 0 ? colors.tabSelectedColor :colors.pageBackgroundColor
+                bottom: this.activeIndex === 0 ? colors.tabSelectedColor : colors.pageBackgroundColor
               },
               style: {
                 bottom: BorderStyle.Solid
@@ -153,16 +156,17 @@ struct LoginPage {
           }
           .layoutWeight(1)
           .justifyContent(FlexAlign.Center)
-          .onClick(()=>{
+          .onClick(() => {
             this.activeIndex = 0
           })
-          Row(){
+
+          Row() {
             Text("邮箱验证码登录").border({
               width: {
                 bottom: 2,
               },
               color: {
-                bottom: this.activeIndex === 1 ? colors.tabSelectedColor :colors.blockColor
+                bottom: this.activeIndex === 1 ? colors.tabSelectedColor : colors.blockColor
               },
               style: {
                 bottom: BorderStyle.Solid
@@ -170,12 +174,13 @@ struct LoginPage {
             })
           }.layoutWeight(1)
           .justifyContent(FlexAlign.Center)
-          .onClick(()=>{
+          .onClick(() => {
             this.activeIndex = 1
           })
-        }.margin({bottom:size.pagePadding})
-        if(this.activeIndex === 0){
-          Column(){
+        }.margin({ bottom: size.pagePadding })
+
+        if (this.activeIndex === 0) {
+          Column() {
             Row() {
               Image($r('app.media.icon_user_active'))
                 .width(size.smallIconSize)
@@ -190,11 +195,13 @@ struct LoginPage {
             }
             .alignItems(VerticalAlign.Center)
             .width('100%')
-            .padding(size.smallPadding).border({
+            .padding(size.smallPadding)
+            .border({
               width: 1,
               color: colors.pageBackgroundColor,
               style: BorderStyle.Solid
-            }).borderRadius(size.blockBorderRaduis * 2)
+            })
+            .borderRadius(size.blockBorderRaduis * 2)
 
             Row() {
               Image($r('app.media.icon_password'))
@@ -220,8 +227,8 @@ struct LoginPage {
             })
             .borderRadius(size.blockBorderRaduis * 2)
           }
-        }else{
-          Column(){
+        } else {
+          Column() {
             Row() {
               Image($r('app.media.icon_user_active'))
                 .width(size.smallIconSize)
@@ -237,16 +244,16 @@ struct LoginPage {
                 .width(size.smallIconSize)
                 .height(size.smallIconSize)
                 .margin({ left: size.smallPadding, right: size.smallPadding })
-                .onClick(()=>{
-                  if(strictEmailRegex.test(this.email)){
-                    sendEmailVertifyCodeService(this.email).then((res)=>{
+                .onClick(() => {
+                  if (strictEmailRegex.test(this.email)) {
+                    sendEmailVertifyCodeService(this.email).then((res) => {
                       promptAction.showToast({
                         message: res.msg,
                         duration: 2000,
                         bottom: px2vp(display.getDefaultDisplaySync().height) / 2
                       })
                     })
-                  }else{
+                  } else {
                     promptAction.showToast({
                       message: "请输入正确的邮箱格式",
                       duration: 2000,
@@ -257,11 +264,13 @@ struct LoginPage {
             }
             .alignItems(VerticalAlign.Center)
             .width('100%')
-            .padding(size.smallPadding).border({
+            .padding(size.smallPadding)
+            .border({
               width: 1,
               color: colors.pageBackgroundColor,
               style: BorderStyle.Solid
-            }).borderRadius(size.blockBorderRaduis * 2)
+            })
+            .borderRadius(size.blockBorderRaduis * 2)
 
             Row() {
               Image($r('app.media.icon_password'))
@@ -287,7 +296,6 @@ struct LoginPage {
             .borderRadius(size.blockBorderRaduis * 2)
           }
         }
-
 
 
         Text('登录')
@@ -320,7 +328,7 @@ struct LoginPage {
                 console.error(`Invoke showAlertBeforeBackPage failed, code is ${err.code}, message is ${err.message}`);
               }
             });
-            router.clear();// 清除历史页面
+            router.clear(); // 清除历史页面
           })
 
         Text('忘记密码')
@@ -343,7 +351,7 @@ struct LoginPage {
                 console.error(`Invoke showAlertBeforeBackPage failed, code is ${err.code}, message is ${err.message}`);
               }
             });
-            router.clear();// 清除历史页面
+            router.clear(); // 清除历史页面
           })
       }
       .alignItems(HorizontalAlign.Center)

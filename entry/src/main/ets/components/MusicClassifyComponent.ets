@@ -1,11 +1,11 @@
 import * as colors from '../theme/color';
 import * as size from '../theme/size';
 import emitter from '@ohos.events.emitter'
-import { MusicInterface,MusicStorageInterface } from '../interface';
+import { MusicInterface, MusicStorageInterface } from '../interface/Index';
 import { getMusicListByClassifyIdService } from '../service/Index';
 import { MUSIC_STORAGE } from '../common/constant';
 import { LIKE_INNER_EVENT } from '../common/config';
-import {usePlayerRouter, useAppStorage} from '../utils/common';
+import { usePlayerRouter, useAppStorage } from '../utils/common';
 import router from '@ohos.router';
 import MusicAvaterComponent from './MusicAvaterComponent';
 
@@ -16,7 +16,8 @@ export default struct MusicClassifyComponent {
   @State musicList: Array<MusicInterface> = []
   @StorageLink(MUSIC_STORAGE) musicStorage: MusicStorageInterface = useAppStorage()
 
-  @Styles blockStyle(){
+  @Styles
+  blockStyle(){
     .backgroundColor(colors.blockColor)
     .borderRadius(size.blockBorderRaduis)
     .padding(size.pagePadding)
@@ -28,7 +29,7 @@ export default struct MusicClassifyComponent {
     getMusicListByClassifyIdService(this.classifyId, 1, 4).then((res) => {
       this.musicList = res.data;
     });
-   this.useLikeEmitter();
+    this.useLikeEmitter();
   }
 
   /**
@@ -36,9 +37,9 @@ export default struct MusicClassifyComponent {
    * @date: 2024-07-07 18:54
    * @author wuwenqiang
    */
-  useLikeEmitter(){
-    emitter.on(LIKE_INNER_EVENT, (data:emitter.EventData)=>{
-      const musicModel:MusicInterface = data.data as MusicInterface;
+  useLikeEmitter() {
+    emitter.on(LIKE_INNER_EVENT, (data: emitter.EventData) => {
+      const musicModel: MusicInterface = data.data as MusicInterface;
       const musicItem = this.musicList.find(item => musicModel.id === item.id);
       musicItem && (musicItem.isLike = musicModel.isLike);
     });
@@ -49,15 +50,15 @@ export default struct MusicClassifyComponent {
    * @date: 2024-07-17 22:23
    * @author wuwenqiang
    */
-  async usePlayMusicList(musicModel:MusicInterface,index:number){
-    let musicList:Array<MusicInterface> = [];
-    if(this.musicStorage.classifyName !== this.classifyName){
-      musicList = await getMusicListByClassifyIdService(this.classifyId,1,500).then(res=>res.data)
+  async usePlayMusicList(musicModel: MusicInterface, index: number) {
+    let musicList: Array<MusicInterface> = [];
+    if (this.musicStorage.classifyName !== this.classifyName) {
+      musicList = await getMusicListByClassifyIdService(this.classifyId, 1, 500).then(res => res.data)
     }
-    usePlayerRouter(this.musicStorage,musicList,musicModel,this.classifyName,index)
+    usePlayerRouter(this.musicStorage, musicList, musicModel, this.classifyName, index)
   }
 
-  aboutToDisappear(){
+  aboutToDisappear() {
     emitter.off(LIKE_INNER_EVENT.eventId);
   }
 
@@ -68,11 +69,11 @@ export default struct MusicClassifyComponent {
           .width(size.smallIconSize)
           .height(size.smallIconSize)
         Text(this.classifyName).margin({ left: size.pagePadding }).layoutWeight(1)
-        Text("更多").onClick(()=>{
+        Text("更多").onClick(() => {
           router.pushUrl({
             url: 'pages/MusicClassifyListPage',
             params: {
-              musicClassify: {id:this.classifyId,classifyName:this.classifyName}
+              musicClassify: { id: this.classifyId, classifyName: this.classifyName }
             }
           });
         })
@@ -80,8 +81,13 @@ export default struct MusicClassifyComponent {
 
       Column() {
         ForEach(this.musicList, (item: MusicInterface, index: number) => {
-          Row({space:size.pagePadding}) {
-            MusicAvaterComponent({avater:item.cover?.toString(),title:item.songName.toString(),dimension:Number(size.middleAvaterSize),type:'music'})
+          Row({ space: size.pagePadding }) {
+            MusicAvaterComponent({
+              avater: item.cover?.toString(),
+              title: item.songName.toString(),
+              dimension: Number(size.middleAvaterSize),
+              type: 'music'
+            })
             Column() {
               Text(item.songName)
                 .maxLines(1)
@@ -92,11 +98,13 @@ export default struct MusicClassifyComponent {
                 .fontColor(colors.disableTextColor)
             }.layoutWeight(1).alignItems(HorizontalAlign.Start)
 
-            Image(this.musicStorage.musicItem?.id === item.id && this.musicStorage.classifyName === this.classifyName && this.musicStorage.isPlaying ? $r("app.media.icon_music_playing_grey") : $r("app.media.icon_music_play"))
+            Image(this.musicStorage.musicItem?.id === item.id && this.musicStorage.classifyName === this.classifyName &&
+            this.musicStorage.isPlaying ? $r("app.media.icon_music_playing_grey") : $r("app.media.icon_music_play"))
               .width(size.smallIconSize)
               .height(size.smallIconSize)
-              .onClick(() => this.usePlayMusicList(item,index))
-            Image((this.musicStorage.musicItem?.id === item.id && this.musicStorage.musicItem?.isLike === 1 || item.isLike === 0) ? $r("app.media.icon_like") : $r("app.media.icon_like_active"))
+              .onClick(() => this.usePlayMusicList(item, index))
+            Image((this.musicStorage.musicItem?.id === item.id && this.musicStorage.musicItem?.isLike === 1 ||
+              item.isLike === 0) ? $r("app.media.icon_like") : $r("app.media.icon_like_active"))
               .width(size.smallIconSize)
               .height(size.smallIconSize)
             Image($r("app.media.icon_music_menu"))

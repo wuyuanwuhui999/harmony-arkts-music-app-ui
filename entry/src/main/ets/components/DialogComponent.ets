@@ -1,5 +1,6 @@
 import * as colors from '../theme/color';
 import * as size from '../theme/size';
+
 /**
  * @description: 退出登录弹窗
  * @date: 2024-01-14 21:47
@@ -8,9 +9,11 @@ import * as size from '../theme/size';
 @CustomDialog
 export default struct DialogComponent {
   controller: CustomDialogController
-  cancel: () => void
-  confirm: () => void
-  title: string=""
+  cancel: () => void = () => {
+  }
+  confirm: () => void = () => {
+  };
+  title: string = ""
 
   build() {
     Column() {

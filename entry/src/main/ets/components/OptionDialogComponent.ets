@@ -9,9 +9,11 @@ import * as size from '../theme/size';
 @CustomDialog
 export default struct OptionDialogComponent {
   controller: CustomDialogController
-  cancel: () => void
-  confirm: (value: string) => void
-  options: Array<string>
+  cancel: () => void = () => {
+  };
+  confirm: (value: string) => void = () => {
+  };
+  options: Array<string> = []
 
   build() {
     Column() {

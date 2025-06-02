@@ -25,30 +25,34 @@ struct LaunchPage {
   }
 
   async aboutToAppear() {
-    const {marketName,productModel,sdkApiVersion} = deviceInfo
-    AppStorage.SetOrCreate<DeviceInterface>(DEVICE_INFO, {device:productModel,platform:marketName,version:sdkApiVersion.toString()})
-    const token: string = <string> await preference.getToken();
-    setTimeout(()=>{// 加载用户信息
-      if(token){
+    AppStorage.SetOrCreate<DeviceInterface>(DEVICE_INFO, {
+      device: deviceInfo.productModel,
+      platform: deviceInfo.marketName,
+      version: deviceInfo.sdkApiVersion.toString(),
+      musicId: null
+    })
+    const token: string = await preference.getToken() as string;
+    setTimeout(() => { // 加载用户信息
+      if (token) {
         getUserDataService(token).then((res) => {
-          preference.setToke(res.token);
+          preference.setToken(res.token);
           httpRequest.setToken(res.token);
           AppStorage.SetOrCreate<UserDataInterface>(USER_DATA, res.data)
           router.replaceUrl({
             url: 'pages/MusicIndexPage'
           });
-        }).catch(()=>{
+        }).catch(() => {
           router.replaceUrl({
             url: 'pages/LoginPage'
           });
         })
-      }else{
+      } else {
         router.replaceUrl({
           url: 'pages/LoginPage'
         });
       }
 
-    },1000)
+    }, 1000)
 
   }
 }

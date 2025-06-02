@@ -14,12 +14,13 @@ import GlobalLoading from '../components/GlobalLoading';
 @Entry
 @Component
 struct LoginPage {
-  @StorageLink(USER_DATA) userData: UserDataInterface = null;
+  @StorageLink(USER_DATA) userData: UserDataInterface = {} as UserDataInterface;
   email: string = '';
-  loading:boolean = false;
-  private loadingController:LoadingController = new LoadingController()
+  loading: boolean = false;
+  private loadingController: LoadingController = new LoadingController()
 
-  @Styles blockStyle(){
+  @Styles
+  blockStyle(){
     .backgroundColor(colors.blockColor)
     .borderRadius(size.blockBorderRaduis)
     .padding(size.pagePadding)
@@ -27,7 +28,8 @@ struct LoginPage {
     .margin({ top: size.pagePadding })
   }
 
-  @Styles rowStyle(){
+  @Styles
+  rowStyle(){
     .border({
       width: {
         bottom: 1,
@@ -43,8 +45,10 @@ struct LoginPage {
     .padding({ top: size.pagePadding, bottom: size.pagePadding })
   }
 
-  useSumbit=()=>{
-    if(this.loading)return true;
+  useSumbit = () => {
+    if (this.loading) {
+      return true;
+    }
     if (!this.email) {
       return promptAction.showToast({
         message: "邮箱不能为空",
@@ -54,7 +58,7 @@ struct LoginPage {
     } else {
       this.loadingController.showLoading();
       this.loading = true;
-      sendEmailVertifyCodeService(this.email).then((res)=>{
+      sendEmailVertifyCodeService(this.email).then((res) => {
         promptAction.showToast({
           message: res.msg,
           duration: 2000,
@@ -70,7 +74,7 @@ struct LoginPage {
             console.error(`Invoke showAlertBeforeBackPage failed, code is ${err.code}, message is ${err.message}`);
           }
         });
-      }).finally(()=>{
+      }).finally(() => {
         this.loadingController.showLoading();
         this.loading = false;
       })
@@ -79,8 +83,8 @@ struct LoginPage {
   }
 
   build() {
-    Column(){
-      GlobalLoading({controller:this.loadingController})
+    Column() {
+      GlobalLoading({ controller: this.loadingController })
       Column() {
         NavigatorTitleComponent({ title: "忘记密码" })
         Column() {
@@ -107,7 +111,7 @@ struct LoginPage {
             .onClick(this.useSumbit)
 
         }
-        .padding({left:size.pagePadding,right:size.pagePadding})
+        .padding({ left: size.pagePadding, right: size.pagePadding })
         .backgroundColor(colors.pageBackgroundColor)
       }
       .width('100%')

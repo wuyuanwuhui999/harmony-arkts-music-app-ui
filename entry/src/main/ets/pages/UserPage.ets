@@ -13,11 +13,12 @@ import DialogComponent from '../components/DialogComponent';
 @Entry
 @Component
 struct UserPage {
-  @StorageLink(USER_DATA) userData: UserDataInterface = null;
+  @StorageLink(USER_DATA) userData: UserDataInterface = {} as UserDataInterface;
   title: string = '';
   @State field: string = '';
 
-  @Styles blockStyle(){
+  @Styles
+  blockStyle(){
     .backgroundColor(colors.blockColor)
     .borderRadius(size.blockBorderRaduis)
     .padding(size.pagePadding)
@@ -25,13 +26,15 @@ struct UserPage {
     .margin({ top: size.pagePadding })
   }
 
-  @Styles arrowStyle(){
+  @Styles
+  arrowStyle(){
     .margin({ left: size.smallPadding })
     .height(size.smallIconSize)
     .width(size.smallIconSize)
   }
 
-  @Styles rowStyle(){
+  @Styles
+  rowStyle(){
     .border({
       width: {
         bottom: 1,
@@ -54,8 +57,8 @@ struct UserPage {
       this.dialogController = new CustomDialogController({
         customStyle: true,
         builder: OptionDialogComponent({
-          cancel: () => this.onCancel(),
-          confirm: (value) => this.onConfirm(value),
+          cancel: (): void => this.onCancel(),
+          confirm: (value): void => this.onConfirm(value),
           options: ['男', '女'],
         }),
         alignment: DialogAlignment.Bottom,
@@ -64,9 +67,9 @@ struct UserPage {
       this.dialogController = new CustomDialogController({
         customStyle: false,
         builder: DialogComponent({
-          title:"是否退出登录？",
-          cancel: () => this.onCancel(),
-          confirm: () => this.onLogout(),
+          title: "是否退出登录？",
+          cancel: (): void => this.onCancel(),
+          confirm: (): void => this.onLogout(),
         }),
         alignment: DialogAlignment.Center,
       })
@@ -74,8 +77,8 @@ struct UserPage {
       this.dialogController = new CustomDialogController({
         customStyle: true,
         builder: CustomDialogComponent({
-          cancel: () => this.onCancel(),
-          confirm: (value) => this.onConfirm(value),
+          cancel: (): void => this.onCancel(),
+          confirm: (value): void => this.onConfirm(value),
           title: this.title,
           text: this.userData[this.field]
         }),
@@ -85,10 +88,10 @@ struct UserPage {
     this.dialogController.open()
   }
 
-  dialogController: CustomDialogController = null
+  dialogController: CustomDialogController | null = null
 
   onCancel() {
-    this.dialogController.close()
+    this.dialogController?.close()
   }
 
   /**
@@ -96,17 +99,17 @@ struct UserPage {
    * @date: 2024-01-10 23:01
    * @author wuwenqiang
    */
-  onConfirm(value) {
-    const userData: UserDataInterface = { ...this.userData }
+  onConfirm(value: string) {
+    const userData: UserDataInterface = JSON.parse(JSON.stringify(this.userData))
     userData[this.field] = value
     updateUserDataService(userData).then(() => {
       this.userData[this.field] = value;
-      this.dialogController.close()
+      this.dialogController?.close()
     })
   }
 
   onLogout() {
-    preference.setToke(null);
+    preference.setToken("");
     router.replaceUrl({
       url: 'pages/LoginPage', // 目标url
     }, router.RouterMode.Single, (err) => {
@@ -119,9 +122,9 @@ struct UserPage {
 
   build() {
     Column() {
-      NavigatorTitleComponent({title:"用户信息"})
-      Scroll(){
-        Column(){
+      NavigatorTitleComponent({ title: "用户信息" })
+      Scroll() {
+        Column() {
           Column() {
             Row() {
               Text('头像').flexGrow(1)
@@ -219,13 +222,13 @@ struct UserPage {
             .width('100%')
             .padding(size.pagePadding)
             .textAlign(TextAlign.Center)
-            .margin({ top: size.pagePadding,bottom:size.pagePadding })
+            .margin({ top: size.pagePadding, bottom: size.pagePadding })
             .onClick(() => {
               router.pushUrl({
                 url: 'pages/UpdatePasswordPage', // 目标url
               });
             })
-        }.padding({left:size.pagePadding,right:size.pagePadding})
+        }.padding({ left: size.pagePadding, right: size.pagePadding })
       }.layoutWeight(1).scrollable(ScrollDirection.Vertical).align(Alignment.Top)
 
     }
@@ -244,18 +247,20 @@ struct UserPage {
 @CustomDialog
 struct CustomDialogComponent {
   controller: CustomDialogController
-  cancel: () => void
-  confirm: (value: string) => void
-  title: string
-  text: string
-  value: string
+  cancel: () => void = () => {
+  };
+  confirm: (value: string) => void = () => {
+  };
+  title: string = '';
+  text: string = '';
+  value: string = '';
 
   aboutToAppear() {
     this.value = this.text
   }
 
   build() {
-    Column({space:size.pagePadding}) {
+    Column({ space: size.pagePadding }) {
       Text("请输入")
         .margin({ top: size.pagePadding })
       Row() {
@@ -269,7 +274,7 @@ struct CustomDialogComponent {
             this.value = value
           })
       }.width('100%')
-      .padding({left:size.pagePadding,right:size.pagePadding})
+      .padding({ left: size.pagePadding, right: size.pagePadding })
       .alignItems(VerticalAlign.Center)
 
       Row() {

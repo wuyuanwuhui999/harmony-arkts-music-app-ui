@@ -1,9 +1,9 @@
 import { getMusicListByClassifyIdService } from '../service/Index';
-import { MusicInterface, MusicStorageInterface } from '../interface';
+import { MusicInterface, MusicStorageInterface } from '../interface/Index';
 import * as colors from '../theme/color';
 import * as size from '../theme/size';
 import { MUSIC_STORAGE } from '../common/constant';
-import { usePlayerRouter,useAppStorage } from '../utils/common';
+import { usePlayerRouter, useAppStorage } from '../utils/common';
 import MusicAvaterComponent from './MusicAvaterComponent';
 
 // LazyForEach列表栏加载，
@@ -11,6 +11,7 @@ import MusicAvaterComponent from './MusicAvaterComponent';
 class BasicDataSource implements IDataSource {
   private listeners: DataChangeListener[] = [];
   private originDataArray: Array<MusicInterface> = [];
+
   public totalCount(): number {
     return 0;
   }
@@ -84,7 +85,8 @@ class MyDataSource extends BasicDataSource {
 
 @Component
 export default struct MusicRecommendComponent {
-  @Styles blockStyle(){
+  @Styles
+  blockStyle(){
     .backgroundColor(colors.blockColor)
     .borderRadius(size.blockBorderRaduis)
     .padding(size.pagePadding)
@@ -96,8 +98,8 @@ export default struct MusicRecommendComponent {
   @State pageNum: number = 1;
   @State total: number = 0;
   @StorageLink(MUSIC_STORAGE) musicStorage: MusicStorageInterface = useAppStorage()
-  private classifyId:number = 1;
-  private classifyName:string = "推荐歌曲";
+  private classifyId: number = 1;
+  private classifyName: string = "推荐歌曲";
   private pageSize: number = 20;
   private scroller: Scroller = new Scroller()
 
@@ -124,12 +126,12 @@ export default struct MusicRecommendComponent {
    * @date: 2024-07-17 22:23
    * @author wuwenqiang
    */
-  async usePlayMusicList(musicModel:MusicInterface,index:number){
-    let musicList:Array<MusicInterface> = [];
-    if(this.musicStorage.classifyName !== this.classifyName){
-      musicList = await getMusicListByClassifyIdService(this.classifyId,1,500).then(res=>res.data)
+  async usePlayMusicList(musicModel: MusicInterface, index: number) {
+    let musicList: Array<MusicInterface> = [];
+    if (this.musicStorage.classifyName !== this.classifyName) {
+      musicList = await getMusicListByClassifyIdService(this.classifyId, 1, 500).then(res => res.data)
     }
-    usePlayerRouter(this.musicStorage,musicList,musicModel,this.classifyName,index)
+    usePlayerRouter(this.musicStorage, musicList, musicModel, this.classifyName, index)
   }
 
   build() {
@@ -137,7 +139,7 @@ export default struct MusicRecommendComponent {
       Scroll(this.scroller) {
         Column() {
           LazyForEach(this.musicList, (item: MusicInterface, index: number) => {
-            Row({space:size.pagePadding}) {
+            Row({ space: size.pagePadding }) {
               if (index === 0) {
                 Image($r("app.media.icon_no1"))
                   .width(size.smallIconSize)
@@ -156,7 +158,12 @@ export default struct MusicRecommendComponent {
                   .height(size.smallIconSize)
                   .textAlign(TextAlign.Center)
               }
-              MusicAvaterComponent({avater:item.cover?.toString(),title:item.songName[0],dimension:Number(size.middleAvaterSize),type:'music'})
+              MusicAvaterComponent({
+                avater: item.cover?.toString(),
+                title: item.songName[0],
+                dimension: Number(size.middleAvaterSize),
+                type: 'music'
+              })
               Column() {
                 Text(item.songName).maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
                 Text(item.authorName)
@@ -165,10 +172,12 @@ export default struct MusicRecommendComponent {
                   .maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
               }.layoutWeight(1).alignItems(HorizontalAlign.Start)
 
-              Image(this.musicStorage.musicItem?.id === item.id && this.musicStorage.classifyName === this.classifyName && this.musicStorage.isPlaying ? $r("app.media.icon_music_playing_grey") : $r("app.media.icon_music_play"))
+              Image(this.musicStorage.musicItem?.id === item.id &&
+                this.musicStorage.classifyName === this.classifyName && this.musicStorage.isPlaying ?
+              $r("app.media.icon_music_playing_grey") : $r("app.media.icon_music_play"))
                 .width(size.smallIconSize)
                 .height(size.smallIconSize)
-                .onClick(() => this.usePlayMusicList(item,index))
+                .onClick(() => this.usePlayMusicList(item, index))
               Image(item.isLike ? $r("app.media.icon_like_active") : $r("app.media.icon_like"))
                 .width(size.smallIconSize)
                 .height(size.smallIconSize)

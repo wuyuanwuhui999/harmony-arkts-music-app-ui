@@ -1,6 +1,6 @@
 import http from '@ohos.net.http';
-import {HOST} from '../common/constant';
-import {MyAwesomeData} from '../interface/Index'
+import { HOST } from '../common/constant';
+import { MyAwesomeData } from '../interface/Index'
 import promptAction from '@ohos.promptAction';
 import display from '@ohos.display';
 
@@ -15,8 +15,11 @@ enum STATUS {
 
 class HttpRequest {
   private static instance: HttpRequest;
-  private token: string;
-  private constructor() { }
+  private token: string = "";
+
+  private constructor() {
+  }
+
   /** 请求函数(单例模式)
    *
    * **注意：**
@@ -30,59 +33,65 @@ class HttpRequest {
    })
    * ```
    */
-  public setToken(token:string){
+  public setToken(token: string) {
     this.token = token;
   }
 
   public static getInstance(): HttpRequest {
-    if (!this.instance) {
-      this.instance = new HttpRequest()
+    if (!HttpRequest.instance) {
+      HttpRequest.instance = new HttpRequest()
     }
-    return this.instance;
+    return HttpRequest.instance;
   }
 
   // 服务器接口请求
-  public request<T>(url:string,options: http.HttpRequestOptions): Promise<MyAwesomeData<T>> {
+  public request<T>(url: string, options: http.HttpRequestOptions): Promise<MyAwesomeData<T>> {
 
-      const defaultOptions:http.HttpRequestOptions = {
-        extraData: null,
-        method: http.RequestMethod.GET,
-        connectTimeout: 10000,
-        readTimeout: 10000,
-        header:  {
-          "content-type": "application/json",
-          "Authorization": this.token
-        }
+    const defaultOptions: http.HttpRequestOptions = {
+      extraData: undefined,
+      method: http.RequestMethod.GET,
+      connectTimeout: 10000,
+      readTimeout: 10000,
+      header: {
+        "content-type": "application/json",
+        "Authorization": this.token
       }
-
-      options = {...defaultOptions,...options}
-
-      let httpRequest = http.createHttp();
-      return new Promise((resolve, reject) => {
-        httpRequest.request(HOST + url,options).then((response:http.HttpResponse)=>{
-          const result:MyAwesomeData<T> = JSON.parse(response.result.toString()) as MyAwesomeData<T>
-          if(result.status == STATUS.SUCCESS){
-            resolve(result)
-          }else{
-            promptAction.showToast({
-              message: result.msg,
-              duration: 2000,
-              bottom: px2fp(display.getDefaultDisplaySync().height) / 2
-            });
-            reject(result)
-          }
-        }).catch((err:Error)=>{
-          reject(err);
+    }
+    // 手动合并对象
+    const mergedOptions: http.HttpRequestOptions = {
+      extraData: options.extraData ?? defaultOptions.extraData,
+      method: options.method ?? defaultOptions.method,
+      connectTimeout: options.connectTimeout ?? defaultOptions.connectTimeout,
+      readTimeout: options.readTimeout ?? defaultOptions.readTimeout,
+      header: options.header ?? defaultOptions.header
+    };
+    let httpRequest = http.createHttp();
+    return new Promise((resolve, reject) => {
+      httpRequest.request(HOST + url, mergedOptions).then((response: http.HttpResponse) => {
+        const result: MyAwesomeData<T> = JSON.parse(response.result.toString()) as MyAwesomeData<T>
+        if (result.status == STATUS.SUCCESS) {
+          resolve(result)
+        } else {
           promptAction.showToast({
-            message: `请求错误，地址：${HOST + url}${options.extraData &&'，请求参数：'+ JSON.stringify(options.extraData)},错误信息： ${JSON.stringify(err)}`,
+            message: result.msg,
             duration: 2000,
             bottom: px2fp(display.getDefaultDisplaySync().height) / 2
           });
-        }).finally(()=>{
-          // 当该请求使用完毕时，调用destroy方法主动销毁。
-          httpRequest.destroy();
+          reject(result)
+        }
+      }).catch((err: Error) => {
+        reject(err);
+        promptAction.showToast({
+          message: `请求错误，地址：${HOST + url}${options.extraData ?
+            '，请求参数：' + JSON.stringify(options.extraData) : '' },错误信息： ${JSON.stringify(err)}`,
+          duration: 2000,
+          bottom: px2fp(display.getDefaultDisplaySync().height) / 2
         });
-      })
+      }).finally(() => {
+        // 当该请求使用完毕时，调用destroy方法主动销毁。
+        httpRequest.destroy();
+      });
+    })
   }
 
   /**
@@ -92,9 +101,10 @@ class HttpRequest {
    * @param {RequestConfig} OtherConfig request其他配置
    * @return {*}
    */
-  public get<T>(url: string, data?: Object):Promise<MyAwesomeData<T>> {
-     return this.request<T>(url, { method: http.RequestMethod.GET, extraData: data })
+  public get<T>(url: string, data?: Object): Promise<MyAwesomeData<T>> {
+    return this.request<T>(url, { method: http.RequestMethod.GET, extraData: data })
   }
+
   /**
    * @description: post请求函数
    * @param {string} url 请求地址
@@ -103,7 +113,7 @@ class HttpRequest {
    * @return {*}
    */
   public post<T>(url: string, data?: Object): Promise<MyAwesomeData<T>> {
-    return this.request<T>(url,{ method: http.RequestMethod.POST,extraData: data})
+    return this.request<T>(url, { method: http.RequestMethod.POST, extraData: data })
   }
 
   /**
@@ -114,7 +124,7 @@ class HttpRequest {
    * @return {*}
    */
   public delete<T>(url: string, data?: Object): Promise<MyAwesomeData<T>> {
-    return this.request<T>(url,{ method: http.RequestMethod.DELETE,extraData: data})
+    return this.request<T>(url, { method: http.RequestMethod.DELETE, extraData: data })
   }
 
   /**
@@ -125,9 +135,8 @@ class HttpRequest {
    * @return {*}
    */
   public put<T>(url: string, data?: Object): Promise<MyAwesomeData<T>> {
-    return this.request<T>(url,{ method: http.RequestMethod.PUT,extraData: data})
+    return this.request<T>(url, { method: http.RequestMethod.PUT, extraData: data })
   }
-
 }
 
 export default HttpRequest.getInstance()

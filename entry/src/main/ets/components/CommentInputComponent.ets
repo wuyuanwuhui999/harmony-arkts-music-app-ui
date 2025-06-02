@@ -5,7 +5,8 @@ import * as size from '../theme/size';
 export default struct CommentInputComponent {
   @State text: string = '';
   placeholder: string = '评论';
-  onSend: (value: string) => void
+  onSend: (value: string) => void = () => {
+  }
   controller: CustomDialogController;
 
   build() {

@@ -20,14 +20,14 @@ export default struct CommentComponent {
   @State commentTotal: number = 0;
   @State commentList: Array<CommentInterface> = [];
   @State text: string = ''; // 评论框文字
-  @State firstComment: CommentInterface = null;
-  @State replyComment: CommentInterface = null;
+  @State firstComment: CommentInterface | null = null;
+  @State replyComment: CommentInterface | null = null;
   @State replyIndex: number = -1;
   @State focusableInput: boolean = false;
   private loading: boolean = false;
   private scroller: Scroller = new Scroller()
-  private dialogController: CustomDialogController;
-  public controller: CommentController = null;
+  private dialogController: CustomDialogController | null = null;
+  public controller: CommentController | null = null;
 
   aboutToAppear() {
     if (this.controller) {
@@ -72,13 +72,16 @@ export default struct CommentComponent {
    * @description: 创建评论框
    * @date: 2024-05-26 14:26
    */
-  @Builder buildCommentInput() {
+  @Builder
+  buildCommentInput() {
     Column() {
       Row() {
         TextInput({
           text: this.text,
-          placeholder: this.replyComment ? `回复${this.replyComment.username}` : (this.firstComment ? `回复${this.firstComment.username}` : '评论')
-        }).defaultFocus(true)
+          placeholder: this.replyComment ? `回复${this.replyComment.username}` :
+            (this.firstComment ? `回复${this.firstComment.username}` : '评论')
+        })
+          .defaultFocus(true)
           .layoutWeight(1)
           .focusable(this.focusableInput)
           .height(size.inputHeight)
@@ -95,13 +98,15 @@ export default struct CommentComponent {
           .height(size.inputHeight)
           .margin({ left: size.pagePadding })
           .onClick(() => {
-            if (this.loading) return;
+            if (this.loading) {
+              return;
+            }
             this.loading = true;
             const commentItem: CommentInterface = {
               id: 0, //主键
               content: this.text, //评论内容
-              parentId: this.replyComment?.id, //父节点id
-              topId: this.firstComment?.id, //顶级节点id
+              parentId: this.replyComment?.id ?? -1, //父节点id
+              topId: this.firstComment?.id ?? -1, //顶级节点id
               type: this.type, // 类型
               relationId: this.relationId, //影片id
               createTime: "", //创建时间
@@ -120,7 +125,7 @@ export default struct CommentComponent {
             insertCommentService(commentItem).then((res) => {
               if (this.firstComment) { // 二级评论，相当于回复
                 // 必须重新解构，然后再赋值，否则添加回复不生效
-                const commentItem = { ...this.commentList[this.replyIndex] };
+                const commentItem: CommentInterface = JSON.parse(JSON.stringify(this.commentList[this.replyIndex]));
                 commentItem.replyList === null && (commentItem.replyList = []);
                 commentItem.replyList.push(res.data); // 添加回复列表
                 this.commentList.splice(this.replyIndex, 1, commentItem); // 替换掉原数据里面的那一条数据
@@ -154,7 +159,7 @@ export default struct CommentComponent {
     this.replyIndex = index;
     if (item.topId) {
       this.replyComment = item; // 二级评论，即回复的内容
-      this.firstComment = this.commentList.find(aItem => aItem.id === item.topId)
+      this.firstComment = this.commentList.find(aItem => aItem.id === item.topId) as CommentInterface
     } else {
       this.replyComment = this.firstComment = item; // 点击的是一级评论
     }
@@ -165,7 +170,8 @@ export default struct CommentComponent {
    * @description: 创建评论列表,参数必须用对象或者接口形式传递，否则参数变化了，视图不更新
    * @date: 2024-05-25 16:30
    */
-  @Builder buildCommentList(commentParams: CommentParamsInterface) {
+  @Builder
+  buildCommentList(commentParams: CommentParamsInterface) {
     Column({ space: size.pagePadding }) {
       ForEach(commentParams.commentList, (aItem: CommentInterface, aIndex: number) => {
         Row() {
@@ -196,14 +202,14 @@ export default struct CommentComponent {
   }
 
   build() {
-    if(this.commentListStr){
-      Column(){
-        if(this.commentList.length > 0){
+    if (this.commentListStr) {
+      Column() {
+        if (this.commentList.length > 0) {
           Blank().height(size.pagePadding)
         }
         this.buildCommentList({ commentList: this.commentList })
       }
-    }else{
+    } else {
       Column() {
         Text(`${this.commentTotal}条评论`)
           .padding(size.pagePadding)
@@ -218,7 +224,7 @@ export default struct CommentComponent {
           if (this.commentList.length > 0) {
             // 必须用对象的方式传递，否则this.commentList发生变化之后，视图不会更新
             this.buildCommentList({ commentList: this.commentList })
-          } else{
+          } else {
             Text('暂无评论')
               .width('100%')
               .height('100%')

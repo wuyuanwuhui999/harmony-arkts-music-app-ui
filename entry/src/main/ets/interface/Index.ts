@@ -11,6 +11,7 @@ export interface MyAwesomeData<T> {
 }
 
 export interface DeviceInterface{
+  musicId:number|null
   version:string,
   platform:string,
   device:string
@@ -177,9 +178,9 @@ export interface MuiscPlayMenuInterface {
 }
 
 export enum LoopMode {
-  ORDER,// 顺序播放
-  RANDOM,// 随机播放
-  REPEAT,// 单曲循环
+  ORDER = "ORDER",// 顺序播放
+  RANDOM = "RANDOM",// 随机播放
+  REPEAT = "REPEAT",// 单曲循环
 }
 
 // 音乐仓库
@@ -241,4 +242,51 @@ export interface MusicAuthorCategoryInterface{
   disabled:number,// 是否禁用
   createTime:string;// 创建时间
   updateTime:string;// 更新时间
+}
+
+// 添加以下接口
+export interface LoginParams {
+  userAccount: string;
+  password: string;
+}
+
+export interface EmailParams {
+  email: string;
+}
+
+export interface EmailCodeParams {
+  email: string;
+  code: string;
+}
+
+export interface ResetPasswordParams {
+  email: string;
+  password: string;
+  code: string;
+}
+
+export interface UpdatePasswordParams {
+  oldPassword: string;
+  newPassword: string;
+}
+
+export interface VerifyUserParams {
+  userAccount?: string;
+  email?: string;
+}
+
+export interface MusicClassifyParamsInterface {
+  musicClassify:MusicClassifyInterface
+}
+
+export interface FavoriteDirectoryParamsInterface{
+  favoriteDirectory:FavoriteDirectoryInterface
+}
+
+export interface MusicAuthorParamsInterface{
+  musicAuthor:MusicAuthorInterface
+}
+
+export interface MusicItemParamsInterface{
+  musicItem:MusicInterface
 }

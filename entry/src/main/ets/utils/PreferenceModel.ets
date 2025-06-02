@@ -1,117 +1,139 @@
-import dataPreferences from "@ohos.data.preferences"
+import dataPreferences from "@ohos.data.preferences";
 
-let context = getContext(this)
-let preference: dataPreferences.Preferences = null
+let context = getContext(this);
+let preference: dataPreferences.Preferences | null = null; // 初始化为 null
 
 class PreferenceModel {
-  //初始化Preferences首选项
+  // 确保首选项已初始化
+  private async ensurePreferenceInitialized() {
+    if (preference === null) {
+      await this.getPreferencesFromStorage();
+    }
+  }
+
+  // 初始化 Preferences 首选项
   async getPreferencesFromStorage() {
     try {
-      preference = await dataPreferences.getPreferences(context, 'mystore')
+      preference = await dataPreferences.getPreferences(context, 'mystore');
     } catch (err) {
-      console.error(err)
+      console.error("Failed to get preferences:", err);
+      preference = null; // 确保在出错时重置为 null
     }
   }
 
-  //删除preferences实例对应的首选项
+  // 删除 preferences 实例对应的首选项
   async deletePreferences() {
     try {
-      await dataPreferences.deletePreferences(context, 'mystore')
+      await dataPreferences.deletePreferences(context, 'mystore');
     } catch (err) {
-      console.error(err)
+      console.error("Failed to delete preferences:", err);
     }
-    preference = null
+    preference = null; // 删除后重置为 null
   }
 
-  //设置key-value
-  async putPreference(key:string,value:string) {
-    if (preference === null) {
-      await this.getPreferencesFromStorage()
+  // 设置 key-value
+  async putPreference(key: string, value: string) {
+    await this.ensurePreferenceInitialized();
+
+    if (preference) {
+      try {
+        await preference.put(key, value);
+        await preference.flush();
+      } catch (err) {
+        console.error(`Failed to put preference [${key}]:`, err);
+      }
+    } else {
+      console.error("Preferences not initialized, cannot put value");
     }
+  }
+
+  // 获取 key 对应的 value
+  async getPreference(key: string): Promise<string | null> {
+    await this.ensurePreferenceInitialized();
+
+    if (!preference) {
+      console.error("Preferences not initialized, cannot get value");
+      return null;
+    }
+
     try {
-      await preference.put(key, value)
+      const value = await preference.get(key, null);
+      return value !== null ? String(value) : null;
     } catch (err) {
-      console.error(err)
-    }
-    await preference.flush()
-  }
-
-  //获取key对应的value
-  async getPreference(key:string){
-    let value = ""
-    if (preference === null) {
-      await this.getPreferencesFromStorage()
-    }
-    try {
-      value = <string> await preference.get(key, null)
-    } catch (err) {
-      console.error(err)
-    }
-    return value;
-  }
-
-  //删除key对应的value
-  async deletePreference(key:string) {
-    try {
-      await preference.delete(key)
-    } catch (err) {
-      console.error(err)
+      console.error(`Failed to get preference [${key}]:`, err);
+      return null;
     }
   }
 
-  //检查参数是否为null
-  isNull(value: any) {
-    if (value === null) {
-      return false
+  // 删除 key 对应的 value
+  async deletePreference(key: string) {
+    await this.ensurePreferenceInitialized();
+
+    if (preference) {
+      try {
+        await preference.delete(key);
+        await preference.flush();
+      } catch (err) {
+        console.error(`Failed to delete preference [${key}]:`, err);
+      }
+    } else {
+      console.error("Preferences not initialized, cannot delete value");
     }
-    return true
   }
 
-  //获取date日期对应的浏览历史
+  // 获取 token
   async getToken() {
     return 'eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MTk4NDE4NjUsInN1YiI6IntcImF2YXRlclwiOlwiL3N0YXRpYy91c2VyL2F2YXRlci_lkLTmgKjlkLTmgpQuanBnXCIsXCJiaXJ0aGRheVwiOlwiMTk5MC0xMC04XCIsXCJjcmVhdGVEYXRlXCI6MTU2NTcwMTMxNjAwMCxcImRpc2FibGVkXCI6MCxcImVtYWlsXCI6XCIyNzUwMTg3MjNAcXEuY29tXCIsXCJwZXJtaXNzaW9uXCI6MCxcInJvbGVcIjpcInB1YmxpY1wiLFwic2V4XCI6XCLnlLdcIixcInNpZ25cIjpcIuaXoOaAqO-8jOacieaClFwiLFwidGVsZXBob25lXCI6XCIxNTMwMjY4Njk0N1wiLFwidXBkYXRlRGF0ZVwiOjE1NjU3MDEzMjIwMDAsXCJ1c2VySWRcIjpcIuWQtOW_p-WQtOiZkVwiLFwidXNlcm5hbWVcIjpcIuWQtOW_p-WQtOiZkVwifSIsImV4cCI6MTcyMjQzMzg2NX0.GbEsgtlPl4SaN9ccE9L1EDlmHDZ3cyWyJbtqlsUas0E';
-    // let token = <string> await this.getPreference('token')
-    // return token ?? null
   }
 
-  //写入date日期对应的浏览历史
-  async setToke(token) {
-    return this.putPreference('token',token)
+  // 写入 token
+  async setToken(token: string) {
+    await this.putPreference('token', token);
   }
 
-  //获取date日期对应的浏览历史
-  async getPassword(userAccount:string) {
-    let token = <string> await this.getPreference(userAccount)
-    return token ?? null
+  // 获取密码
+  async getPassword(userAccount: string): Promise<string | null> {
+    return this.getPreference(userAccount);
   }
 
-  //写入date日期对应的浏览历史
-  setPassword(userAccount:string,password:string) {
-    this.putPreference(userAccount,password);
+  // 写入密码
+  async setPassword(userAccount: string, password: string) {
+    await this.putPreference(userAccount, password);
   }
 
-  //获取date日期对应的浏览历史
-  async getMovieSeachKeyWord():Promise<Array<string>> {
-    let movieSearchKeyWord = <string> await this.getPreference('movieSearchKeyWord');
-    if(movieSearchKeyWord){
-      return JSON.parse(movieSearchKeyWord)
-    }else {
-      return []
+  // 获取电影搜索关键词
+  async getMovieSearchKeyWord(): Promise<Array<string>> {
+    const movieSearchKeyWord = await this.getPreference('movieSearchKeyWord');
+    if (movieSearchKeyWord) {
+      try {
+        return JSON.parse(movieSearchKeyWord) as Array<string>;
+      } catch (e) {
+        console.error('Failed to parse movie search keywords:', e);
+        return [];
+      }
+    } else {
+      return [];
     }
   }
 
-  // 电影搜索记录
-  async setMovieSeachKeyWord(keyWord):Promise<Array<string>> {
-    const movieSearchKeyWord:Array<string> = await this.getMovieSeachKeyWord();
+  // 设置电影搜索关键词
+  async setMovieSearchKeyWord(keyWord: string): Promise<void> {
+    const movieSearchKeyWord: Array<string> = await this.getMovieSearchKeyWord();
     const index = movieSearchKeyWord.findIndex(item => item === keyWord);
-    if(index !== -1){
-      movieSearchKeyWord.splice(index,1)
+
+    if (index !== -1) {
+      movieSearchKeyWord.splice(index, 1);
     }
+
     movieSearchKeyWord.unshift(keyWord);
+
     // 最多只存十条记录
-    if(movieSearchKeyWord.length > 10)movieSearchKeyWord.splice(10,movieSearchKeyWord.length - 10)
-    return movieSearchKeyWord;
+    if (movieSearchKeyWord.length > 10) {
+      movieSearchKeyWord.splice(10);
+    }
+
+    await this.putPreference('movieSearchKeyWord', JSON.stringify(movieSearchKeyWord));
   }
 }
 
-export default new PreferenceModel()
+export default new PreferenceModel();

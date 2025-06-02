@@ -1,7 +1,7 @@
 import * as colors from '../theme/color';
 import * as size from '../theme/size';
 import { resetPasswordService } from '../service/Index';
-import { UserDataInterface } from '../interface/Index';
+import { EmailParams, UserDataInterface } from '../interface/Index';
 import { USER_DATA } from '../common/constant';
 import promptAction from '@ohos.promptAction'
 import display from '@ohos.display';
@@ -14,12 +14,13 @@ import httpRequest from '../utils/HttpUtil';
 @Component
 struct ResetPasswordPage {
   code: string = '';
-  password:string = "";
-  comfirmPassword:string = ""
-  email:string =  router.getParams()['email']; // 获取传递过来的参数对象
-  loading:boolean = false;
+  password: string = "";
+  comfirmPassword: string = ""
+  email: string = (router.getParams() as EmailParams).email;
+  loading: boolean = false;
 
-  @Styles blockStyle(){
+  @Styles
+  blockStyle(){
     .backgroundColor(colors.blockColor)
     .borderRadius(size.blockBorderRaduis)
     .padding(size.pagePadding)
@@ -27,7 +28,8 @@ struct ResetPasswordPage {
     .margin({ top: size.pagePadding })
   }
 
-  @Styles rowStyle(){
+  @Styles
+  rowStyle(){
     .border({
       width: {
         bottom: 1,
@@ -62,44 +64,46 @@ struct ResetPasswordPage {
     return true;
   }
 
-  useSumbit=()=>{
-    if(this.loading)return true;
-    if(!this.code){
+  useSumbit = () => {
+    if (this.loading) {
+      return;
+    }
+    if (!this.code) {
       promptAction.showToast({
         message: "验证码不能为空",
         duration: 2000,
         bottom: px2vp(display.getDefaultDisplaySync().height) / 2
       });
-    }else if(this.code.length < 4){
+    } else if (this.code.length < 4) {
       promptAction.showToast({
         message: "请输入四位数的验证码",
         duration: 2000,
         bottom: px2vp(display.getDefaultDisplaySync().height) / 2
       });
-    }else if(this.password !== this.comfirmPassword){
+    } else if (this.password !== this.comfirmPassword) {
       promptAction.showToast({
         message: "密码和确认密码不一致",
         duration: 2000,
         bottom: px2vp(display.getDefaultDisplaySync().height) / 2
       });
-    } else if (this.verify(this.password,'密码') &&
-      this.verify(this.password,'确认密码')) {
+    } else if (this.verify(this.password, '密码') &&
+    this.verify(this.password, '确认密码')) {
       this.loading = true;
-      resetPasswordService(this.email,this.password,this.code).then(async (res)=>{
+      resetPasswordService(this.email, this.password, this.code).then(async (res) => {
         // prompt.hideLoading()
         promptAction.showToast({
           message: res.msg,
           duration: 2000,
           bottom: px2vp(display.getDefaultDisplaySync().height) / 2
         });
-        await preference.setToke(res.token);
+        await preference.setToken(res.token);
         httpRequest.setToken(res.token);
         AppStorage.SetOrCreate<UserDataInterface>(USER_DATA, res.data)
         router.replaceUrl({
           url: 'pages/MusicIndexPage', // 目标url
         });
         router.clear(); // 清除历史页面
-      }).finally(()=>{
+      }).finally(() => {
         // prompt.hideLoading()
         this.loading = false;
       })
@@ -111,7 +115,7 @@ struct ResetPasswordPage {
     Column() {
       NavigatorTitleComponent({ title: "重置密码" })
       Column() {
-        Column({space:size.pagePadding}){
+        Column({ space: size.pagePadding }) {
           Row() {
             Text("*").fontColor(colors.warnColor)
             TextInput({ placeholder: "请输入验证码" })
@@ -121,6 +125,7 @@ struct ResetPasswordPage {
                 this.code = value;
               })
           }
+
           Divider().height(size.pagePadding).color(colors.borderColor)
           Row() {
             Text("*").fontColor(colors.warnColor)
@@ -132,6 +137,7 @@ struct ResetPasswordPage {
                 this.password = value;
               })
           }
+
           Divider().height(size.pagePadding).color(colors.borderColor)
           Row() {
             Text("*").fontColor(colors.warnColor)
@@ -159,7 +165,7 @@ struct ResetPasswordPage {
       }
       .width('100%')
       .height('100%')
-      .padding({left:size.pagePadding,right:size.pagePadding})
+      .padding({ left: size.pagePadding, right: size.pagePadding })
       .backgroundColor(colors.pageBackgroundColor)
     }
   }

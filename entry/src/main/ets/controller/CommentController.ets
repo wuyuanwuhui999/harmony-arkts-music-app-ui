@@ -1,7 +1,7 @@
 import CommentComponent from '../components/CommentComponent';
 
 export default class CommentController {
-  private mComponent: CommentComponent = null;
+  private mComponent: CommentComponent | null = null;
 
   attach(component: CommentComponent) {
     this.mComponent = component;

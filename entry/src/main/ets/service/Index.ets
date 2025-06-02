@@ -10,10 +10,11 @@ import CryptoJS from '@ohos/crypto-js';
  * @date: 2024-01-15 21:32
  * @author wuwenqiang
  */
-export const loginService = (userAccount:string,password:string):Promise<MyAwesomeData<types.UserDataInterface>>=>{
-  password = CryptoJS.MD5(password).toString();// 使用md5加密
-  return httpRequest.post<types.UserDataInterface>(api.login,{userAccount,password})
-};
+export const loginService = (userAccount:string,password:string):Promise<MyAwesomeData<types.UserDataInterface>>=> {
+  password = CryptoJS.MD5(password).toString(); // 使用md5加密
+  const params: types.LoginParams = { userAccount, password };
+  return httpRequest.post<types.UserDataInterface>(api.login, params)
+}
 
 /**
  * @description: 根据token获取用户信息
@@ -31,7 +32,7 @@ export const getUserDataService = (token:string):Promise<MyAwesomeData<types.Use
  * @author wuwenqiang
  */
 export const registerService = (userData:types.UserDataInterface):Promise<MyAwesomeData<types.UserDataInterface>>=>{
-  userData = {...userData};
+  userData = JSON.parse(JSON.stringify(userData));
   userData.password = CryptoJS.MD5(userData.password).toString();// 使用md5加密
   return httpRequest.post<types.UserDataInterface>(api.register,userData)
 };
@@ -42,7 +43,8 @@ export const registerService = (userData:types.UserDataInterface):Promise<MyAwes
  * @author wuwenqiang
  */
 export const verifyUserService = (userAccount:string|undefined,email:string|undefined):Promise<MyAwesomeData<number>>=>{
-  return httpRequest.post<number>(api.vertifyUser,{userAccount,email})
+  const params: types.VerifyUserParams = { userAccount, email };
+  return httpRequest.post<number>(api.vertifyUser,params)
 };
 
 /**
@@ -51,7 +53,8 @@ export const verifyUserService = (userAccount:string|undefined,email:string|unde
  * @author wuwenqiang
  */
 export const sendEmailVertifyCodeService = (email:string):Promise<MyAwesomeData<number>>=>{
-  return httpRequest.post<number>(api.sendEmailVertifyCode,{email})
+  const params: types.EmailParams = { email };
+  return httpRequest.post<number>(api.sendEmailVertifyCode,params)
 };
 
 /**
@@ -60,7 +63,8 @@ export const sendEmailVertifyCodeService = (email:string):Promise<MyAwesomeData<
  * @author wuwenqiang
  */
 export const loginByEmailService = (email:string,code:string):Promise<MyAwesomeData<types.UserDataInterface>>=>{
-  return httpRequest.post<types.UserDataInterface>(api.loginByEmail,{email,code})
+  const params: types.EmailCodeParams = { email,code };
+  return httpRequest.post<types.UserDataInterface>(api.loginByEmail,params)
 };
 
 /**
@@ -79,7 +83,8 @@ export const updateUserDataService = (userData:types.UserDataInterface):Promise<
  */
 export const resetPasswordService = (email:string,password:string,code:string):Promise<MyAwesomeData<types.UserDataInterface>>=>{
   password = CryptoJS.MD5(password).toString();// 使用md5加密
-  return httpRequest.post<types.UserDataInterface>(api.resetPassword,{email,password,code})
+  const params: types.ResetPasswordParams = {email,password,code};
+  return httpRequest.post<types.UserDataInterface>(api.resetPassword,params)
 };
 
 /**
@@ -90,7 +95,8 @@ export const resetPasswordService = (email:string,password:string,code:string):P
 export const updatePasswordService = (oldPassword:string,newPassword:string):Promise<MyAwesomeData<number>>=>{
   oldPassword = CryptoJS.MD5(oldPassword).toString();// 使用md5加密
   newPassword = CryptoJS.MD5(newPassword).toString();// 使用md5加密
-  return httpRequest.put<number>(api.updatePassword,{oldPassword,newPassword})
+  const params: types.UpdatePasswordParams = {oldPassword,newPassword};
+  return httpRequest.put<number>(api.updatePassword,params)
 };
 
 /**
@@ -215,9 +221,16 @@ export const getMusicRecordService = (pageNum:number,pageSize:number):Promise<My
  * @date: 2024-03-17 22:12
  * @author wuwenqiang
  */
-export const insertMusicRecordService = (musicId):Promise<MyAwesomeData<number>> => {
-  const deviceInterface:DeviceInterface = AppStorage.Get<DeviceInterface>(DEVICE_INFO)
-  return httpRequest.post<number>(api.insertMusicRecord,{musicId,...deviceInterface});
+export const insertMusicRecordService = (musicId:number):Promise<MyAwesomeData<number>> => {
+  const deviceInterface:DeviceInterface = AppStorage.Get<DeviceInterface>(DEVICE_INFO) as DeviceInterface
+  // 手动合并对象属性，避免使用展开运算符
+  const params:DeviceInterface = {
+    musicId: musicId,
+    version: deviceInterface.version,
+    platform: deviceInterface.platform,
+    device: deviceInterface.device
+  };
+  return httpRequest.post<number>(api.insertMusicRecord,params);
 }
 
 /**
@@ -236,7 +249,7 @@ export const getMusicLikeService = (pageNum:number,pageSize:number):Promise<MyAw
  * @author wuwenqiang
  */
 export const insertMusicLikeService = (musicId:number):Promise<MyAwesomeData<number>> => {
-  return httpRequest.post<number>(api.insertMusicLike + musicId,{});
+  return httpRequest.post<number>(api.insertMusicLike + musicId);
 }
 
 /**

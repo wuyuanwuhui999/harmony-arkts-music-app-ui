@@ -1,48 +1,41 @@
 import * as colors from '../theme/color';
 import * as size from '../theme/size';
-import { FavoriteDirectoryInterface, FavoriteMusicInterface } from '../interface/Index';
-import {  getFavoriteDirectoryService, insertMusicFavoriteService,insertFavoriteDirectoryService } from '../service/Index';
+import { FavoriteDirectoryInterface } from '../interface/Index';
+import { insertFavoriteDirectoryService } from '../service/Index';
 import promptAction from '@ohos.promptAction';
 import display from '@ohos.display';
-import MusicAvaterComponent from './MusicAvaterComponent';
-
-@Extend(Row) function roundedSquareStyle  () {
-  .alignItems(VerticalAlign.Center)
-  .justifyContent(FlexAlign.Center)
-  .backgroundColor(colors.pageBackgroundColor)
-  .borderRadius(size.blockBorderRaduis)
-  .width(size.roundedSquareSize)
-  .aspectRatio(1)
-}
 
 @Component
 export default struct CreateFavoriteDirectory {
-  @State checkboxValue:Array<number> = [];
-  @State favoriteDirectoryList:Array<FavoriteDirectoryInterface> = [];
-  @State favoriteName:string = '';
-  public onCreateDirectory: (favoriteDirectory:FavoriteDirectoryInterface) => void;
-  public onCancleCreateDirectory: () => void;
+  @State checkboxValue: Array<number> = [];
+  @State favoriteDirectoryList: Array<FavoriteDirectoryInterface> = [];
+  @State favoriteName: string = '';
+  public onCreateDirectory: (favoriteDirectory: FavoriteDirectoryInterface) => void = () => {
+  };
+  public onCancleCreateDirectory: () => void = () => {
+  };
 
   build() {
-    Column({space:size.pagePadding}){
-      Row(){
+    Column({ space: size.pagePadding }) {
+      Row() {
         Text('*').fontColor(Color.Red)
         Text('名称')
         TextInput({ text: this.favoriteName, placeholder: '请输入收藏夹名称' })
           .height(size.middleAvaterSize)
           .backgroundColor(colors.pageBackgroundColor)
           .borderRadius(size.smallBorderRaduis)
-          .margin({left:size.pagePadding})
+          .margin({ left: size.pagePadding })
           .onChange((value) => {
             this.favoriteName = value.trim();
-          }).layoutWeight(1)
+          })
+          .layoutWeight(1)
       }
       .width('100%')
 
-      Row(){
+      Row() {
         Text('*').visibility(Visibility.Hidden)
         Text('封面')
-        Row(){
+        Row() {
           Image($r('app.media.icon_add'))
             .width(size.middlIconSize)
             .aspectRatio(1)
@@ -51,7 +44,7 @@ export default struct CreateFavoriteDirectory {
         .alignItems(VerticalAlign.Center)
         .backgroundColor(colors.pageBackgroundColor)
         .borderRadius(size.smallBorderRaduis)
-        .margin({left:size.pagePadding})
+        .margin({ left: size.pagePadding })
         .width(size.bigAvaterSize)
         .aspectRatio(1)
       }
@@ -65,9 +58,8 @@ export default struct CreateFavoriteDirectory {
         .fontColor(Color.White)
         .borderRadius(size.blockBorderRaduis * 2)
         .onClick(() => {
-          const favoriteDirectory:FavoriteDirectoryInterface = {
-            name:this.favoriteName,
-            cover: null
+          const favoriteDirectory: FavoriteDirectoryInterface = {
+            name: this.favoriteName,
           }
           insertFavoriteDirectoryService(favoriteDirectory).then(res => {
             promptAction.showToast({
@@ -82,7 +74,7 @@ export default struct CreateFavoriteDirectory {
       Button('取消')
         .width('100%')
         .padding(size.pagePadding)
-        .border({width:1,color:colors.borderColor})
+        .border({ width: 1, color: colors.borderColor })
         .backgroundColor(Color.Transparent)
         .fontColor(Color.Black)
         .borderRadius(size.blockBorderRaduis * 2)

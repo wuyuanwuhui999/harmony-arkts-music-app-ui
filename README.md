@@ -38,7 +38,9 @@
 ![重置密码](音乐播放器-评论页面.png)
 =============================界面预览（如果无法预览，请查看项目根目录png文件）==========================
 
-使用arkts api9搭建的音乐项目，有flutter、react-native、java、微信小程序、uniapp多个版本
+使用arkts搭建的音乐项目，有flutter、react-native、java、微信小程序、uniapp多个版本
+
+api9升级到api15，使用DevEco Studio版本为 5.0.5 Release   
 
 音乐数据来自于python爬虫程序，爬取第三方音乐网站数据
 

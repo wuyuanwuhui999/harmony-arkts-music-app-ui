@@ -1,7 +1,7 @@
 import GlobalLoading from '../components/GlobalLoading';
 
 export default class LoadingController {
-  private mComponent: GlobalLoading = null;
+  private mComponent: GlobalLoading | null = null;
 
   attach(component: GlobalLoading) {
     this.mComponent = component;
@@ -9,7 +9,7 @@ export default class LoadingController {
 
   public showLoading(): void {
     if (this.mComponent) {
-      return this.mComponent.showLoading();
+      return this.mComponent?.showLoading();
     }
   }
 

@@ -1,32 +1,34 @@
 // 自定义Loading组件
 import * as colors from '../theme/color';
 import LoadingController from '../controller/LoadingController';
+
 @Component
 export default struct GlobalLoading {
   @State private message: string = '加载中...'
   @State private isShow: boolean = false
-  public controller: LoadingController = null;
+  public controller: LoadingController | null = null;
 
-  aboutToAppear(){
+  aboutToAppear() {
     if (this.controller) {
       this.controller.attach(this); //绑定控制器
     }
   }
 
-
   // 显示/隐藏方法
   public showLoading(message?: string) {
-    this.isShow  = true
-    if (message) this.message  = message
+    this.isShow = true
+    if (message) {
+      this.message = message
+    }
   }
 
   public hideLoading() {
-    this.isShow  = false
+    this.isShow = false
   }
 
   build() {
     Stack({ alignContent: Alignment.Center }) {
-      if (this.isShow)  {
+      if (this.isShow) {
         // 半透明遮罩层
         Column() {
           LoadingProgress()

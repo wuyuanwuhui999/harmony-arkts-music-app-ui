@@ -1,7 +1,7 @@
 import * as colors from '../theme/color';
 import * as size from '../theme/size';
 import { getCircleListByTypeService } from '../service/Index';
-import { CircleInterface, CommentInterface,UserDataInterface } from '../interface/Index';
+import { CircleInterface, CommentInterface, UserDataInterface } from '../interface/Index';
 import { HOST, USER_DATA } from '../common/constant';
 import { SocialEnum } from '../common/enum';
 import { formatTime } from '../utils/common';
@@ -15,6 +15,7 @@ import LikeController from '../controller/LikeController';
 class BasicDataSource implements IDataSource {
   private listeners: DataChangeListener[] = [];
   private originDataArray: Array<CircleInterface> = [];
+
   public totalCount(): number {
     return 0;
   }
@@ -86,14 +87,14 @@ class MyDataSource extends BasicDataSource {
 
 @Component
 export default struct MusicCircleComponent {
-  @Styles blockStyle(){
+  @Styles
+  blockStyle(){
     .backgroundColor(colors.blockColor)
     .borderRadius(size.blockBorderRaduis)
     .padding(size.pagePadding)
     .width('100%')
     .margin({ top: size.pagePadding })
   }
-
 
   @State circleList: MyDataSource = new MyDataSource();
   @State total: number = 0;
@@ -103,13 +104,11 @@ export default struct MusicCircleComponent {
   @State circleIndex: number = -1; // 当前点击的评论和点赞弹出框的下标
   @State circleId: number = 0; // 当前点赞或评论的朋友圈id
   @State likeIndex: number = -1; // 是否已经点赞,-1表示未点赞
-  @StorageLink(USER_DATA) userData: UserDataInterface = null;
-  @State firstComment: CommentInterface = null; // 一级评论
-  @State replyComment: CommentInterface = null; // 回复的评论
-
+  @StorageLink(USER_DATA) userData: UserDataInterface = {} as UserDataInterface;
+  @State firstComment: CommentInterface | null = null; // 一级评论
+  @State replyComment: CommentInterface | null = null; // 回复的评论
   private commentController: Array<CommentController> = [];
   private likeController: Array<LikeController> = [];
-
   private pageSize: number = 5;
   private scroller: Scroller = new Scroller()
 
@@ -134,14 +133,15 @@ export default struct MusicCircleComponent {
   }
 
   // popup构造器定义弹框内容
-  @Builder popupBuilder() {
+  @Builder
+  popupBuilder() {
     Row() {
       Row({ space: size.smallPadding }) {
         Image($r('app.media.icon_like_white'))
           .width(size.smallIconSize)
           .height(size.smallIconSize)
         Text(
-            this.likeIndex !== -1 ? '取消赞' : '赞')
+          this.likeIndex !== -1 ? '取消赞' : '赞')
           .fontColor(colors.blockColor)
       }.onClick(() => {
         this.likeController[this.circleIndex].useLike()
@@ -198,14 +198,14 @@ export default struct MusicCircleComponent {
               .backgroundColor(colors.pageBackgroundColor)
 
               Row() {
-                Text(formatTime(item.createTime))
+                Text(formatTime(item.createTime!))
                   .layoutWeight(1)
                   .fontColor(colors.disableTextColor)
                 Image($r('app.media.icon_music_menu'))
                   .width(size.smallIconSize)
                   .height(size.smallIconSize)
                   .onClick(() => {
-                    this.circleId = item.id;
+                    this.circleId = item.id!;
                     this.circleIndex = index;
                     this.likeIndex = this.likeController[index].getLikeIndex();
                   })
@@ -217,8 +217,17 @@ export default struct MusicCircleComponent {
               }.width('100%')
 
               Column() {
-                LikeComponent({controller:this.likeController[index],relationId:item.id,likeList:JSON.stringify(item.circleLikes)})
-                CommentComponent({controller:this.commentController[index],type:SocialEnum.MUSIC_CIRCLE.toString(),relationId:item.id,commentListStr:JSON.stringify(item.circleComments)})
+                LikeComponent({
+                  controller: this.likeController[index],
+                  relationId: item.id,
+                  likeList: JSON.stringify(item.circleLikes)
+                })
+                CommentComponent({
+                  controller: this.commentController[index],
+                  type: SocialEnum.MUSIC_CIRCLE.toString(),
+                  relationId: item.id,
+                  commentListStr: JSON.stringify(item.circleComments)
+                })
                 Blank().height(size.pagePadding)
               }.backgroundColor(colors.pageBackgroundColor)
               .alignItems(HorizontalAlign.Start)

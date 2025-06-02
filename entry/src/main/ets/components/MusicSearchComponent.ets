@@ -2,15 +2,16 @@ import router from '@ohos.router';
 import AvaterComponent from '../components/AvaterComponent';
 import * as colors from '../theme/color';
 import * as size from '../theme/size';
-import { MusicInterface } from '../interface';
+import { MusicInterface } from '../interface/Index';
 import { getKeyWordMusicService } from '../service/Index';
 
 @Component
 export default struct MusicSearchComponent {
   @State dimensions: number = size.middleAvaterSize; // 导入的值不能直接传给组件
-  @State musicItem: MusicInterface = null
+  @State musicItem: MusicInterface | null = null
 
-  @Styles blockStyle(){
+  @Styles
+  blockStyle(){
     .backgroundColor(colors.blockColor)
     .borderRadius(size.blockBorderRaduis)
     .padding(size.pagePadding)

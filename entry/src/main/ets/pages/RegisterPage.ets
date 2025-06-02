@@ -1,7 +1,7 @@
 import router from '@ohos.router';
 import * as colors from '../theme/color';
 import * as size from '../theme/size';
-import { UserDataInterface } from '../interface/Index';
+import { MyAwesomeData, UserDataInterface } from '../interface/Index';
 import promptAction from '@ohos.promptAction'
 import { registerService, verifyUserService } from '../service/Index';
 import httpRequest from '../utils/HttpUtil';
@@ -11,6 +11,7 @@ import OptionDialogComponent from '../components/OptionDialogComponent';
 import { zerofull } from '../utils/common';
 import { USER_DATA } from '../common/constant';
 import NavigatorTitleComponent from '../components/NavigatorTitleComponent';
+
 @Entry
 @Component
 struct RegisterPage {
@@ -33,7 +34,8 @@ struct RegisterPage {
   sexController = new TextInputController()
   birthdayController = new TextInputController()
 
-  @Styles blockStyle(){
+  @Styles
+  blockStyle(){
     .backgroundColor(colors.blockColor)
     .borderRadius(size.blockBorderRaduis)
     .padding(size.pagePadding)
@@ -41,7 +43,8 @@ struct RegisterPage {
     .margin({ top: size.pagePadding })
   }
 
-  @Styles inputStyle(){
+  @Styles
+  inputStyle(){
     .border({
       width: {
         bottom: 1
@@ -58,7 +61,7 @@ struct RegisterPage {
     .width('80%')
   }
 
-  dialogController: CustomDialogController = null; // 性别和姓名弹窗
+  dialogController: CustomDialogController | null = null; // 性别和姓名弹窗
 
   /**
    * @description: 校验必填字段
@@ -84,7 +87,7 @@ struct RegisterPage {
     return true;
   }
 
-  useRegister=async ()=>{
+  useRegister = async () => {
     if (
       this.verify(this.userData.userAccount, '账号') &&
       this.verify(this.userData.password, '密码') &&
@@ -92,20 +95,23 @@ struct RegisterPage {
       this.verify(this.userData.username, '昵称') &&
       this.verify(this.userData.email, '邮箱')
     ) {
-      if(this.loading)return;
+      if (this.loading) {
+        return;
+      }
       this.loading = true;
-      const {data,msg} = await verifyUserService(this.userData.userAccount,this.userData.email)
-      if(data > 0){
+      const result: MyAwesomeData<number> = await verifyUserService(this.userData.userAccount, this.userData.email)
+      if (result.data > 0) {
         promptAction.showToast({
-          message: msg,
+          message: result.msg,
           duration: 2000,
           bottom: px2vp(display.getDefaultDisplaySync().height) / 2
         });
-        return this.loading = false;
+        this.loading = false;
+        return
       }
       registerService(this.userData).then(async res => {
         preference.setPassword(this.userData.userAccount, this.userData.password)
-        preference.setToke(res.token);
+        preference.setToken(res.token);
         httpRequest.setToken(res.token);
         AppStorage.SetOrCreate<UserDataInterface>(USER_DATA, res.data)
         router.replaceUrl({
@@ -116,7 +122,7 @@ struct RegisterPage {
           }
         });
         router.clear()
-      }).finally(()=>{
+      }).finally(() => {
         this.loading = false;
       })
     }
@@ -124,9 +130,9 @@ struct RegisterPage {
 
   build() {
     Column() {
-      NavigatorTitleComponent({title:"注册"})
-      Scroll(){
-        Column(){
+      NavigatorTitleComponent({ title: "注册" })
+      Scroll() {
+        Column() {
           Column() {
             Row() {
               Row() {
@@ -141,9 +147,11 @@ struct RegisterPage {
                   this.userData.userAccount = value;
                 }).onBlur(() => {
                 if (this.verify(this.userData.userAccount, '账号')) {
-                  if (this.loading) return;
+                  if (this.loading) {
+                    return;
+                  }
                   this.loading = true;
-                  verifyUserService(this.userData.userAccount,undefined).then((res) => {
+                  verifyUserService(this.userData.userAccount, undefined).then((res) => {
                     if (res.data > 0) {
                       promptAction.showToast({
                         message: '该账号已经存在',
@@ -243,7 +251,7 @@ struct RegisterPage {
                 end: new Date("2100-12-31"),
                 selected: new Date(this.userData.birthday || '1990-1-1'),
                 onChange: (value: DatePickerResult) => {
-                  this.userData.birthday = `${value.year}-${zerofull(value.month + 1)}-${zerofull(value.day)}`;
+                  this.userData.birthday = `${value.year}-${zerofull(value?.month ?? 0 + 1)}-${zerofull(value.day)}`;
                 }
               })
             })
@@ -272,9 +280,11 @@ struct RegisterPage {
                   this.userData.email = value;
                 }).onBlur(() => {
                 if (this.verify(this.userData.email, '邮箱')) {
-                  if (this.loading) return;
+                  if (this.loading) {
+                    return;
+                  }
                   this.loading = true;
-                  verifyUserService(undefined,this.userData.email).then((res) => {
+                  verifyUserService(undefined, this.userData.email).then((res) => {
                     if (res.data > 0) {
                       promptAction.showToast({
                         message: '邮箱已经存在',
@@ -312,6 +322,7 @@ struct RegisterPage {
             }.margin({ top: size.pagePadding })
 
           }.blockStyle()
+
           Text('注册')
             .width('100%')
             .padding(size.pagePadding)
@@ -326,7 +337,7 @@ struct RegisterPage {
       .align(Alignment.Top)
       .scrollable(ScrollDirection.Vertical)
       .layoutWeight(1)
-      .padding({left:size.pagePadding,right:size.pagePadding})
+      .padding({ left: size.pagePadding, right: size.pagePadding })
 
     }
     .width('100%')
@@ -338,8 +349,8 @@ struct RegisterPage {
     this.dialogController = new CustomDialogController({
       customStyle: true,
       builder: OptionDialogComponent({
-        cancel: () => this.onCancel(),
-        confirm: (value) => this.onConfirm(value),
+        cancel: (): void => this.onCancel(),
+        confirm: (value): void => this.onConfirm(value),
         options: ['男', '女'],
       }),
       alignment: DialogAlignment.Bottom,
@@ -348,7 +359,7 @@ struct RegisterPage {
   }
 
   onCancel() {
-    this.dialogController.close()
+    this.dialogController?.close()
   }
 
   /**
@@ -356,8 +367,8 @@ struct RegisterPage {
    * @date: 2024-01-10 23:01
    * @author wuwenqiang
    */
-  onConfirm(value) {
+  onConfirm(value: string) {
     this.userData.sex = value;
-    this.dialogController.close();
+    this.dialogController?.close();
   }
 }

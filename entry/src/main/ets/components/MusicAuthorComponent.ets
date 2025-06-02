@@ -1,13 +1,14 @@
 import * as colors from '../theme/color';
 import * as size from '../theme/size';
 import { getMusicAuthorListByCategoryIdService } from '../service/Index';
-import { MusicAuthorInterface } from '../interface';
+import { MusicAuthorInterface } from '../interface/Index';
 import router from '@ohos.router';
 import MusicAvaterComponent from './MusicAvaterComponent';
 
 @Component
 export default struct MusicAuthorComponent {
-  @Styles blockStyle(){
+  @Styles
+  blockStyle(){
     .backgroundColor(colors.blockColor)
     .borderRadius(size.blockBorderRaduis)
     .padding(size.pagePadding)
@@ -36,7 +37,7 @@ export default struct MusicAuthorComponent {
           .width(size.smallIconSize)
           .height(size.smallIconSize)
         Text("推荐歌手").margin({ left: size.pagePadding }).layoutWeight(1)
-        Text("更多").onClick(()=>{
+        Text("更多").onClick(() => {
           router.pushUrl({
             url: 'pages/MusicAuthorCategoryPage', // 目标url
           })
@@ -46,7 +47,12 @@ export default struct MusicAuthorComponent {
       Row() {
         ForEach(this.authorList, (item: MusicAuthorInterface) => {
           Column() {
-            MusicAvaterComponent({avater:item.avatar?.toString(),title:item.authorName[0],dimension:Number(size.middleAvaterSize * 1.5),type:'author'})
+            MusicAvaterComponent({
+              avater: item.avatar?.toString(),
+              title: item.authorName[0],
+              dimension: Number(size.middleAvaterSize * 1.5),
+              type: 'author'
+            })
             Text(item.authorName).margin({ top: size.smallPadding })
           }.width('25%').alignItems(HorizontalAlign.Center)
         })

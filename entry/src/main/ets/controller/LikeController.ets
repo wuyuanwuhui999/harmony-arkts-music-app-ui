@@ -1,7 +1,7 @@
 import LikeComponent from '../components/LikeComponent';
 
 export default class LikeController {
-  private mComponent: LikeComponent = null;
+  private mComponent: LikeComponent | null = null;
 
   attach(component: LikeComponent) {
     this.mComponent = component;
@@ -17,5 +17,6 @@ export default class LikeController {
     if (this.mComponent) {
       return this.mComponent.getLikeIndex();
     }
+    return -1
   }
 }
