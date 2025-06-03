@@ -299,6 +299,7 @@ export interface ChatModelInterface{
 }
 // 聊天气泡
 export interface ChatType {
+  type?:string,
   text:string,
   position:PositionEnum,
   thinkContent?:string,
@@ -318,7 +319,15 @@ export interface ChatHistoryType {
 }
 
 // 主体数据结构，键是时间前缀，值是该时间前缀下的消息组
-export interface ChatStructure {
+export interface ChatHistoryInterface {
   timeAgo:string,
   list:Array<Array<ChatHistoryType>>
+}
+
+export interface GroupedByChatIdInterface {
+  [chatId: string]: ChatHistoryType[];
+}
+
+export interface GroupedByTimeAgoInterface {
+  [timeAgo: string]: GroupedByChatIdInterface;
 }
