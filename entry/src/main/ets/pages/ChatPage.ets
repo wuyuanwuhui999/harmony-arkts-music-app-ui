@@ -3,7 +3,8 @@ import * as size from '../theme/size';
 import router from '@ohos.router';
 import { LIKE_INNER_EVENT } from '../common/config';
 import emitter from '@ohos.events.emitter';
-import { ChatHistoryInterface, ChatModelInterface, ChatType, GroupedByTimeAgoInterface } from '../interface/Index';
+import { ChatModelInterface, ChatInterface, GroupedByChatIdInterface, GroupedByTimeAgoInterface,
+  ChatHistoryInterface } from '../interface/Index';
 import { getModelListService, getChatHistoryService } from '../service/Index';
 import { PositionEnum } from '../common/enum';
 import AvaterComponent from "../components/AvaterComponent";
@@ -21,7 +22,9 @@ export default struct ChatPage {
   @State showHistory:boolean = false;
   @State pageNum:number = 1;
   @State total:number = 0;
-  @State chatList:Array<ChatType> = [
+  @State chatHistoryGroup:GroupedByTimeAgoInterface = {};
+  @State chatTimeAgoGroup:string[] = [];
+  @State chatList:Array<ChatInterface> = [
     {
       type:"tip",
       text:"你好，我是智能音乐助手小吴同学，请问有什么可以帮助您？",
@@ -41,23 +44,25 @@ export default struct ChatPage {
 
   useChatHistory(){
     getChatHistoryService(this.pageNum,PAGE_SIZE).then((res)=>{
+      const result1:GroupedByChatIdInterface = {}
       res.data.forEach((aItem)=>{
-        const result: GroupedByTimeAgoInterface = {};
         aItem.timeAgo = formatTimeAgo(aItem.createTime);
-
-        // 初始化timeAgo分组
-        if (!result[aItem.timeAgo]) {
-          result[aItem.timeAgo] = {};
+        if(!result1[aItem.chatId]){
+          result1[aItem.chatId] = [];
         }
-
-        // 初始化chatId分组
-        if (!result[aItem.timeAgo][aItem.chatId]) {
-          result[aItem.timeAgo][aItem.chatId] = [];
+        result1[aItem.chatId].push(aItem);
+      });
+      this.chatHistoryGroup = {};
+      this.chatTimeAgoGroup = []
+      const keys:string[] = Object.keys(result1);
+      keys.forEach((key)=>{
+        const timeAgo = result1[key][0].timeAgo;
+        if(!this.chatHistoryGroup[timeAgo]){
+          this.chatTimeAgoGroup.push(timeAgo);
+          this.chatHistoryGroup[timeAgo] = [];
         }
-
-        // 添加消息到对应分组
-        result[aItem.timeAgo][aItem.chatId].push(aItem);
-      })
+        this.chatHistoryGroup[timeAgo].push(result1[key])
+      });
     })
   }
 
@@ -65,9 +70,23 @@ export default struct ChatPage {
     Stack(){
       if(this.showHistory){
         Row(){
-          Column(){
-
+          Scroll(){
+            Column({space:size.pagePadding}){
+              ForEach(this.chatTimeAgoGroup,(key:string)=>{
+                Column({space:size.miniPadding}){
+                  Text(key).fontColor(colors.disableTextColor)
+                  ForEach(this.chatHistoryGroup[key],(item:ChatHistoryInterface[])=>{
+                    Text(item[0].prompt)
+                      .maxLines(1) // 限制最大行数为1
+                      .textOverflow({ overflow: TextOverflow.Ellipsis }) // 溢出时显示省略号
+                      .width('100%') // 必须设置宽度（或固定宽度）触发溢出判断
+                  })
+                }.alignItems(HorizontalAlign.Start)
+              })
+            }.alignItems(HorizontalAlign.Start).justifyContent(FlexAlign.Start)
           }
+          .align(Alignment.TopStart)
+          .padding(size.pagePadding)
           .width("70%")
           .backgroundColor(colors.blockColor)
           .height("100%")
@@ -101,9 +120,7 @@ export default struct ChatPage {
             .onClick(()=>{
               this.showHistory = true;
               this.pageNum = 1;
-              getChatHistoryService(this.pageNum,PAGE_SIZE).then((res)=>{
-
-              })
+              this.useChatHistory();
             })
         }
         .alignItems(VerticalAlign.Center)
@@ -111,7 +128,7 @@ export default struct ChatPage {
         .backgroundColor(colors.blockColor)
         Scroll() {
           Column({space:size.pagePadding}){
-            ForEach(this.chatList,(item:ChatType)=>{
+            ForEach(this.chatList,(item:ChatInterface)=>{
               if(item.position == PositionEnum.LEFT){
                 Row(){
                   Image($r("app.media.icon_ai"))

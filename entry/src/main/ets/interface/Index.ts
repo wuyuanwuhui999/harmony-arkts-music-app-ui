@@ -298,7 +298,7 @@ export interface ChatModelInterface{
   createTime:string
 }
 // 聊天气泡
-export interface ChatType {
+export interface ChatInterface {
   type?:string,
   text:string,
   position:PositionEnum,
@@ -307,7 +307,7 @@ export interface ChatType {
   start?:boolean
 }
 // 聊天气泡
-export interface ChatHistoryType {
+export interface ChatHistoryInterface {
   id: number;          // 主键
   userId: string;      // 用户id
   files?: string;       // 文件（
@@ -315,19 +315,15 @@ export interface ChatHistoryType {
   prompt: string;      // 提示词
   content: string;     // 内容
   createTime: string;  // 创建时间
+  thinkContent?:string,// 思考内容
+  responseContent?:string,// 正文内容
   timeAgo:string;// xx分钟、小时、天、月前
 }
 
-// 主体数据结构，键是时间前缀，值是该时间前缀下的消息组
-export interface ChatHistoryInterface {
-  timeAgo:string,
-  list:Array<Array<ChatHistoryType>>
-}
-
 export interface GroupedByChatIdInterface {
-  [chatId: string]: ChatHistoryType[];
+  [chatId: string]: ChatHistoryInterface[];
 }
 
 export interface GroupedByTimeAgoInterface {
-  [timeAgo: string]: GroupedByChatIdInterface;
+  [timeAgo: string]:  ChatHistoryInterface[][];
 }

@@ -369,6 +369,6 @@ export const getModelListService = ():Promise<types.MyAwesomeData<Array<types.Ch
  * @date: 2025-05-16 00:19
  * @author wuwenqiang
  */
-export const getChatHistoryService = (pageNum:number,pageSize:number):Promise<types.MyAwesomeData<Array<types.ChatHistoryType>>> => {
-  return httpRequest.get<Array<types.ChatHistoryType>>(`${api.getChatHistory}?pageNum=${pageNum}&pageSize=${pageSize}`);
+export const getChatHistoryService = (pageNum:number,pageSize:number):Promise<types.MyAwesomeData<Array<types.ChatHistoryInterface>>> => {
+  return httpRequest.get<Array<types.ChatHistoryInterface>>(`${api.getChatHistory}?pageNum=${pageNum}&pageSize=${pageSize}`);
 }
