@@ -304,8 +304,17 @@ export interface ChatInterface {
   position:PositionEnum,
   thinkContent?:string,
   responseContent?:string,
-  start?:boolean
+  start?:boolean,
 }
+
+export interface ChatParamsInterface {
+  modelId:string,
+  token: string, // 替换为实际用户ID
+  chatId:string, // 替换为实际聊天ID
+  prompt: string,
+  files: string[] // 如果需要上传文件，请根据实际情况调整
+}
+
 // 聊天气泡
 export interface ChatHistoryInterface {
   id: number;          // 主键

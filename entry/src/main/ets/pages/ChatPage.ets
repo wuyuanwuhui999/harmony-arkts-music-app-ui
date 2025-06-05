@@ -4,12 +4,18 @@ import router from '@ohos.router';
 import { LIKE_INNER_EVENT } from '../common/config';
 import emitter from '@ohos.events.emitter';
 import { ChatModelInterface, ChatInterface, GroupedByChatIdInterface, GroupedByTimeAgoInterface,
-  ChatHistoryInterface } from '../interface/Index';
+  ChatHistoryInterface,
+  ChatParamsInterface} from '../interface/Index';
 import { getModelListService, getChatHistoryService } from '../service/Index';
 import { PositionEnum } from '../common/enum';
 import AvaterComponent from "../components/AvaterComponent";
-import { PAGE_SIZE } from '../common/constant';
+import { HOST, PAGE_SIZE } from '../common/constant';
 import { formatTimeAgo, generateSecureID } from "../utils/common";
+import { display, promptAction } from '@kit.ArkUI';
+import webSocket from '@ohos.net.webSocket';
+import { BusinessError } from '@kit.BasicServicesKit';
+import api from '../api';
+import preference from '../utils/PreferenceModel';
 
 @Entry
 @Component
@@ -23,7 +29,7 @@ export default struct ChatPage {
   @State pageNum:number = 1;
   @State total:number = 0;
   @State chatHistoryGroup:GroupedByTimeAgoInterface = {};
-  @State chatTimeAgoGroup:string[] = [];
+  @State token:string = "";
   @State chatList:Array<ChatInterface> = [
     {
       type:"tip",
@@ -31,6 +37,9 @@ export default struct ChatPage {
       position:PositionEnum.LEFT,
     }
   ];
+  @State message: string = '';
+  private ws: webSocket.WebSocket | null = null;
+
   aboutToAppear() {
     getModelListService().then((res)=>{
       this.modelList = res.data;
@@ -43,27 +52,80 @@ export default struct ChatPage {
   }
 
   useChatHistory(){
+    const chatHistoryGroup:GroupedByTimeAgoInterface = JSON.parse(JSON.stringify(this.chatHistoryGroup))
     getChatHistoryService(this.pageNum,PAGE_SIZE).then((res)=>{
-      const result1:GroupedByChatIdInterface = {}
+      this.total = res.total
+      const result:GroupedByChatIdInterface = {}
       res.data.forEach((aItem)=>{
         aItem.timeAgo = formatTimeAgo(aItem.createTime);
-        if(!result1[aItem.chatId]){
-          result1[aItem.chatId] = [];
+        if(!result[aItem.chatId]){
+          result[aItem.chatId] = [];
         }
-        result1[aItem.chatId].push(aItem);
+        result[aItem.chatId].push(aItem);
       });
-      this.chatHistoryGroup = {};
-      this.chatTimeAgoGroup = []
-      const keys:string[] = Object.keys(result1);
+
+      const keys:string[] = Object.keys(result);
       keys.forEach((key)=>{
-        const timeAgo = result1[key][0].timeAgo;
-        if(!this.chatHistoryGroup[timeAgo]){
-          this.chatTimeAgoGroup.push(timeAgo);
-          this.chatHistoryGroup[timeAgo] = [];
+        const timeAgo = result[key][0].timeAgo;
+        if(!chatHistoryGroup[timeAgo]){
+          chatHistoryGroup[timeAgo] = [];
         }
-        this.chatHistoryGroup[timeAgo].push(result1[key])
+        chatHistoryGroup[timeAgo].push(result[key])
       });
+      this.chatHistoryGroup = chatHistoryGroup;
     })
+  }
+
+  onSend=()=>{
+    if(this.prompt === ""){
+      promptAction.showToast({
+        message: "请输入要问的问题",
+        duration: 2000,
+        bottom: px2vp(display.getDefaultDisplaySync().height) / 2
+      })
+    }else{
+
+    }
+  }
+
+  // 建立WebSocket连接
+  async buildConnection() {
+    if(!this.ws){
+      await this.connectWebSocket();
+    }
+    if(this.token) this.token = await preference.getToken() as string;
+    this.chatId = this.chatId || generateSecureID();
+    const payload:ChatParamsInterface = {
+      modelId:"qwen3:8b",
+      token: this.token, // 替换为实际用户ID
+      chatId:this.chatId, // 替换为实际聊天ID
+      prompt: this.prompt.trim(),
+      files: [] // 如果需要上传文件，请根据实际情况调整
+    };
+    this.ws?.send(JSON.stringify(payload),()=>{
+
+    })
+  }
+
+  connectWebSocket():Promise<string>{
+    return new Promise((resolve,reject)=>{
+      const url = `wss://${HOST}${api.chatWs}`; // 替换为实际API地址
+      this.ws = webSocket.createWebSocket();
+
+      // 设置事件监听
+      this.ws.on('open', () => {
+        resolve('')
+      });
+      this.ws.on('message', (error: BusinessError,data: string | ArrayBuffer) => {
+        if (typeof data === 'string') {
+          this.message += data;
+        }
+      });
+      this.ws.on('close', () => console.log('连接关闭'));
+      this.ws.on('error', (err: Error) => console.error('错误:', err));
+      // 发起连接
+      this.ws.connect(url);
+    });
   }
 
   build() {
@@ -72,7 +134,7 @@ export default struct ChatPage {
         Row(){
           Scroll(){
             Column({space:size.pagePadding}){
-              ForEach(this.chatTimeAgoGroup,(key:string)=>{
+              ForEach(Object.keys(this.chatHistoryGroup),(key:string)=>{
                 Column({space:size.miniPadding}){
                   Text(key).fontColor(colors.disableTextColor)
                   ForEach(this.chatHistoryGroup[key],(item:ChatHistoryInterface[])=>{
@@ -85,6 +147,12 @@ export default struct ChatPage {
               })
             }.alignItems(HorizontalAlign.Start).justifyContent(FlexAlign.Start)
           }
+          .onScrollEdge((side: Edge) => {
+            if (this.total > this.pageNum * PAGE_SIZE) {
+              this.pageNum++;
+              this.useChatHistory();
+            }
+          })
           .align(Alignment.TopStart)
           .padding(size.pagePadding)
           .width("70%")
@@ -120,6 +188,7 @@ export default struct ChatPage {
             .onClick(()=>{
               this.showHistory = true;
               this.pageNum = 1;
+              this.chatHistoryGroup = {};
               this.useChatHistory();
             })
         }
@@ -230,6 +299,7 @@ export default struct ChatPage {
                 .opacity(size.opacity)
                 .width(size.middlIconSize)
                 .height(size.middlIconSize)
+                .onClick(this.onSend)
             }
 
           }
