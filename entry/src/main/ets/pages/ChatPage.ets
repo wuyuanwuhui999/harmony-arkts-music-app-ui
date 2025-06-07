@@ -22,7 +22,7 @@ import preference from '../utils/PreferenceModel';
 export default struct ChatPage {
   @State modelList:Array<ChatModelInterface> = []
   @State activeModel:ChatModelInterface | null = null;
-  @State prompt:string = "";// 提示词
+  @State prompt:string = "请你自我介绍一下";// 提示词
   @State chatId:string = "";
   @State loading:boolean = false;
   @State showHistory:boolean = false;
@@ -33,11 +33,13 @@ export default struct ChatPage {
   @State chatList:Array<ChatInterface> = [
     {
       type:"tip",
-      text:"你好，我是智能音乐助手小吴同学，请问有什么可以帮助您？",
+      responseContent:"你好，我是智能音乐助手小吴同学，请问有什么可以帮助您？",
       position:PositionEnum.LEFT,
     }
   ];
-  @State message: string = '';
+  @State thinkContent: string = "";
+  @State responseContent:string = "";
+  private message:string = "";
   private ws: webSocket.WebSocket | null = null;
 
   aboutToAppear() {
@@ -76,40 +78,40 @@ export default struct ChatPage {
     })
   }
 
-  onSend=()=>{
-    if(this.prompt === ""){
+  onSend= async ()=>{
+    if(this.prompt.trim() === ""){
       promptAction.showToast({
         message: "请输入要问的问题",
         duration: 2000,
         bottom: px2vp(display.getDefaultDisplaySync().height) / 2
       })
     }else{
-
+      if(!this.ws){
+        await this.connectWebSocket();
+      }
+      if(!this.token) this.token = await preference.getToken() as string;
+      this.chatId = this.chatId || generateSecureID();
+      const payload:ChatParamsInterface = {
+        modelId: this.activeModel?.id ?? -1,
+        token: this.token, // 替换为实际用户ID
+        chatId:this.chatId, // 替换为实际聊天ID
+        prompt: this.prompt.trim(),
+        files: [] // 如果需要上传文件，请根据实际情况调整
+      };
+      this.chatList.push({
+        text: this.prompt.trim(),
+        position:PositionEnum.RIGHT,
+      });
+      this.prompt = "";
+      this.ws?.send(JSON.stringify(payload),()=>{
+        console.log("发送消息成功")
+      })
     }
-  }
-
-  // 建立WebSocket连接
-  async buildConnection() {
-    if(!this.ws){
-      await this.connectWebSocket();
-    }
-    if(this.token) this.token = await preference.getToken() as string;
-    this.chatId = this.chatId || generateSecureID();
-    const payload:ChatParamsInterface = {
-      modelId:"qwen3:8b",
-      token: this.token, // 替换为实际用户ID
-      chatId:this.chatId, // 替换为实际聊天ID
-      prompt: this.prompt.trim(),
-      files: [] // 如果需要上传文件，请根据实际情况调整
-    };
-    this.ws?.send(JSON.stringify(payload),()=>{
-
-    })
   }
 
   connectWebSocket():Promise<string>{
     return new Promise((resolve,reject)=>{
-      const url = `wss://${HOST}${api.chatWs}`; // 替换为实际API地址
+      const url = `ws://${HOST.replace(/http[s]?:\/\//,"")}${api.chatWs}`; // 替换为实际API地址
       this.ws = webSocket.createWebSocket();
 
       // 设置事件监听
@@ -117,12 +119,34 @@ export default struct ChatPage {
         resolve('')
       });
       this.ws.on('message', (error: BusinessError,data: string | ArrayBuffer) => {
-        if (typeof data === 'string') {
+        if(data !== "[completed]"){
+          this.loading = true;
           this.message += data;
+          // 使用正则提取内容
+          if(/^<think>/.test(this.message) && /<\/think>/.test(this.message) && !/<\/think>/.test(data.toString())){
+            this.responseContent += data;
+          }else{
+            this.thinkContent += data;
+          }
+        }else{//对话已完成
+          this.message = "";
+          this.loading = false;
+          this.chatList.push({
+            responseContent: this.responseContent,
+            thinkContent: this.thinkContent,
+            position:PositionEnum.LEFT,
+          });
+          console.log(this.thinkContent)
+          console.log(this.responseContent)
+          this.thinkContent = this.responseContent = "";
         }
       });
-      this.ws.on('close', () => console.log('连接关闭'));
-      this.ws.on('error', (err: Error) => console.error('错误:', err));
+      this.ws.on('close', () => {
+        console.log('连接关闭')
+      });
+      this.ws.on('error', (err: Error) => {
+        console.error('错误:', JSON.stringify(err))
+      });
       // 发起连接
       this.ws.connect(url);
     });
@@ -197,55 +221,91 @@ export default struct ChatPage {
         .backgroundColor(colors.blockColor)
         Scroll() {
           Column({space:size.pagePadding}){
-            ForEach(this.chatList,(item:ChatInterface)=>{
+            ForEach(this.chatList,(item:ChatInterface,index:number)=>{
               if(item.position == PositionEnum.LEFT){
-                Row(){
-                  Image($r("app.media.icon_ai"))
-                    .width(size.middlIconSize)
-                    .height(size.middlIconSize)
-                    .margin({right:size.smallIconSize})
-                  Stack(){
-                    Image($r("app.media.icon_triangle"))
-                      .width(size.smallIconSize)
-                      .height(size.smallIconSize)
-                      .alignSelf(ItemAlign.Start)
-                      .position({x:-size.smallIconSize/1.5,y:size.smallIconSize/2})
+                if(item.thinkContent || item.responseContent){
+                  Row(){
+                    Image($r("app.media.icon_ai"))
+                      .width(size.middlIconSize)
+                      .height(size.middlIconSize)
+                      .margin({right:size.smallIconSize})
                     Row(){
-                      Text(item.text)
-                    }
-                    .backgroundColor(colors.blockColor)
-                    .borderRadius(size.blockBorderRaduis)
-                    .padding(size.pagePadding)
-                  }.layoutWeight(1)
-                }.alignItems(VerticalAlign.Top)
+                      Image($r("app.media.icon_triangle"))
+                        .width(size.smallIconSize)
+                        .height(size.smallIconSize)
+                        .alignSelf(ItemAlign.Start)
+                        .position({x:-size.smallIconSize/1.5,y:size.smallIconSize/2})
+                      Column(){
+                        if(item.thinkContent){
+                          Text(item.thinkContent?.replace(/^(<think>)|(<\/think>)$/g,"")).fontColor(colors.disableTextColor)
+                        }
+                        if(item.responseContent){
+                          Text(item.responseContent)
+                        }
+                      }.backgroundColor(colors.blockColor)
+                      .borderRadius(size.blockBorderRaduis)
+                      .padding(size.pagePadding)
+
+                    }.layoutWeight(1)
+                  }
+                  .width("100%")
+                  .alignItems(VerticalAlign.Top)
+                  .justifyContent(FlexAlign.Start)
+                }
               }else{
                 Row(){
-                  Stack(){
+                  Row(){
+                    Text(item.text)
+                      .backgroundColor(colors.blockColor)
+                      .borderRadius(size.blockBorderRaduis)
+                      .padding(size.pagePadding)
                     Image($r("app.media.icon_triangle"))
                       .width(size.smallIconSize)
                       .height(size.smallIconSize)
                       .alignSelf(ItemAlign.Start)
                       .rotate({ angle: 180 })
                       .position({right:-size.smallIconSize/1.5,top:size.smallIconSize/2})
-                    Row(){
-                      Text(item.text)
-                    }
-                    .backgroundColor(colors.blockColor)
-                    .borderRadius(size.blockBorderRaduis)
-                    .padding(size.pagePadding)
-                  }.layoutWeight(1)
-
+                  }.layoutWeight(1).justifyContent(FlexAlign.End)
                   AvaterComponent({dimensions:size.middlIconSize}).margin({left:size.smallIconSize})
                 }
-                .alignItems(VerticalAlign.Top)
                 .width("100%")
-                .height("100%")
               }
-
             })
-
+            if(this.loading){
+              Row(){
+                Image($r("app.media.icon_ai"))
+                  .width(size.middlIconSize)
+                  .height(size.middlIconSize)
+                  .margin({right:size.smallIconSize})
+                Row(){
+                  Image($r("app.media.icon_triangle"))
+                    .width(size.smallIconSize)
+                    .height(size.smallIconSize)
+                    .alignSelf(ItemAlign.Start)
+                    .position({x:-size.smallIconSize/1.5,y:size.smallIconSize/2})
+                  Column(){
+                    if(!this.thinkContent && !this.responseContent){
+                      Text("正在思考中").fontColor(colors.disableTextColor)
+                    }else{
+                      if(this.thinkContent){
+                        Text(this.thinkContent.replace(/^(<think>)[\s\s\n]?|(<\/think>[\s\S\n]?)$/gi,"")).fontColor(colors.disableTextColor)
+                      }
+                      if(this.responseContent)
+                        Text(this.responseContent)
+                      }
+                    }
+                  }.backgroundColor(colors.blockColor)
+                  .borderRadius(size.blockBorderRaduis)
+                  .padding(size.pagePadding)
+                  .layoutWeight(1)
+              }
+              .width("100%")
+              .alignItems(VerticalAlign.Top)
+            }
           }
-
+          .width("100%")
+          .justifyContent(FlexAlign.Start)
+          .alignItems(HorizontalAlign.Start)
         }
         .padding(size.pagePadding)
         .align(Alignment.Top)

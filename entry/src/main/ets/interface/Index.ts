@@ -300,15 +300,14 @@ export interface ChatModelInterface{
 // 聊天气泡
 export interface ChatInterface {
   type?:string,
-  text:string,
+  text?:string,
   position:PositionEnum,
   thinkContent?:string,
   responseContent?:string,
-  start?:boolean,
 }
 
 export interface ChatParamsInterface {
-  modelId:string,
+  modelId:number,
   token: string, // 替换为实际用户ID
   chatId:string, // 替换为实际聊天ID
   prompt: string,
