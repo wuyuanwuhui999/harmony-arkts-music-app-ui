@@ -1,11 +1,14 @@
 import * as colors from '../theme/color';
 import * as size from '../theme/size';
 import router from '@ohos.router';
-import { LIKE_INNER_EVENT } from '../common/config';
-import emitter from '@ohos.events.emitter';
-import { ChatModelInterface, ChatInterface, GroupedByChatIdInterface, GroupedByTimeAgoInterface,
+import {
+  ChatModelInterface,
+  ChatInterface,
+  GroupedByChatIdInterface,
+  GroupedByTimeAgoInterface,
   ChatHistoryInterface,
-  ChatParamsInterface} from '../interface/Index';
+  ChatParamsInterface
+} from '../interface/Index';
 import { getModelListService, getChatHistoryService } from '../service/Index';
 import { PositionEnum } from '../common/enum';
 import AvaterComponent from "../components/AvaterComponent";
@@ -20,56 +23,57 @@ import preference from '../utils/PreferenceModel';
 @Entry
 @Component
 export default struct ChatPage {
-  @State modelList:Array<ChatModelInterface> = []
-  @State activeModel:ChatModelInterface | null = null;
-  @State prompt:string = "请你自我介绍一下";// 提示词
-  @State chatId:string = "";
-  @State loading:boolean = false;
-  @State showHistory:boolean = false;
-  @State pageNum:number = 1;
-  @State total:number = 0;
-  @State chatHistoryGroup:GroupedByTimeAgoInterface = {};
-  @State token:string = "";
-  @State chatList:Array<ChatInterface> = [
+  @State modelList: Array<ChatModelInterface> = []
+  @State activeModel: ChatModelInterface | null = null;
+  @State prompt: string = "请你自我介绍一下"; // 提示词
+  @State chatId: string = "";
+  @State loading: boolean = false;
+  @State showHistory: boolean = false;
+  @State pageNum: number = 1;
+  @State total: number = 0;
+  @State chatHistoryGroup: GroupedByTimeAgoInterface = {};
+  @State token: string = "";
+  private scroller: Scroller = new Scroller()
+  @State chatList: Array<ChatInterface> = [
     {
-      type:"tip",
-      responseContent:"你好，我是智能音乐助手小吴同学，请问有什么可以帮助您？",
-      position:PositionEnum.LEFT,
+      type: "tip",
+      responseContent: "你好，我是智能音乐助手小吴同学，请问有什么可以帮助您？",
+      position: PositionEnum.LEFT,
     }
   ];
   @State thinkContent: string = "";
-  @State responseContent:string = "";
-  private message:string = "";
+  @State responseContent: string = "";
+  private message: string = "";
   private ws: webSocket.WebSocket | null = null;
 
   aboutToAppear() {
-    getModelListService().then((res)=>{
+    getModelListService().then((res) => {
       this.modelList = res.data;
       this.activeModel = res.data[0];
     })
   }
 
   aboutToDisappear() {
-    emitter.off(LIKE_INNER_EVENT.eventId);
+    this.ws?.close();
   }
 
-  useChatHistory(){
-    const chatHistoryGroup:GroupedByTimeAgoInterface = JSON.parse(JSON.stringify(this.chatHistoryGroup))
-    getChatHistoryService(this.pageNum,PAGE_SIZE).then((res)=>{
+  useChatHistory() {
+    const chatHistoryGroup: GroupedByTimeAgoInterface = JSON.parse(JSON.stringify(this.chatHistoryGroup))
+    getChatHistoryService(this.pageNum, PAGE_SIZE).then((res) => {
       this.total = res.total
-      const result:GroupedByChatIdInterface = {}
-      res.data.forEach((aItem)=>{
+      const result: GroupedByChatIdInterface = {}
+      res.data.forEach((aItem) => {
         aItem.timeAgo = formatTimeAgo(aItem.createTime);
-        if(!result[aItem.chatId]){
+        if (!result[aItem.chatId]) {
           result[aItem.chatId] = [];
         }
         result[aItem.chatId].push(aItem);
       });
 
-      const keys:string[] = Object.keys(result);
-      keys.forEach((key)=>{
+      const keys: string[] = Object.keys(result);
+      keys.forEach((key) => {
         const timeAgo = result[key][0].timeAgo;
-        if(!chatHistoryGroup[timeAgo]){
+        if (!chatHistoryGroup[timeAgo]) {
           chatHistoryGroup[timeAgo] = [];
         }
         chatHistoryGroup[timeAgo].push(result[key])
@@ -78,73 +82,75 @@ export default struct ChatPage {
     })
   }
 
-  onSend= async ()=>{
-    if(this.prompt.trim() === ""){
+  onSend = async () => {
+    if (this.prompt.trim() === "") {
       promptAction.showToast({
         message: "请输入要问的问题",
         duration: 2000,
         bottom: px2vp(display.getDefaultDisplaySync().height) / 2
       })
-    }else{
-      if(!this.ws){
+    } else {
+      if (!this.ws) {
         await this.connectWebSocket();
       }
-      if(!this.token) this.token = await preference.getToken() as string;
+      if (!this.token) {
+        this.token = await preference.getToken() as string;
+      }
       this.chatId = this.chatId || generateSecureID();
-      const payload:ChatParamsInterface = {
+      const payload: ChatParamsInterface = {
         modelId: this.activeModel?.id ?? -1,
         token: this.token, // 替换为实际用户ID
-        chatId:this.chatId, // 替换为实际聊天ID
+        chatId: this.chatId, // 替换为实际聊天ID
         prompt: this.prompt.trim(),
         files: [] // 如果需要上传文件，请根据实际情况调整
       };
       this.chatList.push({
         text: this.prompt.trim(),
-        position:PositionEnum.RIGHT,
+        position: PositionEnum.RIGHT,
       });
       this.prompt = "";
-      this.ws?.send(JSON.stringify(payload),()=>{
+      this.ws?.send(JSON.stringify(payload), () => {
+        this.loading = true;
         console.log("发送消息成功")
       })
     }
   }
 
-  connectWebSocket():Promise<string>{
-    return new Promise((resolve,reject)=>{
-      const url = `ws://${HOST.replace(/http[s]?:\/\//,"")}${api.chatWs}`; // 替换为实际API地址
+  connectWebSocket(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const url = `ws://${HOST.replace(/http[s]?:\/\//, "")}${api.chatWs}`; // 替换为实际API地址
       this.ws = webSocket.createWebSocket();
-
       // 设置事件监听
       this.ws.on('open', () => {
         resolve('')
       });
-      this.ws.on('message', (error: BusinessError,data: string | ArrayBuffer) => {
-        if(data !== "[completed]"){
-          this.loading = true;
+      this.ws.on('message', (error: BusinessError, data: string | ArrayBuffer) => {
+        if (data !== "[completed]") {
           this.message += data;
           // 使用正则提取内容
-          if(/^<think>/.test(this.message) && /<\/think>/.test(this.message) && !/<\/think>/.test(data.toString())){
+          if (/^<think>/.test(this.message) && /<\/think>/.test(this.message) && !/<\/think>/.test(data.toString())) {
             this.responseContent += data;
-          }else{
+          } else {
             this.thinkContent += data;
           }
-        }else{//对话已完成
+        } else { //对话已完成
           this.message = "";
           this.loading = false;
           this.chatList.push({
             responseContent: this.responseContent,
             thinkContent: this.thinkContent,
-            position:PositionEnum.LEFT,
+            position: PositionEnum.LEFT,
           });
-          console.log(this.thinkContent)
-          console.log(this.responseContent)
           this.thinkContent = this.responseContent = "";
         }
+        this.scroller.scrollEdge(Edge.Bottom)
       });
       this.ws.on('close', () => {
+        this.ws = null
         console.log('连接关闭')
       });
       this.ws.on('error', (err: Error) => {
+        this.ws = null
         console.error('错误:', JSON.stringify(err))
       });
       // 发起连接
@@ -153,19 +159,34 @@ export default struct ChatPage {
   }
 
   build() {
-    Stack(){
-      if(this.showHistory){
-        Row(){
-          Scroll(){
-            Column({space:size.pagePadding}){
-              ForEach(Object.keys(this.chatHistoryGroup),(key:string)=>{
-                Column({space:size.miniPadding}){
+    Stack() {
+      if (this.showHistory) {
+        Row() {
+          Scroll() {
+            Column({ space: size.pagePadding }) {
+              ForEach(Object.keys(this.chatHistoryGroup), (key: string) => {
+                Column({ space: size.miniPadding }) {
                   Text(key).fontColor(colors.disableTextColor)
-                  ForEach(this.chatHistoryGroup[key],(item:ChatHistoryInterface[])=>{
-                    Text(item[0].prompt)
-                      .maxLines(1) // 限制最大行数为1
-                      .textOverflow({ overflow: TextOverflow.Ellipsis }) // 溢出时显示省略号
+                  ForEach(this.chatHistoryGroup[key], (items: ChatHistoryInterface[]) => {
+                    Text(items[0].prompt)
+                      .maxLines(1)// 限制最大行数为1
+                      .textOverflow({ overflow: TextOverflow.Ellipsis })// 溢出时显示省略号
                       .width('100%') // 必须设置宽度（或固定宽度）触发溢出判断
+                      .onClick(()=>{
+                        this.showHistory = false;
+                        this.chatList.length = 0;
+                        this.chatId = items[0].chatId;
+                        items.forEach((item)=>{
+                          this.chatList.push({
+                            text:item.prompt,
+                            position:PositionEnum.RIGHT
+                          },{
+                            thinkContent:item.thinkContent,
+                            responseContent:item.responseContent,
+                            position:PositionEnum.LEFT
+                          })
+                        })
+                      })
                   })
                 }.alignItems(HorizontalAlign.Start)
               })
@@ -182,12 +203,13 @@ export default struct ChatPage {
           .width("70%")
           .backgroundColor(colors.blockColor)
           .height("100%")
+
           Row()
             .height("100%")
             .layoutWeight(1)
             .backgroundColor(colors.tabNormalColor)
             .opacity(0.5)
-            .onClick(()=>{
+            .onClick(() => {
               this.showHistory = false
             })
         }
@@ -196,20 +218,20 @@ export default struct ChatPage {
         .zIndex(1)
       }
       Column() {
-        Row(){
+        Row() {
           Image($r('app.media.icon_back'))
             .width(size.smallIconSize)
             .height(size.smallIconSize)
             .opacity(size.opacity)
-            .onClick(()=>{
+            .onClick(() => {
               router.back()
             })
-          Text("当前接入模型：" + (this.activeModel?.modelName??"")).layoutWeight(1).textAlign(TextAlign.Center)
+          Text("当前接入模型：" + (this.activeModel?.modelName ?? "")).layoutWeight(1).textAlign(TextAlign.Center)
           Image($r('app.media.icon_menu'))
             .width(size.smallIconSize)
             .height(size.smallIconSize)
             .opacity(size.opacity)
-            .onClick(()=>{
+            .onClick(() => {
               this.showHistory = true;
               this.pageNum = 1;
               this.chatHistoryGroup = {};
@@ -219,27 +241,29 @@ export default struct ChatPage {
         .alignItems(VerticalAlign.Center)
         .padding(size.pagePadding)
         .backgroundColor(colors.blockColor)
-        Scroll() {
-          Column({space:size.pagePadding}){
-            ForEach(this.chatList,(item:ChatInterface,index:number)=>{
-              if(item.position == PositionEnum.LEFT){
-                if(item.thinkContent || item.responseContent){
-                  Row(){
+
+        Scroll(this.scroller) {
+          Column({ space: size.pagePadding }) {
+            ForEach(this.chatList, (item: ChatInterface, index: number) => {
+              if (item.position == PositionEnum.LEFT) {
+                if (item.thinkContent || item.responseContent) {
+                  Row() {
                     Image($r("app.media.icon_ai"))
                       .width(size.middlIconSize)
                       .height(size.middlIconSize)
-                      .margin({right:size.smallIconSize})
-                    Row(){
+                      .margin({ right: size.smallIconSize })
+                    Row() {
                       Image($r("app.media.icon_triangle"))
                         .width(size.smallIconSize)
                         .height(size.smallIconSize)
                         .alignSelf(ItemAlign.Start)
-                        .position({x:-size.smallIconSize/1.5,y:size.smallIconSize/2})
-                      Column(){
-                        if(item.thinkContent){
-                          Text(item.thinkContent?.replace(/^(<think>)|(<\/think>)$/g,"")).fontColor(colors.disableTextColor)
+                        .position({ x: -size.smallIconSize / 1.5, y: size.smallIconSize / 2 })
+                      Column() {
+                        if (item.thinkContent) {
+                          Text(item.thinkContent?.replace(/^(<think>)|(<\/think>)$/g, ""))
+                            .fontColor(colors.disableTextColor)
                         }
-                        if(item.responseContent){
+                        if (item.responseContent) {
                           Text(item.responseContent)
                         }
                       }.backgroundColor(colors.blockColor)
@@ -252,9 +276,9 @@ export default struct ChatPage {
                   .alignItems(VerticalAlign.Top)
                   .justifyContent(FlexAlign.Start)
                 }
-              }else{
-                Row(){
-                  Row(){
+              } else {
+                Row() {
+                  Row() {
                     Text(item.text)
                       .backgroundColor(colors.blockColor)
                       .borderRadius(size.blockBorderRaduis)
@@ -264,40 +288,43 @@ export default struct ChatPage {
                       .height(size.smallIconSize)
                       .alignSelf(ItemAlign.Start)
                       .rotate({ angle: 180 })
-                      .position({right:-size.smallIconSize/1.5,top:size.smallIconSize/2})
+                      .position({ right: -size.smallIconSize / 1.5, top: size.smallIconSize / 2 })
                   }.layoutWeight(1).justifyContent(FlexAlign.End)
-                  AvaterComponent({dimensions:size.middlIconSize}).margin({left:size.smallIconSize})
+
+                  AvaterComponent({ dimensions: size.middlIconSize }).margin({ left: size.smallIconSize })
                 }
                 .width("100%")
               }
             })
-            if(this.loading){
-              Row(){
+            if (this.loading) {
+              Row() {
                 Image($r("app.media.icon_ai"))
                   .width(size.middlIconSize)
                   .height(size.middlIconSize)
-                  .margin({right:size.smallIconSize})
-                Row(){
+                  .margin({ right: size.smallIconSize })
+                Row() {
                   Image($r("app.media.icon_triangle"))
                     .width(size.smallIconSize)
                     .height(size.smallIconSize)
                     .alignSelf(ItemAlign.Start)
-                    .position({x:-size.smallIconSize/1.5,y:size.smallIconSize/2})
-                  Column(){
-                    if(!this.thinkContent && !this.responseContent){
+                    .position({ x: -size.smallIconSize / 1.5, y: size.smallIconSize / 2 })
+                  Column() {
+                    if (!this.thinkContent && !this.responseContent) {
                       Text("正在思考中").fontColor(colors.disableTextColor)
-                    }else{
-                      if(this.thinkContent){
-                        Text(this.thinkContent.replace(/^(<think>)[\s\s\n]?|(<\/think>[\s\S\n]?)$/gi,"")).fontColor(colors.disableTextColor)
+                    } else {
+                      if (this.thinkContent) {
+                        Text(this.thinkContent.replace(/^(<think>)[\s\s\n]?|(<\/think>[\s\S\n]?)$/gi, ""))
+                          .fontColor(colors.disableTextColor)
                       }
-                      if(this.responseContent)
+                      if (this.responseContent) {
                         Text(this.responseContent)
                       }
                     }
-                  }.backgroundColor(colors.blockColor)
-                  .borderRadius(size.blockBorderRaduis)
-                  .padding(size.pagePadding)
-                  .layoutWeight(1)
+                  }
+                }.backgroundColor(colors.blockColor)
+                .borderRadius(size.blockBorderRaduis)
+                .padding(size.pagePadding)
+                .layoutWeight(1)
               }
               .width("100%")
               .alignItems(VerticalAlign.Top)
@@ -311,12 +338,13 @@ export default struct ChatPage {
         .align(Alignment.Top)
         .scrollable(ScrollDirection.Vertical)
         .layoutWeight(1)
-        Row({space:size.pagePadding}){
+
+        Row({ space: size.pagePadding }) {
           Image($r("app.media.icon_chat"))
             .opacity(size.opacity)
             .width(size.middlIconSize)
             .height(size.middlIconSize)
-            .onClick(()=>{
+            .onClick(() => {
               this.chatId = "";
             })
           Row() {
@@ -347,14 +375,15 @@ export default struct ChatPage {
           .borderRadius(size.middleAvaterSize)
           .backgroundColor(colors.pageBackgroundColor)
           .layoutWeight(1)
-          Row(){
-            if(this.loading){
+
+          Row() {
+            if (this.loading) {
               Row()
                 .height(size.smallIconSize)
                 .width(size.smallIconSize)
                 .backgroundColor(colors.disableTextColor)
-                .borderRadius(size.smallBorderRaduis/2)
-            }else{
+                .borderRadius(size.smallBorderRaduis / 2)
+            } else {
               Image($r("app.media.icon_send"))
                 .opacity(size.opacity)
                 .width(size.middlIconSize)
