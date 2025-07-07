@@ -7,33 +7,37 @@ import {
   GroupedByChatIdInterface,
   GroupedByTimeAgoInterface,
   ChatHistoryInterface,
-  ChatParamsInterface
+  ChatParamsInterface,
+  DocumentInterface
 } from '../interface/Index';
 import { getModelListService, getChatHistoryService } from '../service/Index';
 import { PositionEnum } from '../common/enum';
 import AvaterComponent from "../components/AvaterComponent";
 import { HOST, PAGE_SIZE } from '../common/constant';
-import { formatTimeAgo, generateSecureID } from "../utils/common";
+import { formatTimeAgo, generateSecureID, formatTime} from "../utils/common";
 import { display, promptAction } from '@kit.ArkUI';
 import webSocket from '@ohos.net.webSocket';
 import { BusinessError } from '@kit.BasicServicesKit';
 import api from '../api';
 import preference from '../utils/PreferenceModel';
+import OptionDialogComponent from '../components/OptionDialogComponent';
 
 @Entry
 @Component
 export default struct ChatPage {
   @State modelList: Array<ChatModelInterface> = []
-  @State activeModel: ChatModelInterface | null = null;
+  @State activeModelName: string = "";
   @State prompt: string = "请你自我介绍一下"; // 提示词
   @State chatId: string = "";
   @State loading: boolean = false;
-  @State showHistory: boolean = false;
+  @State showMenu: boolean = false;
   @State pageNum: number = 1;
   @State total: number = 0;
   @State chatHistoryGroup: GroupedByTimeAgoInterface = {};
   @State token: string = "";
+  @State showHistory:boolean = false;
   private scroller: Scroller = new Scroller()
+  private myDocList:DocumentInterface[] = [];
   @State chatList: Array<ChatInterface> = [
     {
       type: "tip",
@@ -43,13 +47,15 @@ export default struct ChatPage {
   ];
   @State thinkContent: string = "";
   @State responseContent: string = "";
+  @State showMyDoc:boolean = false;
   private message: string = "";
+  private dialogController: CustomDialogController | null = null
   private ws: webSocket.WebSocket | null = null;
 
   aboutToAppear() {
     getModelListService().then((res) => {
       this.modelList = res.data;
-      this.activeModel = res.data[0];
+      this.activeModelName = res.data[0].modelName;
     })
   }
 
@@ -98,7 +104,7 @@ export default struct ChatPage {
       }
       this.chatId = this.chatId || generateSecureID();
       const payload: ChatParamsInterface = {
-        modelId: this.activeModel?.id ?? -1,
+        modelName: this.activeModelName,
         token: this.token, // 替换为实际用户ID
         chatId: this.chatId, // 替换为实际聊天ID
         prompt: this.prompt.trim(),
@@ -158,6 +164,54 @@ export default struct ChatPage {
     });
   }
 
+  // popup构造器定义弹框内容
+  @Builder
+  popupBuilder() {
+    Column() {
+      Text("上传文档").height(size.popupMenuHeight)
+      Divider().height(1).color(colors.borderColor)
+      Text("我的文档").height(size.popupMenuHeight).onClick(()=>{
+        this.showMyDoc = true;
+        this.showMenu = false;
+      })
+      Divider().height(1).color(colors.borderColor)
+      Text("历史记录").height(size.popupMenuHeight).onClick(()=>{
+        this.showMenu = false;
+        this.showHistory = true;
+        this.chatHistoryGroup = {};
+        this.useChatHistory();
+      })
+      Divider().height(1).color(colors.borderColor)
+      Text("切换模型").height(size.popupMenuHeight).onClick(this.onTabModel)
+    }
+    .width(size.popupMenuWidth)
+  }
+
+  onTabModel=()=>{
+    this.dialogController = new CustomDialogController({
+      customStyle: true,
+      builder: OptionDialogComponent({
+        cancel: (): void => this.onCancel(),
+        confirm: (value): void => this.onConfirm(value),
+        options: this.modelList.map((item)=>item.modelName),
+      }),
+      alignment: DialogAlignment.Bottom,
+    })
+  }
+
+  /**
+   * @description: 修改用户信息
+   * @date: 2024-01-10 23:01
+   * @author wuwenqiang
+   */
+  onConfirm(value: string) {
+    this.activeModelName = value;
+  }
+
+  onCancel(){
+    this.dialogController?.close()
+  }
+
   build() {
     Stack() {
       if (this.showHistory) {
@@ -173,7 +227,7 @@ export default struct ChatPage {
                       .textOverflow({ overflow: TextOverflow.Ellipsis })// 溢出时显示省略号
                       .width('100%') // 必须设置宽度（或固定宽度）触发溢出判断
                       .onClick(()=>{
-                        this.showHistory = false;
+                        this.showMenu = false;
                         this.chatList.length = 0;
                         this.chatId = items[0].chatId;
                         items.forEach((item)=>{
@@ -216,6 +270,39 @@ export default struct ChatPage {
         .height("100%")
         .width("100%")
         .zIndex(1)
+      }else if(this.showMyDoc){
+        Row() {
+          Scroll() {
+            Column({ space: size.pagePadding }) {
+              ForEach(this.myDocList, (item: DocumentInterface) => {
+                Column({ space: size.miniPadding }) {
+                  Text(formatTime(item.createTime)).fontColor(colors.disableTextColor)
+                  Text(item.name)
+                    .maxLines(2)// 限制最大行数为1
+                    .textOverflow({ overflow: TextOverflow.Ellipsis })// 溢出时显示省略号
+                    .width('100%') // 必须设置宽度（或固定宽度）触发溢出判断
+                }.alignItems(HorizontalAlign.Start)
+              })
+            }.alignItems(HorizontalAlign.Start).justifyContent(FlexAlign.Start)
+          }
+          .align(Alignment.TopStart)
+          .padding(size.pagePadding)
+          .width("70%")
+          .backgroundColor(colors.blockColor)
+          .height("100%")
+
+          Row()
+            .height("100%")
+            .layoutWeight(1)
+            .backgroundColor(colors.tabNormalColor)
+            .opacity(0.5)
+            .onClick(() => {
+              this.showHistory = false
+            })
+        }
+        .height("100%")
+        .width("100%")
+        .zIndex(1)
       }
       Column() {
         Row() {
@@ -226,16 +313,18 @@ export default struct ChatPage {
             .onClick(() => {
               router.back()
             })
-          Text("当前接入模型：" + (this.activeModel?.modelName ?? "")).layoutWeight(1).textAlign(TextAlign.Center)
+          Text("当前接入模型：" + this.activeModelName).layoutWeight(1).textAlign(TextAlign.Center)
           Image($r('app.media.icon_menu'))
             .width(size.smallIconSize)
             .height(size.smallIconSize)
             .opacity(size.opacity)
             .onClick(() => {
-              this.showHistory = true;
-              this.pageNum = 1;
-              this.chatHistoryGroup = {};
-              this.useChatHistory();
+              this.showMenu = true;
+            })
+            .bindPopup(this.showMenu, {
+              builder: this.popupBuilder, // 气泡的内容
+              placement: Placement.Bottom, // 气泡的弹出位置
+              popupColor: colors.disableTextColor // 气泡的背景色
             })
         }
         .alignItems(VerticalAlign.Center)

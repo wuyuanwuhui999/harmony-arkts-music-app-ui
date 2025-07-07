@@ -307,7 +307,7 @@ export interface ChatInterface {
 }
 
 export interface ChatParamsInterface {
-  modelId:number,
+  modelName:string,
   token: string, // 替换为实际用户ID
   chatId:string, // 替换为实际聊天ID
   prompt: string,
@@ -335,3 +335,12 @@ export interface GroupedByChatIdInterface {
 export interface GroupedByTimeAgoInterface {
   [timeAgo: string]:  ChatHistoryInterface[][];
 }
+
+export interface DocumentInterface {
+  id: string;// 文档id
+  name: string; // 文档名称
+  ext:string; // 文档格式
+  userId: string;// 用户id
+  createTime: string;//创建时间
+  updateTime: string// 更新时间
+};
