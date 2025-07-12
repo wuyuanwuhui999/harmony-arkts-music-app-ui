@@ -45,5 +45,7 @@ export default {
   getChatHistory: "/service/music/getChatHistory",// ai聊天
   // chatWs: "/service/ai/ws/chat"// ai聊天
   chatWs: "/service/music/ws/chat",// ai聊天
-  getModelList:"/service/music/getModelList"
+  getModelList:"/service/music/getModelList",
+  getDocList: "/service/music/getDocList",// 查询我的文档
+  deleteDoc: "/service/music/deleteDoc/",// 查询我的文档
 };

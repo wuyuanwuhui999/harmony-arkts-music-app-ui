@@ -10,7 +10,7 @@ import {
   ChatParamsInterface,
   DocumentInterface
 } from '../interface/Index';
-import { getModelListService, getChatHistoryService } from '../service/Index';
+import { getModelListService, getChatHistoryService,getMyDocumentService,deleteMyDocumentService } from '../service/Index';
 import { PositionEnum } from '../common/enum';
 import AvaterComponent from "../components/AvaterComponent";
 import { HOST, PAGE_SIZE } from '../common/constant';
@@ -21,6 +21,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import api from '../api';
 import preference from '../utils/PreferenceModel';
 import OptionDialogComponent from '../components/OptionDialogComponent';
+import DialogComponent from "../components/DialogComponent";
 
 @Entry
 @Component
@@ -48,6 +49,8 @@ export default struct ChatPage {
   @State thinkContent: string = "";
   @State responseContent: string = "";
   @State showMyDoc:boolean = false;
+  @State showThink:boolean = false;
+  @State type:string = "";
   private message: string = "";
   private dialogController: CustomDialogController | null = null
   private ws: webSocket.WebSocket | null = null;
@@ -173,6 +176,9 @@ export default struct ChatPage {
       Text("我的文档").height(size.popupMenuHeight).onClick(()=>{
         this.showMyDoc = true;
         this.showMenu = false;
+        getMyDocumentService().then((res)=>{
+          this.myDocList = res.data
+        });
       })
       Divider().height(1).color(colors.borderColor)
       Text("历史记录").height(size.popupMenuHeight).onClick(()=>{
@@ -210,6 +216,54 @@ export default struct ChatPage {
 
   onCancel(){
     this.dialogController?.close()
+  }
+
+  /**
+   * @author: wuwenqiang
+   * @description: 删除弹窗
+   * @date: 2025-04-13 12:07
+   */
+  @Builder
+  DeleteButton(docItem:DocumentInterface) {
+    Column() {
+      Text('删除')
+        .fontColor(Color.White)
+        .fontSize(16)
+    }
+    .justifyContent(FlexAlign.Center)
+    .width(80)
+    .height('100%')
+    .backgroundColor(colors.warnColor)
+    .onClick(() => {
+      this.dialogController = new CustomDialogController({
+        customStyle: false,
+        builder: DialogComponent({
+          title: `是否删除文档：${docItem.name}`,
+          cancel: () => {
+            this.dialogController?.close();
+          },
+          confirm: () => {
+            deleteMyDocumentService(docItem.id).then((res)=>{
+              promptAction.showToast({
+                message: "删除文档成功",
+                duration: 2000,
+                bottom: px2vp(display.getDefaultDisplaySync().height) / 2
+              })
+              this.dialogController?.close()
+            }).catch(()=>{
+              promptAction.showToast({
+                message: "删除文档失败",
+                duration: 2000,
+                bottom: px2vp(display.getDefaultDisplaySync().height) / 2
+              })
+            })
+
+          },
+        }),
+        alignment: DialogAlignment.Center,
+      })
+      this.dialogController.open()
+    })
   }
 
   build() {
@@ -273,17 +327,23 @@ export default struct ChatPage {
       }else if(this.showMyDoc){
         Row() {
           Scroll() {
-            Column({ space: size.pagePadding }) {
-              ForEach(this.myDocList, (item: DocumentInterface) => {
-                Column({ space: size.miniPadding }) {
-                  Text(formatTime(item.createTime)).fontColor(colors.disableTextColor)
-                  Text(item.name)
-                    .maxLines(2)// 限制最大行数为1
-                    .textOverflow({ overflow: TextOverflow.Ellipsis })// 溢出时显示省略号
-                    .width('100%') // 必须设置宽度（或固定宽度）触发溢出判断
-                }.alignItems(HorizontalAlign.Start)
+            List() {
+              ForEach(this.myDocList, (item: DocumentInterface, index: number) => {
+                ListItem() {
+                  Column({ space: size.miniPadding }) {
+                    Text(formatTime(item.createTime)).fontColor(colors.disableTextColor)
+                    Text(item.name)
+                      .maxLines(2)// 限制最大行数为1
+                      .textOverflow({ overflow: TextOverflow.Ellipsis })// 溢出时显示省略号
+                      .width('100%') // 必须设置宽度（或固定宽度）触发溢出判断
+                  }.alignItems(HorizontalAlign.Start).justifyContent(FlexAlign.Start)
+                }.swipeAction({
+                  end: () => {
+                    return this.DeleteButton(item)
+                  }
+                })
               })
-            }.alignItems(HorizontalAlign.Start).justifyContent(FlexAlign.Start)
+            }
           }
           .align(Alignment.TopStart)
           .padding(size.pagePadding)
@@ -297,7 +357,7 @@ export default struct ChatPage {
             .backgroundColor(colors.tabNormalColor)
             .opacity(0.5)
             .onClick(() => {
-              this.showHistory = false
+              this.showMyDoc = false
             })
         }
         .height("100%")
@@ -427,7 +487,64 @@ export default struct ChatPage {
         .align(Alignment.Top)
         .scrollable(ScrollDirection.Vertical)
         .layoutWeight(1)
-
+        Scroll(){
+          Row({space:size.pagePadding}){
+            Text("深度思考")
+              .fontColor(this.showThink ? colors.tabSelectedColor :colors.disableTextColor)
+              .borderRadius(size.inputHeight)
+              .border({
+                width:1,
+                color:this.showThink ? colors.tabSelectedColor :colors.disableTextColor,
+                style:BorderStyle.Solid
+              })
+              .padding({
+                top:size.smallPadding,
+                bottom:size.smallPadding,
+                left:size.pagePadding,
+                right:size.pagePadding
+              })
+              .backgroundColor(colors.blockColor)
+              .onClick(()=>{
+                this.showThink = !this.showThink
+              })
+            Text("查询文档")
+              .fontColor(this.type == "document" ? colors.tabSelectedColor :colors.disableTextColor)
+              .borderRadius(size.inputHeight)
+              .border({
+                width:1,
+                color:this.type == "document" ? colors.tabSelectedColor :colors.disableTextColor,
+                style:BorderStyle.Solid
+              })
+              .padding({
+                top:size.smallPadding,
+                bottom:size.smallPadding,
+                left:size.pagePadding,
+                right:size.pagePadding
+              })
+              .backgroundColor(colors.blockColor)
+              .onClick(()=>{
+                this.type = this.type === "document" ? "" : "document"
+              })
+            Text("查询数据库")
+              .fontColor(this.type == "db" ? colors.tabSelectedColor :colors.disableTextColor)
+              .borderRadius(size.inputHeight)
+              .border({
+                width:1,
+                color:this.type == "db" ? colors.tabSelectedColor :colors.disableTextColor,
+                style:BorderStyle.Solid
+              })
+              .padding({
+                top:size.smallPadding,
+                bottom:size.smallPadding,
+                left:size.pagePadding,
+                right:size.pagePadding
+              })
+              .backgroundColor(colors.blockColor)
+              .onClick(()=>{
+                this.type = this.type === "db" ? "" : "db"
+              })
+          }.margin({bottom:size.pagePadding})
+        }.backgroundColor(colors.pageBackgroundColor).scrollable(ScrollDirection.Horizontal)
         Row({ space: size.pagePadding }) {
           Image($r("app.media.icon_chat"))
             .opacity(size.opacity)
