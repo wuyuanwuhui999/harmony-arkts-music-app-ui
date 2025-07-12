@@ -111,6 +111,8 @@ export default struct ChatPage {
         token: this.token, // 替换为实际用户ID
         chatId: this.chatId, // 替换为实际聊天ID
         prompt: this.prompt.trim(),
+        type:this.type,
+        showThink:this.showThink,
         files: [] // 如果需要上传文件，请根据实际情况调整
       };
       this.chatList.push({
@@ -543,7 +545,7 @@ export default struct ChatPage {
               .onClick(()=>{
                 this.type = this.type === "db" ? "" : "db"
               })
-          }.margin({bottom:size.pagePadding})
+          }.margin({bottom:size.smallPadding,top:size.smallPadding})
         }.backgroundColor(colors.pageBackgroundColor).scrollable(ScrollDirection.Horizontal)
         Row({ space: size.pagePadding }) {
           Image($r("app.media.icon_chat"))
