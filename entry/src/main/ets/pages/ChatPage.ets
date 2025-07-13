@@ -119,6 +119,7 @@ export default struct ChatPage {
         text: this.prompt.trim(),
         position: PositionEnum.RIGHT,
       });
+
       this.prompt = "";
       this.ws?.send(JSON.stringify(payload), () => {
         this.loading = true;
@@ -409,18 +410,24 @@ export default struct ChatPage {
                         .height(size.smallIconSize)
                         .alignSelf(ItemAlign.Start)
                         .position({ x: -size.smallIconSize / 1.5, y: size.smallIconSize / 2 })
-                      Column() {
-                        if (item.thinkContent) {
-                          Text(item.thinkContent?.replace(/^(<think>)|(<\/think>)$/g, ""))
-                            .fontColor(colors.disableTextColor)
+                      Row() {
+                        Row(){
+                          Column(){
+                            if (item.thinkContent) {
+                              Text(item.thinkContent?.replace(/^(<think>)|(<\/think>)$/g, ""))
+                                .fontColor(colors.disableTextColor)
+                            }
+                            if (item.responseContent) {
+                              Text(item.responseContent)
+                            }
+                          }.alignItems(HorizontalAlign.Start)
                         }
-                        if (item.responseContent) {
-                          Text(item.responseContent)
-                        }
-                      }.backgroundColor(colors.blockColor)
-                      .borderRadius(size.blockBorderRaduis)
-                      .padding(size.pagePadding)
-
+                        .justifyContent(FlexAlign.Start)
+                        .backgroundColor(colors.blockColor)
+                        .justifyContent(FlexAlign.Start)
+                        .borderRadius(size.blockBorderRaduis)
+                        .padding(size.pagePadding)
+                      }.layoutWeight(1)
                     }.layoutWeight(1)
                   }
                   .width("100%")
