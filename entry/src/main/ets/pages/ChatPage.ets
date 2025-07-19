@@ -51,6 +51,7 @@ export default struct ChatPage {
   @State showMyDoc:boolean = false;
   @State showThink:boolean = false;
   @State type:string = "";
+  @State language:string = "zh";
   private message: string = "";
   private dialogController: CustomDialogController | null = null
   private ws: webSocket.WebSocket | null = null;
@@ -113,7 +114,7 @@ export default struct ChatPage {
         prompt: this.prompt.trim(),
         type:this.type,
         showThink:this.showThink,
-        files: [] // 如果需要上传文件，请根据实际情况调整
+        language: this.language // 如果需要上传文件，请根据实际情况调整
       };
       this.chatList.push({
         text: this.prompt.trim(),
@@ -542,18 +543,30 @@ export default struct ChatPage {
                 color:this.type == "db" ? colors.tabSelectedColor :colors.disableTextColor,
                 style:BorderStyle.Solid
               })
-              .padding({
-                top:size.smallPadding,
-                bottom:size.smallPadding,
-                left:size.pagePadding,
-                right:size.pagePadding
-              })
+              .padding(size.smallPadding)
               .backgroundColor(colors.blockColor)
               .onClick(()=>{
                 this.type = this.type === "db" ? "" : "db"
               })
-          }.margin({bottom:size.smallPadding,top:size.smallPadding})
-        }.backgroundColor(colors.pageBackgroundColor).scrollable(ScrollDirection.Horizontal)
+            Row({space:size.smallPadding}){
+              Text(this.language == "zh" ? "中文" : "英文")
+              Image($r('app.media.icon_switch')).width(size.smallIconSize).height(size.smallPadding)
+            }
+            .padding(size.smallPadding)
+            .onClick(()=>{
+              this.language = this.language == "zh" ? "en" : "zh";
+            })
+            .borderRadius(size.inputHeight)
+            .border({
+              width:1,
+              color: colors.tabNormalColor,
+              style:BorderStyle.Solid
+            })
+          }
+        }
+        .backgroundColor(colors.pageBackgroundColor)
+        .padding(size.pagePadding)
+        .scrollable(ScrollDirection.Horizontal)
         Row({ space: size.pagePadding }) {
           Image($r("app.media.icon_chat"))
             .opacity(size.opacity)

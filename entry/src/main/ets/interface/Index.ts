@@ -313,7 +313,7 @@ export interface ChatParamsInterface {
   prompt: string,// 提示词
   type:string,//查询的类型
   showThink:boolean,// 是否显示思考内容
-  files: string[] // 如果需要上传文件，请根据实际情况调整
+  language:string//语言
 }
 
 // 聊天气泡
