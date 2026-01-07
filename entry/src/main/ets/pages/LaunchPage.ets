@@ -39,7 +39,7 @@ struct LaunchPage {
           httpRequest.setToken(res.token);
           AppStorage.SetOrCreate<UserDataInterface>(USER_DATA, res.data)
           router.replaceUrl({
-            url: 'pages/MusicIndexPage'
+            url: 'pages/ChatPage'
           });
         }).catch(() => {
           router.replaceUrl({

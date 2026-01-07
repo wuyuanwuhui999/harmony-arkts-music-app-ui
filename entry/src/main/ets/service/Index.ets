@@ -372,21 +372,3 @@ export const getModelListService = ():Promise<types.MyAwesomeData<Array<types.Ch
 export const getChatHistoryService = (pageNum:number,pageSize:number):Promise<types.MyAwesomeData<Array<types.ChatHistoryInterface>>> => {
   return httpRequest.get<Array<types.ChatHistoryInterface>>(`${api.getChatHistory}?pageNum=${pageNum}&pageSize=${pageSize}`);
 }
-
-/**
- * @description: 上传文档
- * @date: 2025-06-21 13:48
- * @author wuwenqiang
- */
-export const getMyDocumentService = ():Promise<types.MyAwesomeData<Array<types.DocumentInterface>>> => {
-  return httpRequest.get<Array<types.DocumentInterface>>(api.getDocList);
-}
-
-/**
- * @description: 删除文档
- * @date: 2025-07-12 11:31
- * @author wuwenqiang
- */
-export const deleteMyDocumentService = (docId:string):Promise<types.MyAwesomeData<number>> => {
-  return httpRequest.delete<number>(api.deleteDoc + docId);
-}

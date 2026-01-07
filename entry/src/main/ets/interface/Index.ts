@@ -306,16 +306,6 @@ export interface ChatInterface {
   responseContent?:string,
 }
 
-export interface ChatParamsInterface {
-  modelName:string,
-  token: string, // 替换为实际用户ID
-  chatId:string, // 替换为实际聊天ID
-  prompt: string,// 提示词
-  type:string,//查询的类型
-  showThink:boolean,// 是否显示思考内容
-  language:string//语言
-}
-
 // 聊天气泡
 export interface ChatHistoryInterface {
   id: number;          // 主键
@@ -338,11 +328,11 @@ export interface GroupedByTimeAgoInterface {
   [timeAgo: string]:  ChatHistoryInterface[][];
 }
 
-export interface DocumentInterface {
-  id: string;// 文档id
-  name: string; // 文档名称
-  ext:string; // 文档格式
-  userId: string;// 用户id
-  createTime: string;//创建时间
-  updateTime: string// 更新时间
-};
+export interface ChatParamsInterface {
+  modelName:string,
+  chatId:string, // 替换为实际聊天ID
+  prompt: string,// 提示词
+  type:string,//查询的类型
+  showThink:boolean,// 是否显示思考内容
+  language:string//语言
+}

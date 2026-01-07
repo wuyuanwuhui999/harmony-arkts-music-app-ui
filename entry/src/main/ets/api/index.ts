@@ -41,11 +41,7 @@ export default {
   getMusicListByAuthorId: '/service/music/getMusicListByAuthorId',// 根据歌手id获取音乐列表
   circleWebsocket: '/service/circle/ws',// 音乐圈动态
   getCircleByLastUpdateTime:'/service/circle/getCircleByLastUpdateTime',// 音乐圈动态
-  chat:"/service/ai/chat",// ai聊天
-  getChatHistory: "/service/music/getChatHistory",// ai聊天
-  // chatWs: "/service/ai/ws/chat"// ai聊天
-  chatWs: "/service/music/ws/chat",// ai聊天
-  getModelList:"/service/music/getModelList",
-  getDocList: "/service/music/getDocList",// 查询我的文档
-  deleteDoc: "/service/music/deleteDoc/",// 查询我的文档
+  getChatHistory: "/service/agent/getChatHistory",// ai聊天
+  chatWs: "/service/agent/ws/chat",// ai聊天
+  getModelList:"/service/chat/getModelList",
 };

@@ -82,7 +82,7 @@ struct LoginPage {
         httpRequest.setToken(res.token);
         AppStorage.SetOrCreate<UserDataInterface>(USER_DATA, res.data)
         router.replaceUrl({
-          url: 'pages/MusicIndexPage', // 目标url
+          url: 'pages/ChatPage', // 目标url
         });
       }).catch((e: Error) => {
         promptAction.showToast({
@@ -117,7 +117,7 @@ struct LoginPage {
         httpRequest.setToken(res.token);
         AppStorage.SetOrCreate<UserDataInterface>(USER_DATA, res.data)
         router.replaceUrl({
-          url: 'pages/MusicIndexPage', // 目标url
+          url: 'pages/ChatPage', // 目标url
         });
       }).catch(() => {
         promptAction.showToast({

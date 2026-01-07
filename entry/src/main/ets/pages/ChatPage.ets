@@ -8,12 +8,12 @@ import {
   GroupedByTimeAgoInterface,
   ChatHistoryInterface,
   ChatParamsInterface,
-  DocumentInterface
-} from '../interface/Index';
-import { getModelListService, getChatHistoryService,getMyDocumentService,deleteMyDocumentService } from '../service/Index';
+  UserDataInterface,
+} from '../interface';
+import { getModelListService, getChatHistoryService } from '../service/Index';
 import { PositionEnum } from '../common/enum';
 import AvaterComponent from "../components/AvaterComponent";
-import { HOST, PAGE_SIZE } from '../common/constant';
+import { HOST, PAGE_SIZE, USER_DATA } from '../common/constant';
 import { formatTimeAgo, generateSecureID, formatTime} from "../utils/common";
 import { display, promptAction } from '@kit.ArkUI';
 import webSocket from '@ohos.net.webSocket';
@@ -22,7 +22,8 @@ import api from '../api';
 import preference from '../utils/PreferenceModel';
 import OptionDialogComponent from '../components/OptionDialogComponent';
 import DialogComponent from "../components/DialogComponent";
-
+import BottomDialogComponent from "../components/BottomDialogComponent";
+// import MarkdownRenderer from "../components/MarkdownRenderer";
 @Entry
 @Component
 export default struct ChatPage {
@@ -38,10 +39,8 @@ export default struct ChatPage {
   @State token: string = "";
   @State showHistory:boolean = false;
   private scroller: Scroller = new Scroller()
-  private myDocList:DocumentInterface[] = [];
   @State chatList: Array<ChatInterface> = [
     {
-      type: "tip",
       responseContent: "你好，我是智能音乐助手小吴同学，请问有什么可以帮助您？",
       position: PositionEnum.LEFT,
     }
@@ -52,11 +51,21 @@ export default struct ChatPage {
   @State showThink:boolean = false;
   @State type:string = "";
   @State language:string = "zh";
+  @StorageLink(USER_DATA) userData: UserDataInterface = {} as UserDataInterface;
   private message: string = "";
   private dialogController: CustomDialogController | null = null
   private ws: webSocket.WebSocket | null = null;
 
-  aboutToAppear() {
+  @Styles
+  blockStyle(){
+    .backgroundColor(colors.blockColor)
+    .borderRadius(size.blockBorderRaduis)
+    .padding(size.pagePadding)
+    .width('100%')
+    .margin({ top: size.pagePadding })
+  }
+
+  async aboutToAppear() {
     getModelListService().then((res) => {
       this.modelList = res.data;
       this.activeModelName = res.data[0].modelName;
@@ -109,7 +118,6 @@ export default struct ChatPage {
       this.chatId = this.chatId || generateSecureID();
       const payload: ChatParamsInterface = {
         modelName: this.activeModelName,
-        token: this.token, // 替换为实际用户ID
         chatId: this.chatId, // 替换为实际聊天ID
         prompt: this.prompt.trim(),
         type:this.type,
@@ -175,16 +183,6 @@ export default struct ChatPage {
   @Builder
   popupBuilder() {
     Column() {
-      Text("上传文档").height(size.popupMenuHeight)
-      Divider().height(1).color(colors.borderColor)
-      Text("我的文档").height(size.popupMenuHeight).onClick(()=>{
-        this.showMyDoc = true;
-        this.showMenu = false;
-        getMyDocumentService().then((res)=>{
-          this.myDocList = res.data
-        });
-      })
-      Divider().height(1).color(colors.borderColor)
       Text("历史记录").height(size.popupMenuHeight).onClick(()=>{
         this.showMenu = false;
         this.showHistory = true;
@@ -220,54 +218,6 @@ export default struct ChatPage {
 
   onCancel(){
     this.dialogController?.close()
-  }
-
-  /**
-   * @author: wuwenqiang
-   * @description: 删除弹窗
-   * @date: 2025-04-13 12:07
-   */
-  @Builder
-  DeleteButton(docItem:DocumentInterface) {
-    Column() {
-      Text('删除')
-        .fontColor(Color.White)
-        .fontSize(16)
-    }
-    .justifyContent(FlexAlign.Center)
-    .width(80)
-    .height('100%')
-    .backgroundColor(colors.warnColor)
-    .onClick(() => {
-      this.dialogController = new CustomDialogController({
-        customStyle: false,
-        builder: DialogComponent({
-          title: `是否删除文档：${docItem.name}`,
-          cancel: () => {
-            this.dialogController?.close();
-          },
-          confirm: () => {
-            deleteMyDocumentService(docItem.id).then((res)=>{
-              promptAction.showToast({
-                message: "删除文档成功",
-                duration: 2000,
-                bottom: px2vp(display.getDefaultDisplaySync().height) / 2
-              })
-              this.dialogController?.close()
-            }).catch(()=>{
-              promptAction.showToast({
-                message: "删除文档失败",
-                duration: 2000,
-                bottom: px2vp(display.getDefaultDisplaySync().height) / 2
-              })
-            })
-
-          },
-        }),
-        alignment: DialogAlignment.Center,
-      })
-      this.dialogController.open()
-    })
   }
 
   build() {
@@ -328,55 +278,14 @@ export default struct ChatPage {
         .height("100%")
         .width("100%")
         .zIndex(1)
-      }else if(this.showMyDoc){
-        Row() {
-          Scroll() {
-            List() {
-              ForEach(this.myDocList, (item: DocumentInterface, index: number) => {
-                ListItem() {
-                  Column({ space: size.miniPadding }) {
-                    Text(formatTime(item.createTime)).fontColor(colors.disableTextColor)
-                    Text(item.name)
-                      .maxLines(2)// 限制最大行数为1
-                      .textOverflow({ overflow: TextOverflow.Ellipsis })// 溢出时显示省略号
-                      .width('100%') // 必须设置宽度（或固定宽度）触发溢出判断
-                  }.alignItems(HorizontalAlign.Start).justifyContent(FlexAlign.Start)
-                }.swipeAction({
-                  end: () => {
-                    return this.DeleteButton(item)
-                  }
-                })
-              })
-            }
-          }
-          .align(Alignment.TopStart)
-          .padding(size.pagePadding)
-          .width("70%")
-          .backgroundColor(colors.blockColor)
-          .height("100%")
-
-          Row()
-            .height("100%")
-            .layoutWeight(1)
-            .backgroundColor(colors.tabNormalColor)
-            .opacity(0.5)
-            .onClick(() => {
-              this.showMyDoc = false
-            })
-        }
-        .height("100%")
-        .width("100%")
-        .zIndex(1)
       }
       Column() {
         Row() {
-          Image($r('app.media.icon_back'))
-            .width(size.smallIconSize)
-            .height(size.smallIconSize)
-            .opacity(size.opacity)
-            .onClick(() => {
-              router.back()
-            })
+          AvaterComponent({dimensions:size.middleAvaterSize,avater:this.userData.avater}).onClick(()=>{
+            router.pushUrl({
+              url: 'pages/UserPage'
+            });
+          })
           Text("当前接入模型：" + this.activeModelName).layoutWeight(1).textAlign(TextAlign.Center)
           Image($r('app.media.icon_menu'))
             .width(size.smallIconSize)
@@ -420,6 +329,7 @@ export default struct ChatPage {
                             }
                             if (item.responseContent) {
                               Text(item.responseContent)
+                              // MarkdownRenderer({markdownText:item.responseContent})
                             }
                           }.alignItems(HorizontalAlign.Start)
                         }
@@ -450,7 +360,7 @@ export default struct ChatPage {
                       .position({ right: -size.smallIconSize / 1.5, top: size.smallIconSize / 2 })
                   }.layoutWeight(1).justifyContent(FlexAlign.End)
 
-                  AvaterComponent({ dimensions: size.middlIconSize }).margin({ left: size.smallIconSize })
+                  AvaterComponent({ dimensions: size.middlIconSize,avater:this.userData.avater }).margin({ left: size.smallIconSize })
                 }
                 .width("100%")
               }
@@ -476,6 +386,7 @@ export default struct ChatPage {
                           .fontColor(colors.disableTextColor)
                       }
                       if (this.responseContent) {
+                        // MarkdownRenderer({markdownText:this.responseContent})
                         Text(this.responseContent)
                       }
                     }
@@ -516,37 +427,6 @@ export default struct ChatPage {
               .backgroundColor(colors.blockColor)
               .onClick(()=>{
                 this.showThink = !this.showThink
-              })
-            Text("查询文档")
-              .fontColor(this.type == "document" ? colors.tabSelectedColor :colors.disableTextColor)
-              .borderRadius(size.inputHeight)
-              .border({
-                width:1,
-                color:this.type == "document" ? colors.tabSelectedColor :colors.disableTextColor,
-                style:BorderStyle.Solid
-              })
-              .padding({
-                top:size.smallPadding,
-                bottom:size.smallPadding,
-                left:size.pagePadding,
-                right:size.pagePadding
-              })
-              .backgroundColor(colors.blockColor)
-              .onClick(()=>{
-                this.type = this.type === "document" ? "" : "document"
-              })
-            Text("查询数据库")
-              .fontColor(this.type == "db" ? colors.tabSelectedColor :colors.disableTextColor)
-              .borderRadius(size.inputHeight)
-              .border({
-                width:1,
-                color:this.type == "db" ? colors.tabSelectedColor :colors.disableTextColor,
-                style:BorderStyle.Solid
-              })
-              .padding(size.smallPadding)
-              .backgroundColor(colors.blockColor)
-              .onClick(()=>{
-                this.type = this.type === "db" ? "" : "db"
               })
             Row({space:size.smallPadding}){
               Text(this.language == "zh" ? "中文" : "英文")
