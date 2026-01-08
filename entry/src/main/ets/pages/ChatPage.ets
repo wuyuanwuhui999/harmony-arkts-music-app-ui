@@ -335,7 +335,6 @@ export default struct ChatPage {
                         }
                         .justifyContent(FlexAlign.Start)
                         .backgroundColor(colors.blockColor)
-                        .justifyContent(FlexAlign.Start)
                         .borderRadius(size.blockBorderRaduis)
                         .padding(size.pagePadding)
                       }.layoutWeight(1)
@@ -428,7 +427,7 @@ export default struct ChatPage {
               this.showThink = !this.showThink
             })
           Row({space:size.smallPadding}){
-            Text(this.language == "zh" ? "中文" : "英文")
+            Text(this.language == "zh" ? "中文" : "En")
             Image($r('app.media.icon_switch')).width(size.smallIconSize).height(size.smallPadding)
           }
           .padding(size.smallPadding)
@@ -442,6 +441,7 @@ export default struct ChatPage {
             style:BorderStyle.Solid
           })
         }
+        .width('100%')
         .backgroundColor(colors.pageBackgroundColor)
         .padding(size.pagePadding)
         .justifyContent(FlexAlign.Start)
