@@ -2,12 +2,12 @@
 chcp 65001 >nul
 echo ================================
 echo Gitee 代码推送脚本（SSH方式）
-echo 专用仓库：uniapp-vite-vue3-ts-music-app-ui
+echo 专用仓库：harmony-arkts-music-app-ui
 echo ================================
 echo.
 
 REM 强制设置为SSH地址
-set "SSH_REPO=git@gitee.com:wuyuanwuhui99/uniapp-vite-vue3-ts-music-app-ui.git"
+set "SSH_REPO=git@gitee.com:wuyuanwuhui99/harmony-arkts-music-app-ui.git"
 echo 设置远程仓库为SSH地址...
 git remote remove origin 2>nul
 git remote add origin "%SSH_REPO%"
@@ -56,7 +56,7 @@ if errorlevel 1 (
     echo 解决方案：
     echo 1. 检查SSH公钥是否添加到Gitee
     echo 2. 在Git Bash中运行：ssh -T git@gitee.com
-    echo 3. 或切换到HTTPS：git remote set-url origin https://gitee.com/wuyuanwuhui99/uniapp-vite-vue3-ts-music-app-ui.git
+    echo 3. 或切换到HTTPS：git remote set-url origin https://gitee.com/wuyuanwuhui99/harmony-arkts-music-app-ui.git
     echo.
     pause
     exit /b 1
