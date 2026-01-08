@@ -408,45 +408,43 @@ export default struct ChatPage {
         .align(Alignment.Top)
         .scrollable(ScrollDirection.Vertical)
         .layoutWeight(1)
-        Scroll(){
-          Row({space:size.pagePadding}){
-            Text("深度思考")
-              .fontColor(this.showThink ? colors.tabSelectedColor :colors.disableTextColor)
-              .borderRadius(size.inputHeight)
-              .border({
-                width:1,
-                color:this.showThink ? colors.tabSelectedColor :colors.disableTextColor,
-                style:BorderStyle.Solid
-              })
-              .padding({
-                top:size.smallPadding,
-                bottom:size.smallPadding,
-                left:size.pagePadding,
-                right:size.pagePadding
-              })
-              .backgroundColor(colors.blockColor)
-              .onClick(()=>{
-                this.showThink = !this.showThink
-              })
-            Row({space:size.smallPadding}){
-              Text(this.language == "zh" ? "中文" : "英文")
-              Image($r('app.media.icon_switch')).width(size.smallIconSize).height(size.smallPadding)
-            }
-            .padding(size.smallPadding)
-            .onClick(()=>{
-              this.language = this.language == "zh" ? "en" : "zh";
-            })
+        Row({space:size.pagePadding}){
+          Text("深度思考")
+            .fontColor(this.showThink ? colors.tabSelectedColor :colors.disableTextColor)
             .borderRadius(size.inputHeight)
             .border({
               width:1,
-              color: colors.tabNormalColor,
+              color:this.showThink ? colors.tabSelectedColor :colors.disableTextColor,
               style:BorderStyle.Solid
             })
+            .padding({
+              top:size.smallPadding,
+              bottom:size.smallPadding,
+              left:size.pagePadding,
+              right:size.pagePadding
+            })
+            .backgroundColor(colors.blockColor)
+            .onClick(()=>{
+              this.showThink = !this.showThink
+            })
+          Row({space:size.smallPadding}){
+            Text(this.language == "zh" ? "中文" : "英文")
+            Image($r('app.media.icon_switch')).width(size.smallIconSize).height(size.smallPadding)
           }
+          .padding(size.smallPadding)
+          .onClick(()=>{
+            this.language = this.language == "zh" ? "en" : "zh";
+          })
+          .borderRadius(size.inputHeight)
+          .border({
+            width:1,
+            color: colors.tabNormalColor,
+            style:BorderStyle.Solid
+          })
         }
         .backgroundColor(colors.pageBackgroundColor)
         .padding(size.pagePadding)
-        .scrollable(ScrollDirection.Horizontal)
+        .justifyContent(FlexAlign.Start)
         Row({ space: size.pagePadding }) {
           Image($r("app.media.icon_chat"))
             .opacity(size.opacity)

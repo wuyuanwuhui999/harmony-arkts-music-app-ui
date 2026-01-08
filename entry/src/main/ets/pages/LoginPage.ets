@@ -78,8 +78,9 @@ struct LoginPage {
           duration: 2000,
           bottom: px2vp(display.getDefaultDisplaySync().height) / 2
         })
-        await preference.setToken(res.token);
-        httpRequest.setToken(res.token);
+        const token = `Bearer ${res.token}`
+        await preference.setToken(token);
+        httpRequest.setToken(token);
         AppStorage.SetOrCreate<UserDataInterface>(USER_DATA, res.data)
         router.replaceUrl({
           url: 'pages/ChatPage', // 目标url
@@ -113,8 +114,9 @@ struct LoginPage {
           duration: 2000,
           bottom: px2vp(display.getDefaultDisplaySync().height) / 2
         })
-        await preference.setToken(res.token);
-        httpRequest.setToken(res.token);
+        const token = `Bearer ${res.token}`
+        await preference.setToken(token);
+        httpRequest.setToken(token);
         AppStorage.SetOrCreate<UserDataInterface>(USER_DATA, res.data)
         router.replaceUrl({
           url: 'pages/ChatPage', // 目标url
