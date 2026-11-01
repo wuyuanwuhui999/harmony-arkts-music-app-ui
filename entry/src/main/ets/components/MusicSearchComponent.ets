@@ -42,7 +42,7 @@ export default struct MusicSearchComponent {
     Row({space:size.middleGap}) {
       AvaterComponent({ dimensions: this.dimensions })
       Row() {
-        Text(this.musicItem?.songName)
+        Text(`${this.musicItem?.authorName} - ${this.musicItem?.songName}`)
           .fontSize(size.middleFont)
           .fontColor(colors.gray)
       }
