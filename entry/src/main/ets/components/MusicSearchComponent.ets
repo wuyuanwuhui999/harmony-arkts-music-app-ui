@@ -4,7 +4,7 @@ import * as colors from '../theme/color';
 import * as size from '../theme/size';
 import { MusicInterface } from '../interface/Index';
 import { getKeyWordMusicService } from '../service/Index';
-import { RECOMMEND_COVER } from '../common/constant';
+import { RECOMMEND_MUSIC } from '../common/constant';
 
 @Component
 export default struct MusicSearchComponent {
@@ -28,9 +28,9 @@ export default struct MusicSearchComponent {
   useSearchKeyWord() {
     getKeyWordMusicService().then((res) => {
       this.musicItem = res.data;
-      // 首页导航栏中间凸起组件在没有播放中的音乐时，用推荐音乐的封面兜底；
-      // 接口 data 为 null（或没有 cover）时写入空串，由首页回退到默认歌曲图标
-      AppStorage.SetOrCreate<string>(RECOMMEND_COVER, res.data?.cover ?? '');
+      // 首页导航栏中间凸起组件在没有播放中的音乐时，用推荐音乐兜底展示封面、点击直接播放；
+      // 接口 data 为 null 时写入 null，由首页回退到默认歌曲图标
+      AppStorage.SetOrCreate<MusicInterface | null>(RECOMMEND_MUSIC, res.data ?? null);
     });
   }
 

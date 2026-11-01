@@ -4,17 +4,17 @@ import MusicCircleComponent from '../components/MusicCircleComponent'
 import MusicHomeComponent from '../components/MusicHomeComponent'
 import MusicMyComponent from '../components/MusicMyComponent'
 import MusicRecommendComponent from '../components/MusicRecommendComponent'
-import {MUSIC_STORAGE,HOST,RECOMMEND_COVER} from '../common/constant'
-import { MusicStorageInterface } from '../interface/Index';
+import {MUSIC_STORAGE,HOST,RECOMMEND_MUSIC} from '../common/constant'
+import { MusicStorageInterface, MusicInterface } from '../interface/Index';
 import router from '@ohos.router';
-import { useAppStorage } from '../utils/common';
+import { useAppStorage, usePlayerRouter } from '../utils/common';
 @Entry
 @Component
 struct MusicIndexPage {
   @State activeIndex: number = 0;
   @State isInitPage: Array<boolean> = [true, false, false, false,false];
   @StorageLink(MUSIC_STORAGE) musicStorage:  MusicStorageInterface = useAppStorage()
-  @StorageLink(RECOMMEND_COVER) recommendCover: string = '';
+  @StorageLink(RECOMMEND_MUSIC) recommendMusic: MusicInterface | null = null;
   @State angle:number = 0;
 
   onPageShow(){
@@ -98,7 +98,7 @@ struct MusicIndexPage {
     .width('100%')
     .height('100%')
     .alignContent(Alignment.Bottom)// 设置Tab组件和凸起悬浮按钮底部对齐
-    .onClick(() => this.musicStorage.musicItem && router.pushUrl({url: 'pages/MusicPlayerPage'}));
+    .onClick(() => this.useCenterMusic());
   }
 
   /**
@@ -109,8 +109,24 @@ struct MusicIndexPage {
    * @author wuwenqiang
    */
   getCenterCover(): ResourceStr {
-    const cover = this.musicStorage?.musicItem?.cover || this.recommendCover;
+    const cover = this.musicStorage?.musicItem?.cover || this.recommendMusic?.cover;
     return cover ? HOST + cover : $r('app.media.icon_song_default');
+  }
+
+  /**
+   * @description: 点击导航栏中间凸起组件
+   * 有播放中的音乐：直接进播放页；没有：播放 getKeywordMusic 推荐的音乐并进播放页
+   * @date: 2026-11-01 20:05
+   * @author wuwenqiang
+   */
+  useCenterMusic() {
+    if (this.musicStorage?.musicItem) {
+      router.pushUrl({ url: 'pages/MusicPlayerPage' });
+      return;
+    }
+    if (this.recommendMusic) {
+      usePlayerRouter(this.musicStorage, [this.recommendMusic], this.recommendMusic, '推荐音乐', 0);
+    }
   }
 
   /**
