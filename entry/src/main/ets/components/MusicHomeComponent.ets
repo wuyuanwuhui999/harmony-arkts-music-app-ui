@@ -1,8 +1,8 @@
 import MusicSearchComponent from './MusicSearchComponent';
 import * as colors from '../theme/color';
 import * as size from '../theme/size';
-import { MusicClassifyInterface } from '../interface/Index';
-import { getMusicClassifyService } from '../service/Index';
+import { MusicCategoryInterface } from '../interface/Index';
+import { getMusicCategoryService } from '../service/Index';
 import MusicClassifyComponent from './MusicClassifyComponent';
 import MusicCategoryComponent from './MusicCategoryComponent';
 import MusicAuthorComponent from './MusicAuthorComponent';
@@ -18,12 +18,12 @@ export default struct MusicHomeComponent {
     .margin({ top: size.pagePadding })
   }
 
-  @State allClassifyList: Array<MusicClassifyInterface> = [];
+  @State allClassifyList: Array<MusicCategoryInterface> = [];
   @State pageNum: number = 3;
   scroller: Scroller = new Scroller();
 
   aboutToAppear() {
-    getMusicClassifyService().then((res) => {
+    getMusicCategoryService().then((res) => {
       this.allClassifyList = res.data;
     });
   }
@@ -34,11 +34,11 @@ export default struct MusicHomeComponent {
         Column() {
           MusicSearchComponent()
           MusicCategoryComponent()
-          ForEach(this.allClassifyList.slice(0, this.pageNum), (item: MusicClassifyInterface) => {
-            if (item.classifyName === '推荐歌手') {
+          ForEach(this.allClassifyList.slice(0, this.pageNum), (item: MusicCategoryInterface) => {
+            if (item.category === '推荐歌手') {
               MusicAuthorComponent()
             } else {
-              MusicClassifyComponent({ classifyId: Number(item.id), classifyName: item.classifyName.toString() })
+              MusicClassifyComponent({ classifyId: Number(item.id), classifyName: item.category.toString() })
             }
           })
           Row() {

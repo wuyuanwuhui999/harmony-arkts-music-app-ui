@@ -1,4 +1,4 @@
-import { getMusicListByClassifyIdService } from '../service/Index';
+import { getMusicListByCategoryIdService } from '../service/Index';
 import { MusicInterface, MusicStorageInterface } from '../interface/Index';
 import * as colors from '../theme/color';
 import * as size from '../theme/size';
@@ -113,7 +113,7 @@ export default struct MusicRecommendComponent {
    * @author wuwenqiang
    */
   useMusicList() {
-    getMusicListByClassifyIdService(this.classifyId, this.pageNum, this.pageSize).then((res) => {
+    getMusicListByCategoryIdService(this.classifyId, this.pageNum, this.pageSize).then((res) => {
       this.total = res.total;
       res.data.forEach((item: MusicInterface) => {
         this.musicList.pushData(item);
@@ -129,7 +129,7 @@ export default struct MusicRecommendComponent {
   async usePlayMusicList(musicModel: MusicInterface, index: number) {
     let musicList: Array<MusicInterface> = [];
     if (this.musicStorage.classifyName !== this.classifyName) {
-      musicList = await getMusicListByClassifyIdService(this.classifyId, 1, 500).then(res => res.data)
+      musicList = await getMusicListByCategoryIdService(this.classifyId, 1, 500).then(res => res.data)
     }
     usePlayerRouter(this.musicStorage, musicList, musicModel, this.classifyName, index)
   }

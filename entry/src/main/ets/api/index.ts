@@ -10,8 +10,8 @@ export default {
   updatePassword: '/service/user-getway/updatePassword',//更新密码
   loginByEmail: '/service/user/loginByEmail',//邮箱登录
   getKeywordMusic: '/service/music/getKeywordMusic',//获取搜索关键词
-  getMusicClassify: '/service/music/getMusicClassify',//获取分类歌曲
-  getMusicListByClassifyId: '/service/music/getMusicListByClassifyId',//获取推荐音乐列表
+  getMusicCategory: '/service/music/getMusicCategory',//获取音乐分类
+  getMusicListByCategoryId: '/service/music/getMusicListByCategoryId',//根据分类id获取音乐列表
   getMusicAuthorListByCategoryId: '/service/music/getMusicAuthorListByCategoryId',// 获取歌手列表
   getCircleListByType: '/service/circle/getCircleListByType',// 获取歌手列表
   getMusicPlayMenu: '/service/music/getMusicPlayMenu',// 获取我的歌单

@@ -108,21 +108,21 @@ export const getKeyWordMusicService = ():Promise<types.MyAwesomeData<types.Music
 }
 
 /**
- * @description: 获取模块分类
+ * @description: 获取音乐分类
  * @date: 2024-03-02 22:44
  * @author wuwenqiang
  */
-export const getMusicClassifyService = ():Promise<types.MyAwesomeData<Array<types.MusicClassifyInterface>>> => {
-  return httpRequest.get<Array<types.MusicClassifyInterface>>(api.getMusicClassify);
+export const getMusicCategoryService = ():Promise<types.MyAwesomeData<Array<types.MusicCategoryInterface>>> => {
+  return httpRequest.get<Array<types.MusicCategoryInterface>>(api.getMusicCategory);
 }
 
 /**
- * @description: 获取模块分类
+ * @description: 根据分类id获取音乐列表
  * @date: 2024-03-03 11:50
  * @author wuwenqiang
  */
-export const getMusicListByClassifyIdService = (classifyId:number,pageNum:number,pageSize:number):Promise<types.MyAwesomeData<Array<types.MusicInterface>>> => {
-  return httpRequest.get<Array<types.MusicInterface>>(`${api.getMusicListByClassifyId}?classifyId=${classifyId}&pageNum=${pageNum}&pageSize=${pageSize}`);
+export const getMusicListByCategoryIdService = (categoryId:number,pageNum:number,pageSize:number):Promise<types.MyAwesomeData<Array<types.MusicInterface>>> => {
+  return httpRequest.get<Array<types.MusicInterface>>(`${api.getMusicListByCategoryId}?categoryId=${categoryId}&pageNum=${pageNum}&pageSize=${pageSize}`);
 }
 
 /**

@@ -1,4 +1,4 @@
-export const HOST: string = 'http://192.168.71.1:3000'; // 内网地址
+export const HOST: string = 'http://192.168.5.51:4000'; // 内网地址
 export const USER_DATA: string = 'USER_DATA';//用户信息
 export const DEVICE_INFO: string = 'DEVICE_INFO';// 设备信息
 export const MUSIC_PLAYER: string = 'MUSIC_PLAYER';// 音乐播放器

@@ -83,7 +83,7 @@ struct LoginPage {
         httpRequest.setToken(token);
         AppStorage.SetOrCreate<UserDataInterface>(USER_DATA, res.data)
         router.replaceUrl({
-          url: 'pages/ChatPage', // 目标url
+          url: 'pages/MusicIndexPage', // 目标url
         });
       }).catch((e: Error) => {
         promptAction.showToast({

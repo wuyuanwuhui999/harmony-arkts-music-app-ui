@@ -2,7 +2,7 @@ import * as colors from '../theme/color';
 import * as size from '../theme/size';
 import emitter from '@ohos.events.emitter'
 import { MusicInterface, MusicStorageInterface } from '../interface/Index';
-import { getMusicListByClassifyIdService } from '../service/Index';
+import { getMusicListByCategoryIdService } from '../service/Index';
 import { MUSIC_STORAGE } from '../common/constant';
 import { LIKE_INNER_EVENT } from '../common/config';
 import { usePlayerRouter, useAppStorage } from '../utils/common';
@@ -26,7 +26,7 @@ export default struct MusicClassifyComponent {
   }
 
   aboutToAppear() {
-    getMusicListByClassifyIdService(this.classifyId, 1, 4).then((res) => {
+    getMusicListByCategoryIdService(this.classifyId, 1, 4).then((res) => {
       this.musicList = res.data;
     });
     this.useLikeEmitter();
@@ -53,7 +53,7 @@ export default struct MusicClassifyComponent {
   async usePlayMusicList(musicModel: MusicInterface, index: number) {
     let musicList: Array<MusicInterface> = [];
     if (this.musicStorage.classifyName !== this.classifyName) {
-      musicList = await getMusicListByClassifyIdService(this.classifyId, 1, 500).then(res => res.data)
+      musicList = await getMusicListByCategoryIdService(this.classifyId, 1, 500).then(res => res.data)
     }
     usePlayerRouter(this.musicStorage, musicList, musicModel, this.classifyName, index)
   }
@@ -74,7 +74,7 @@ export default struct MusicClassifyComponent {
           router.pushUrl({
             url: 'pages/MusicClassifyListPage',
             params: {
-              musicClassify: { id: this.classifyId, classifyName: this.classifyName }
+              musicClassify: { id: this.classifyId, category: this.classifyName }
             }
           });
         })

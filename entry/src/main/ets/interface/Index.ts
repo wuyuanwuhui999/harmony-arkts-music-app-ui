@@ -69,15 +69,13 @@ export interface MusicInterface  {
 }
 
 // 歌曲分类字段
-export interface MusicClassifyInterface {
+export interface MusicCategoryInterface {
   id : number,// 分类id
-  classifyName : string, // 分类时间
-  permission : number,// 权限
-  classifyRank : number, // 分类排名
-  cover : string,// 分类图标
-  disabled : number,// 是否禁用
-  createTime : string,// 创建时间
-  updateTime : string// 更新时间
+  img?: string,// 分类图片
+  category : string, // 小分类名称
+  classify?: string, // 大分类名称
+  createTime? : string,// 创建时间
+  updateTime? : string// 更新时间
 }
 
 // 歌手字段
@@ -276,7 +274,7 @@ export interface VerifyUserParamsInterface {
 }
 
 export interface MusicClassifyParamsInterface {
-  musicClassify:MusicClassifyInterface
+  musicClassify:MusicCategoryInterface
 }
 
 export interface FavoriteDirectoryParamsInterface{

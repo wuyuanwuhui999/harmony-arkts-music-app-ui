@@ -4,10 +4,10 @@ import {
   MusicStorageInterface,
   FavoriteDirectoryInterface,
   MusicInterface,
-  MusicClassifyInterface
+  MusicCategoryInterface
 } from '../interface/Index';
 import { MUSIC_STORAGE, PAGE_SIZE } from '../common/constant';
-import { getMusicClassifyService, getMusicListByClassifyIdService } from '../service/Index';
+import { getMusicCategoryService, getMusicListByCategoryIdService } from '../service/Index';
 import { useAppStorage, usePlayerRouter } from '../utils/common';
 import NavigatorTitleComponent from '../components/NavigatorTitleComponent';
 import MusicClassifyListComponent from '../components/MusicClassifyListComponent';
@@ -17,10 +17,10 @@ import MusicClassifyListComponent from '../components/MusicClassifyListComponent
 export default struct MusicCategoryPage {
   @StorageLink(MUSIC_STORAGE) musicStorage: MusicStorageInterface = useAppStorage()
   @State favoriteDirectory: FavoriteDirectoryInterface | null = null;
-  @State allCategoryList: Array<Array<MusicClassifyInterface>> = [];
-  @State currentCategoryList: Array<Array<MusicClassifyInterface>> = [];
+  @State allCategoryList: Array<Array<MusicCategoryInterface>> = [];
+  @State currentCategoryList: Array<Array<MusicCategoryInterface>> = [];
   @State musicList: Array<MusicInterface> = [];
-  @State activeCategory: MusicClassifyInterface = {} as MusicClassifyInterface;
+  @State activeCategory: MusicCategoryInterface = {} as MusicCategoryInterface;
   @State pageNum: number = 1;
   @State total: number = 0;
   @State loading: boolean = false;
@@ -42,9 +42,9 @@ export default struct MusicCategoryPage {
   }
 
   aboutToAppear() {
-    getMusicClassifyService().then((res) => {
+    getMusicCategoryService().then((res) => {
       for (let i = 0; i < Math.ceil(res.data.length / 3); i++) {
-        const categoryList: Array<MusicClassifyInterface> = [];
+        const categoryList: Array<MusicCategoryInterface> = [];
         for (let j = 0; j < 3; j++) {
           categoryList.push(res.data[i * 3 + j < res.data.length ? i * 3 + j : 0])
         }
@@ -66,7 +66,7 @@ export default struct MusicCategoryPage {
       return;
     }
     this.loading = true;
-    getMusicListByClassifyIdService(this.activeCategory.id, this.pageNum, PAGE_SIZE).then((res) => {
+    getMusicListByCategoryIdService(this.activeCategory.id, this.pageNum, PAGE_SIZE).then((res) => {
       this.total = res.total;
       this.musicList.push(...res.data);
     }).finally(() => {
@@ -81,10 +81,10 @@ export default struct MusicCategoryPage {
    */
   async usePlayMusicList(musicModel: MusicInterface, index: number) {
     let musicList: Array<MusicInterface> = [];
-    if (this.musicStorage.classifyName !== this.activeCategory.classifyName) {
-      musicList = await getMusicListByClassifyIdService(this.activeCategory.id, 1, 500).then(res => res.data)
+    if (this.musicStorage.classifyName !== this.activeCategory.category) {
+      musicList = await getMusicListByCategoryIdService(this.activeCategory.id, 1, 500).then(res => res.data)
     }
-    usePlayerRouter(this.musicStorage, musicList, musicModel, this.activeCategory.classifyName, index)
+    usePlayerRouter(this.musicStorage, musicList, musicModel, this.activeCategory.category, index)
   }
 
   build() {
@@ -93,11 +93,11 @@ export default struct MusicCategoryPage {
       Scroll() {
         Column() {
           Column({ space: size.smallPadding }) {
-            ForEach(this.currentCategoryList, (items: Array<MusicClassifyInterface>) => {
+            ForEach(this.currentCategoryList, (items: Array<MusicCategoryInterface>) => {
               Row({ space: size.smallPadding }) {
-                ForEach(items, (item: MusicClassifyInterface) => {
+                ForEach(items, (item: MusicCategoryInterface) => {
                   if (item) {
-                    Text(item.classifyName)
+                    Text(item.category)
                       .border({
                         width: 1,
                         color: this.activeCategory?.id === item.id ? colors.tabSelectedColor : colors.borderColor,
@@ -143,7 +143,7 @@ export default struct MusicCategoryPage {
 
           MusicClassifyListComponent({
             musicList: $musicList,
-            classifyName: this.activeCategory?.classifyName,
+            classifyName: this.activeCategory?.category,
             onPlayMusicList: this.usePlayMusicList,
           })
 

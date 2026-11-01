@@ -1,10 +1,10 @@
 import * as colors from '../theme/color';
 import * as size from '../theme/size';
 import router from '@ohos.router';
-import { MusicInterface, MusicStorageInterface, MusicClassifyInterface } from '../interface/Index';
+import { MusicInterface, MusicStorageInterface, MusicCategoryInterface } from '../interface/Index';
 import { MAX_PAGE_SIZE, MUSIC_STORAGE, PAGE_SIZE } from '../common/constant';
 import { LIKE_INNER_EVENT } from '../common/config';
-import { deleteMusicLikeService, getMusicListByClassifyIdService, insertMusicLikeService } from '../service/Index';
+import { deleteMusicLikeService, getMusicListByCategoryIdService, insertMusicLikeService } from '../service/Index';
 import { useAppStorage, usePlayerRouter, useUpdateStorage } from '../utils/common';
 import promptAction from '@ohos.promptAction';
 import display from '@ohos.display';
@@ -21,7 +21,7 @@ export default struct MusicClassifyListComponents {
   @State pageNum: number = 1;
   @State total: number = 0;
   private loading: boolean = false;
-  private musicClassify: MusicClassifyInterface = {} as MusicClassifyInterface;
+  private musicClassify: MusicCategoryInterface = {} as MusicCategoryInterface;
 
   @Styles
   blockStyle(){
@@ -33,8 +33,8 @@ export default struct MusicClassifyListComponents {
 
   aboutToAppear() {
     const params = router.getParams() as MusicClassifyParamsInterface; // 获取传递过来的参数对象
-    this.musicClassify = params['musicClassify'] as MusicClassifyInterface; // 获取info属性的值
-    this.useMusicListByClassifyId();
+    this.musicClassify = params['musicClassify'] as MusicCategoryInterface; // 获取info属性的值
+    this.useMusicListByCategoryId();
     emitter.on(LIKE_INNER_EVENT, (data: emitter.EventData) => {
       const musicModel: MusicInterface = data.data as MusicInterface;
       const musicItem = this.musicList.find(item => musicModel.id === item.id);
@@ -47,8 +47,8 @@ export default struct MusicClassifyListComponents {
    * @date: 2024-07-25 23:18
    * @author wuwenqiang
    */
-  useMusicListByClassifyId() {
-    getMusicListByClassifyIdService(this.musicClassify.id, this.pageNum, PAGE_SIZE).then((res) => {
+  useMusicListByCategoryId() {
+    getMusicListByCategoryIdService(this.musicClassify.id, this.pageNum, PAGE_SIZE).then((res) => {
       this.musicList.push(...res.data);
       this.total = res.total;
     })
@@ -104,10 +104,10 @@ export default struct MusicClassifyListComponents {
    */
   usePlayMusicList = async (musicModel: MusicInterface, index: number) => {
     let musicList: Array<MusicInterface> = [];
-    if (this.musicStorage.classifyName !== this.musicClassify.classifyName) {
-      musicList = await getMusicListByClassifyIdService(this.musicClassify.id!, 1, MAX_PAGE_SIZE).then(res => res.data)
+    if (this.musicStorage.classifyName !== this.musicClassify.category) {
+      musicList = await getMusicListByCategoryIdService(this.musicClassify.id!, 1, MAX_PAGE_SIZE).then(res => res.data)
     }
-    usePlayerRouter(this.musicStorage, musicList, musicModel, this.musicClassify.classifyName!, index)
+    usePlayerRouter(this.musicStorage, musicList, musicModel, this.musicClassify.category!, index)
   }
 
   aboutToDisappear() {
@@ -116,13 +116,13 @@ export default struct MusicClassifyListComponents {
 
   build() {
     Column() {
-      NavigatorTitleComponent({ title: this.musicClassify?.classifyName || '' })
+      NavigatorTitleComponent({ title: this.musicClassify?.category || '' })
       Scroll() {
         Column() {
           MusicClassifyListComponent({
             musicList: $musicList,
             // 使用toString防止把@State装饰的响应式变量传递到组件中，避免编辑器抛出警告
-            onPlayMusicList: this.usePlayMusicList, classifyName: this.musicClassify.classifyName.toString()
+            onPlayMusicList: this.usePlayMusicList, classifyName: this.musicClassify.category.toString()
           })
           Row() {
             Text(this.pageNum * PAGE_SIZE < this.total ? '正在加载更多...' : '已经到底了...')
@@ -136,7 +136,7 @@ export default struct MusicClassifyListComponents {
       .onScrollEdge((side: Edge) => {
         if (this.pageNum * PAGE_SIZE < this.total) {
           this.pageNum++;
-          this.useMusicListByClassifyId()
+          this.useMusicListByCategoryId()
         }
       }) // 滚动方向纵向
     }
