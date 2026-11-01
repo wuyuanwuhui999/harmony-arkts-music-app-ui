@@ -109,13 +109,8 @@ struct MusicIndexPage {
    * @author wuwenqiang
    */
   getCenterCover(): ResourceStr {
-    if (this.musicStorage?.musicItem?.cover) {
-      return HOST + this.musicStorage.musicItem.cover;
-    }
-    if (this.recommendCover) {
-      return HOST + this.recommendCover;
-    }
-    return $r('app.media.icon_song_default');
+    const cover = this.musicStorage?.musicItem?.cover || this.recommendCover;
+    return cover ? HOST + cover : $r('app.media.icon_song_default');
   }
 
   /**
