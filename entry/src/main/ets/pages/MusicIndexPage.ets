@@ -4,7 +4,7 @@ import MusicCircleComponent from '../components/MusicCircleComponent'
 import MusicHomeComponent from '../components/MusicHomeComponent'
 import MusicMyComponent from '../components/MusicMyComponent'
 import MusicRecommendComponent from '../components/MusicRecommendComponent'
-import {MUSIC_STORAGE,HOST} from '../common/constant'
+import {MUSIC_STORAGE,HOST,RECOMMEND_COVER} from '../common/constant'
 import { MusicStorageInterface } from '../interface/Index';
 import router from '@ohos.router';
 import { useAppStorage } from '../utils/common';
@@ -14,6 +14,7 @@ struct MusicIndexPage {
   @State activeIndex: number = 0;
   @State isInitPage: Array<boolean> = [true, false, false, false,false];
   @StorageLink(MUSIC_STORAGE) musicStorage:  MusicStorageInterface = useAppStorage()
+  @StorageLink(RECOMMEND_COVER) recommendCover: string = '';
   @State angle:number = 0;
 
   onPageShow(){
@@ -80,7 +81,7 @@ struct MusicIndexPage {
       })
 
       // 用图片组件代作为导航栏中间凸起组件
-      Image(this.musicStorage?.musicItem ? HOST + this.musicStorage.musicItem.cover: $r('app.media.icon_song_default'))
+      Image(this.getCenterCover())
         .margin({bottom:size.barHeight - size.bigAvater/2 - size.miniGap})
         .height(size.bigAvater + size.miniGap * 2)
         .height(size.bigAvater + size.miniGap * 2)
@@ -98,6 +99,23 @@ struct MusicIndexPage {
     .height('100%')
     .alignContent(Alignment.Bottom)// 设置Tab组件和凸起悬浮按钮底部对齐
     .onClick(() => this.musicStorage.musicItem && router.pushUrl({url: 'pages/MusicPlayerPage'}));
+  }
+
+  /**
+   * @description: 导航栏中间凸起组件的图片地址
+   * 优先级：播放中的音乐封面 > getKeywordMusic 推荐音乐的封面 > 默认歌曲图标
+   * 封面为相对路径，需要拼接 HOST
+   * @date: 2026-11-01 19:40
+   * @author wuwenqiang
+   */
+  getCenterCover(): ResourceStr {
+    if (this.musicStorage?.musicItem?.cover) {
+      return HOST + this.musicStorage.musicItem.cover;
+    }
+    if (this.recommendCover) {
+      return HOST + this.recommendCover;
+    }
+    return $r('app.media.icon_song_default');
   }
 
   /**
