@@ -29,9 +29,9 @@ export default struct MusicFavoriteListPage {
 
   @Styles
   blockStyle(){
-    .backgroundColor(colors.blockColor)
-    .borderRadius(size.blockBorderRaduis)
-    .padding(size.pagePadding)
+    .backgroundColor(colors.white)
+    .borderRadius(size.middleBorderRaduis)
+    .padding(size.middleGap)
     .width('100%')
   }
 
@@ -81,14 +81,14 @@ export default struct MusicFavoriteListPage {
       NavigatorTitleComponent({ title: this.favoriteDirectory?.name || '' })
       Scroll() {
         Column() {
-          Row({ space: size.pagePadding }) {
+          Row({ space: size.middleGap }) {
             Image(getMusicCover(this.favoriteDirectory?.cover))
-              .width(size.bigAvaterSize)
+              .width(size.bigAvater)
               .aspectRatio(1)
-              .borderRadius(size.blockBorderRaduis)
-            Column({ space: size.pagePadding }) {
+              .borderRadius(size.middleBorderRaduis)
+            Column({ space: size.middleGap }) {
               Text(this.favoriteDirectory?.name)
-              Text(`${this.favoriteDirectory?.total}首`).fontColor(colors.disableTextColor)
+              Text(`${this.favoriteDirectory?.total}首`).fontColor(colors.gray)
             }
             .alignItems(HorizontalAlign.Start)
           }.alignItems(VerticalAlign.Top).blockStyle()
@@ -101,13 +101,13 @@ export default struct MusicFavoriteListPage {
         }.justifyContent(FlexAlign.Start)
 
       }
-      .padding(size.pagePadding)
+      .padding(size.middleGap)
       .align(Alignment.Top)
       .scrollable(ScrollDirection.Vertical)
       .layoutWeight(1)
     }
     .width('100%')
     .height('100%')
-    .backgroundColor(colors.pageBackgroundColor)
+    .backgroundColor(colors.pageBackground)
   }
 }

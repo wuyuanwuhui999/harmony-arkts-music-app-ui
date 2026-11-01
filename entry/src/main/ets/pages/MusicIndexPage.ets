@@ -81,16 +81,16 @@ struct MusicIndexPage {
 
       // 用图片组件代作为导航栏中间凸起组件
       Image(this.musicStorage?.musicItem ? HOST + this.musicStorage.musicItem.cover: $r('app.media.icon_song_default'))
-        .margin({bottom:size.barHeight - size.bigAvaterSize/2 - size.miniPadding})
-        .height(size.bigAvaterSize + size.miniPadding * 2)
-        .height(size.bigAvaterSize + size.miniPadding * 2)
+        .margin({bottom:size.barHeight - size.bigAvater/2 - size.miniGap})
+        .height(size.bigAvater + size.miniGap * 2)
+        .height(size.bigAvater + size.miniGap * 2)
         .alignSelf(ItemAlign.Center)// 设置悬浮图标居中对齐
-        .borderRadius(size.bigAvaterSize + size.miniPadding * 2)
-        .backgroundColor(colors.blockColor)
+        .borderRadius(size.bigAvater + size.miniGap * 2)
+        .backgroundColor(colors.white)
         .rotate({ angle: this.angle })
         .border({
-          width: size.miniPadding,
-          color: colors.pageBackgroundColor,
+          width: size.miniGap,
+          color: colors.pageBackground,
           style: BorderStyle.Solid
         })
     }
@@ -108,13 +108,13 @@ struct MusicIndexPage {
   @Builder tabBuilder(index: number, title: string, selectedImage: Resource, normalImage: Resource) {
     Column() {
       Image(this.activeIndex == index ? selectedImage : normalImage)
-        .width(size.middlIconSize)
-        .height(size.middlIconSize)
-        .margin({ top: size.smallPadding, bottom: size.smallPadding })
+        .width(size.middleIcon)
+        .height(size.middleIcon)
+        .margin({ top: size.smallGap, bottom: size.smallGap })
       Text(title)
-        .fontColor(this.activeIndex == index ? colors.tabSelectedColor : colors.tabNormalColor)
-        .fontSize(size.normalFontSize)
-        .padding({ bottom: size.pagePadding })
+        .fontColor(this.activeIndex == index ? colors.primary : colors.black)
+        .fontSize(size.middleFont)
+        .padding({ bottom: size.middleGap })
     }
     .width('100%')
     .justifyContent(FlexAlign.Center)

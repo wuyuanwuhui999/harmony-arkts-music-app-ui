@@ -22,9 +22,9 @@ export default struct MusicAuthorMusicListPage {
 
   @Styles
   blockStyle(){
-    .backgroundColor(colors.blockColor)
-    .borderRadius(size.blockBorderRaduis)
-    .padding(size.pagePadding)
+    .backgroundColor(colors.white)
+    .borderRadius(size.middleBorderRaduis)
+    .padding(size.middleGap)
     .width('100%')
   }
 
@@ -79,13 +79,13 @@ export default struct MusicAuthorMusicListPage {
           this.useMusicListByAuthorId()
         }
       }) // 滚动方向纵向
-      .padding({left:size.pagePadding,right:size.pagePadding,bottom:size.pagePadding})
+      .padding({left:size.middleGap,right:size.middleGap,bottom:size.middleGap})
       .align(Alignment.Top)
       .scrollable(ScrollDirection.Vertical)
       .layoutWeight(1)
     }
     .width('100%')
     .height('100%')
-    .backgroundColor(colors.pageBackgroundColor)
+    .backgroundColor(colors.pageBackground)
   }
 }

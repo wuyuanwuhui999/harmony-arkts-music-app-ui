@@ -23,11 +23,11 @@ export default struct MusicAuthorCategoryPage {
 
   @Styles
   blockStyle(){
-    .backgroundColor(colors.blockColor)
-    .borderRadius(size.blockBorderRaduis)
-    .padding(size.pagePadding)
+    .backgroundColor(colors.white)
+    .borderRadius(size.middleBorderRaduis)
+    .padding(size.middleGap)
     .width('100%')
-    .margin({ top: size.pagePadding })
+    .margin({ top: size.middleGap })
   }
 
   aboutToAppear() {
@@ -80,14 +80,14 @@ export default struct MusicAuthorCategoryPage {
       NavigatorTitleComponent({ title: '歌手分类' })
       Scroll() {
         Column() {
-          Column({ space: size.smallPadding }) {
+          Column({ space: size.smallGap }) {
             ForEach(this.categoryList, (items: Array<MusicAuthorCategoryInterface>) => {
-              Row({ space: size.smallPadding }) {
+              Row({ space: size.smallGap }) {
                 ForEach(items, (item: MusicAuthorCategoryInterface) => {
                   Text(item.categoryName)
                     .border({
                       width: 1,
-                      color: this.activeCategoryItem?.id === item.id ? colors.tabSelectedColor : colors.borderColor,
+                      color: this.activeCategoryItem?.id === item.id ? colors.primary : colors.borderColor,
                       style: BorderStyle.Solid
                     })
                     .onClick(() => {
@@ -99,8 +99,8 @@ export default struct MusicAuthorCategoryPage {
                       this.total = 0;
                       this.useMusicAuthorList();
                     })
-                    .fontColor(this.activeCategoryItem?.id === item.id ? colors.tabSelectedColor :
-                    colors.blackBackgroundColor)
+                    .fontColor(this.activeCategoryItem?.id === item.id ? colors.primary :
+                    colors.black)
                     .visibility(item.categoryName ? Visibility.Visible : Visibility.Hidden)
                     .layoutWeight(item.categoryName.length === 2 ? 1 : 2)
                     .textAlign(TextAlign.Center)
@@ -112,25 +112,25 @@ export default struct MusicAuthorCategoryPage {
           }
           .blockStyle()
 
-          Column({ space: size.pagePadding }) {
+          Column({ space: size.middleGap }) {
             ForEach(this.musicAuthorList, (item: MusicAuthorInterface, index: number) => {
-              Row({ space: size.pagePadding }) {
+              Row({ space: size.middleGap }) {
                 MusicAvaterComponent({
                   avater: item.avatar?.toString(),
                   title: item.authorName[0],
-                  dimension: Number(size.middleAvaterSize),
+                  dimension: Number(size.middleAvater),
                   type: 'author'
                 })
                 Text(item.authorName).layoutWeight(1)
                 Image($r("app.media.icon_music_play"))
-                  .width(size.smallIconSize)
-                  .height(size.smallIconSize)
+                  .width(size.smallIcon)
+                  .height(size.smallIcon)
                 Image(item.isLike ? $r("app.media.icon_like_active") : $r("app.media.icon_like"))
-                  .width(size.smallIconSize)
-                  .height(size.smallIconSize)
+                  .width(size.smallIcon)
+                  .height(size.smallIcon)
                 Image($r("app.media.icon_music_menu"))
-                  .width(size.smallIconSize)
-                  .height(size.smallIconSize)
+                  .width(size.smallIcon)
+                  .height(size.smallIcon)
               }.onClick(() => {
                 router.pushUrl({
                   url: 'pages/MusicAuthorMusicListPage',
@@ -146,11 +146,11 @@ export default struct MusicAuthorCategoryPage {
             })
           }
           .blockStyle()
-          .margin({ top: size.pagePadding, bottom: size.pagePadding })
+          .margin({ top: size.middleGap, bottom: size.middleGap })
 
           Row() {
             Text(this.pageNum * PAGE_SIZE < this.total || this.loading ? '正在加载更多...' : '已经到底了...')
-          }.width('100%').justifyContent(FlexAlign.Center).padding({ top: size.pagePadding, bottom: size.pagePadding })
+          }.width('100%').justifyContent(FlexAlign.Center).padding({ top: size.middleGap, bottom: size.middleGap })
         }
         .justifyContent(FlexAlign.Start)
       }
@@ -160,13 +160,13 @@ export default struct MusicAuthorCategoryPage {
           this.useMusicAuthorList()
         }
       })
-      .padding({ left: size.pagePadding, right: size.pagePadding })
+      .padding({ left: size.middleGap, right: size.middleGap })
       .align(Alignment.Top)
       .scrollable(ScrollDirection.Vertical)
       .layoutWeight(1)
     }
     .width('100%')
     .height('100%')
-    .backgroundColor(colors.pageBackgroundColor)
+    .backgroundColor(colors.pageBackground)
   }
 }

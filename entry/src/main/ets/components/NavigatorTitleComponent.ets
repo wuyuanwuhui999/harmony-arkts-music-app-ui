@@ -9,8 +9,8 @@ export default struct NavigatorTitleComponent {
   build() {
     Row(){
       Image($r('app.media.icon_back'))
-        .width(size.smallIconSize)
-        .height(size.smallIconSize)
+        .width(size.smallIcon)
+        .height(size.smallIcon)
         .opacity(size.opacity)
         .onClick(()=>{
           router.back()
@@ -19,12 +19,12 @@ export default struct NavigatorTitleComponent {
         .layoutWeight(1)
         .textAlign(TextAlign.Center)
       Image($r('app.media.icon_back'))
-        .width(size.smallIconSize)
-        .height(size.smallIconSize)
+        .width(size.smallIcon)
+        .height(size.smallIcon)
         .visibility(Visibility.Hidden)
     }
     .width('100%')
-    .padding(size.pagePadding)
-    .backgroundColor(colors.blockColor)
+    .padding(size.middleGap)
+    .backgroundColor(colors.white)
   }
 }

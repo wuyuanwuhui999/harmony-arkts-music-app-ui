@@ -28,17 +28,17 @@ export default struct MusicCategoryPage {
 
   @Styles
   blockStyle(){
-    .backgroundColor(colors.blockColor)
-    .borderRadius(size.blockBorderRaduis)
-    .padding(size.pagePadding)
+    .backgroundColor(colors.white)
+    .borderRadius(size.middleBorderRaduis)
+    .padding(size.middleGap)
     .width('100%')
-    .margin({ top: size.pagePadding })
+    .margin({ top: size.middleGap })
   }
 
   @Styles
   arrowIconStyle(){
-    .width(size.smallIconSize)
-    .height(size.smallIconSize)
+    .width(size.smallIcon)
+    .height(size.smallIcon)
   }
 
   aboutToAppear() {
@@ -92,15 +92,15 @@ export default struct MusicCategoryPage {
       NavigatorTitleComponent({ title: '歌手分类' })
       Scroll() {
         Column() {
-          Column({ space: size.smallPadding }) {
+          Column({ space: size.smallGap }) {
             ForEach(this.currentCategoryList, (items: Array<MusicCategoryInterface>) => {
-              Row({ space: size.smallPadding }) {
+              Row({ space: size.smallGap }) {
                 ForEach(items, (item: MusicCategoryInterface) => {
                   if (item) {
                     Text(item.category)
                       .border({
                         width: 1,
-                        color: this.activeCategory?.id === item.id ? colors.tabSelectedColor : colors.borderColor,
+                        color: this.activeCategory?.id === item.id ? colors.primary : colors.borderColor,
                         style: BorderStyle.Solid
                       })
                       .onClick(() => {
@@ -112,8 +112,8 @@ export default struct MusicCategoryPage {
                         this.total = 0;
                         this.useMusicList();
                       })
-                      .fontColor(this.activeCategory?.id === item.id ? colors.tabSelectedColor :
-                      colors.blackBackgroundColor)
+                      .fontColor(this.activeCategory?.id === item.id ? colors.primary :
+                      colors.black)
                       .layoutWeight(1)
                       .textAlign(TextAlign.Center)
                       .height(size.inputHeight)
@@ -125,7 +125,7 @@ export default struct MusicCategoryPage {
               }
             })
             Row() {
-              Text(this.expand ? '收起' : '展开更多').fontColor(colors.disableTextColor)
+              Text(this.expand ? '收起' : '展开更多').fontColor(colors.gray)
               Image($r('app.media.icon_arrow'))
                 .opacity(size.opacity)
                 .arrowIconStyle()
@@ -149,7 +149,7 @@ export default struct MusicCategoryPage {
 
           Row() {
             Text(this.pageNum * PAGE_SIZE < this.total || this.loading ? '正在加载更多...' : '已经到底了...')
-          }.width('100%').justifyContent(FlexAlign.Center).padding({ top: size.pagePadding, bottom: size.pagePadding })
+          }.width('100%').justifyContent(FlexAlign.Center).padding({ top: size.middleGap, bottom: size.middleGap })
         }
         .justifyContent(FlexAlign.Start)
       }
@@ -159,13 +159,13 @@ export default struct MusicCategoryPage {
           this.useMusicList()
         }
       })
-      .padding({ left: size.pagePadding, right: size.pagePadding })
+      .padding({ left: size.middleGap, right: size.middleGap })
       .align(Alignment.Top)
       .scrollable(ScrollDirection.Vertical)
       .layoutWeight(1)
     }
     .width('100%')
     .height('100%')
-    .backgroundColor(colors.pageBackgroundColor)
+    .backgroundColor(colors.pageBackground)
   }
 }

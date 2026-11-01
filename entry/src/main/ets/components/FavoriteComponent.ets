@@ -11,8 +11,8 @@ import CreateFavoriteDirectory from './CreateFavoriteDirectory';
 function roundedSquareStyle() {
   .alignItems(VerticalAlign.Center)
   .justifyContent(FlexAlign.Center)
-  .backgroundColor(colors.pageBackgroundColor)
-  .borderRadius(size.blockBorderRaduis)
+  .backgroundColor(colors.pageBackground)
+  .borderRadius(size.middleBorderRaduis)
   .width(size.roundedSquareSize)
   .aspectRatio(1)
 }
@@ -56,7 +56,7 @@ export default struct FavoriteComponent {
   build() {
     Column() {
       Text('收藏夹')
-        .padding(size.pagePadding)
+        .padding(size.middleGap)
         .textAlign(TextAlign.Center)
         .border({
           width: { bottom: 1 },
@@ -79,7 +79,7 @@ export default struct FavoriteComponent {
             Row() {
               Row() {
                 Image($r("app.media.icon_add"))
-                  .width(size.middlIconSize)
+                  .width(size.middleIcon)
                   .aspectRatio(1)
               }.roundedSquareStyle()
 
@@ -89,26 +89,26 @@ export default struct FavoriteComponent {
             .onClick(() => this.isCreateFavoriteDirectory = true)
             .justifyContent(FlexAlign.SpaceBetween)
             .alignItems(VerticalAlign.Center)
-            .margin({ bottom: size.pagePadding })
+            .margin({ bottom: size.middleGap })
 
             ForEach(this.favoriteDirectoryList, (item: FavoriteDirectoryInterface, index: number) => {
               Row() {
                 MusicAvaterComponent({
                   avater: item.cover?.toString(),
                   title: item.name[0],
-                  dimension: Number(size.middleAvaterSize),
+                  dimension: Number(size.middleAvater),
                   type: 'music'
                 })
-                Column({ space: size.smallPadding }) {
+                Column({ space: size.smallGap }) {
                   Text(item.name)
-                  Text(`${item.total}首`).fontColor(colors.disableTextColor)
+                  Text(`${item.total}首`).fontColor(colors.gray)
                 }.alignItems(HorizontalAlign.Start)
                 .layoutWeight(1)
-                .margin({ left: size.pagePadding })
+                .margin({ left: size.middleGap })
 
                 Checkbox({ name: 'favoriteCheckbox', group: 'checkboxGroup' })
                   .select(item.checked === 1)
-                  .selectedColor(colors.lineBackgroundColor)
+                  .selectedColor(colors.primary)
                   .onChange((value: boolean) => {
                     item.checked = value ? 1 : 0;
                     this.checkboxValue.length = 0;
@@ -120,9 +120,9 @@ export default struct FavoriteComponent {
               .alignItems(VerticalAlign.Center)
 
               if (index !== this.favoriteDirectoryList.length - 1) {
-                Blank().height(size.pagePadding)
+                Blank().height(size.middleGap)
                 Divider().height(1).color(colors.borderColor)
-                Blank().height(size.pagePadding)
+                Blank().height(size.middleGap)
               }
             })
           }
@@ -130,18 +130,18 @@ export default struct FavoriteComponent {
         .scrollable(ScrollDirection.Vertical)
         .layoutWeight(1)
         .align(Alignment.Top)
-        .padding(size.pagePadding)
+        .padding(size.middleGap)
 
         Column() {
           Button(this.isFavorite && this.checkboxValue.length == 0 ? '取消收藏' :
             `添加${this.checkboxValue.length > 0 ? `（已选${this.checkboxValue.length}个）` : ''}`)
             .width('100%')
-            .padding(size.pagePadding)
-            .backgroundColor(colors.warnColor)
+            .padding(size.middleGap)
+            .backgroundColor(colors.warn)
             .fontColor(Color.White)
-            .borderRadius(size.blockBorderRaduis * 2)
+            .borderRadius(size.middleBorderRaduis * 2)
             .onClick(this.useAddFavorite)
-        }.padding(size.pagePadding)
+        }.padding(size.middleGap)
       }
 
     }.width('100%').height('100%')

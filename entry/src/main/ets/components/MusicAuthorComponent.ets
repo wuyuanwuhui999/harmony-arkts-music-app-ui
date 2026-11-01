@@ -9,11 +9,11 @@ import MusicAvaterComponent from './MusicAvaterComponent';
 export default struct MusicAuthorComponent {
   @Styles
   blockStyle(){
-    .backgroundColor(colors.blockColor)
-    .borderRadius(size.blockBorderRaduis)
-    .padding(size.pagePadding)
+    .backgroundColor(colors.white)
+    .borderRadius(size.middleBorderRaduis)
+    .padding(size.middleGap)
     .width('100%')
-    .margin({ top: size.pagePadding })
+    .margin({ top: size.middleGap })
   }
 
   @State authorList: Array<MusicAuthorInterface> = [];
@@ -34,15 +34,15 @@ export default struct MusicAuthorComponent {
     Column() {
       Row() {
         Image($r('app.media.icon_down'))
-          .width(size.smallIconSize)
-          .height(size.smallIconSize)
-        Text("推荐歌手").margin({ left: size.pagePadding }).layoutWeight(1)
+          .width(size.smallIcon)
+          .height(size.smallIcon)
+        Text("推荐歌手").margin({ left: size.middleGap }).layoutWeight(1)
         Text("更多").onClick(() => {
           router.pushUrl({
             url: 'pages/MusicAuthorCategoryPage', // 目标url
           })
         })
-      }.alignItems(VerticalAlign.Center).margin({ bottom: size.pagePadding })
+      }.alignItems(VerticalAlign.Center).margin({ bottom: size.middleGap })
 
       Row() {
         ForEach(this.authorList, (item: MusicAuthorInterface) => {
@@ -50,10 +50,10 @@ export default struct MusicAuthorComponent {
             MusicAvaterComponent({
               avater: item.avatar?.toString(),
               title: item.authorName[0],
-              dimension: Number(size.middleAvaterSize * 1.5),
+              dimension: Number(size.middleAvater * 1.5),
               type: 'author'
             })
-            Text(item.authorName).margin({ top: size.smallPadding })
+            Text(item.authorName).margin({ top: size.smallGap })
           }
           .width('25%')
           .alignItems(HorizontalAlign.Center)

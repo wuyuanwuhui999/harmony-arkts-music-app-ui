@@ -7,16 +7,16 @@ import { getKeyWordMusicService } from '../service/Index';
 
 @Component
 export default struct MusicSearchComponent {
-  @State dimensions: number = size.middleAvaterSize; // 导入的值不能直接传给组件
+  @State dimensions: number = size.middleAvater; // 导入的值不能直接传给组件
   @State musicItem: MusicInterface | null = null
 
   @Styles
   blockStyle(){
-    .backgroundColor(colors.blockColor)
-    .borderRadius(size.blockBorderRaduis)
-    .padding(size.pagePadding)
+    .backgroundColor(colors.white)
+    .borderRadius(size.middleBorderRaduis)
+    .padding(size.middleGap)
     .width('100%')
-    .margin({ top: size.pagePadding })
+    .margin({ top: size.middleGap })
   }
 
   /**
@@ -35,17 +35,17 @@ export default struct MusicSearchComponent {
   }
 
   build() {
-    Row({space:size.pagePadding}) {
+    Row({space:size.middleGap}) {
       AvaterComponent({ dimensions: this.dimensions })
       Row() {
         Text(this.musicItem?.songName)
-          .fontSize(size.normalFontSize)
-          .fontColor(colors.disableTextColor)
+          .fontSize(size.middleFont)
+          .fontColor(colors.gray)
       }
-      .height(size.middleAvaterSize)
-      .borderRadius(size.middleAvaterSize)
-      .backgroundColor(colors.pageBackgroundColor)
-      .padding({ left: size.pagePadding })
+      .height(size.middleAvater)
+      .borderRadius(size.middleAvater)
+      .backgroundColor(colors.pageBackground)
+      .padding({ left: size.middleGap })
       .flexGrow(1)
       .onClick(() => {
         router.pushUrl({
@@ -60,8 +60,8 @@ export default struct MusicSearchComponent {
         });
       })
       Image($r("app.media.icon_ai"))
-        .width(size.middlIconSize)
-        .height(size.middlIconSize)
+        .width(size.middleIcon)
+        .height(size.middleIcon)
         .onClick(()=>{
           router.pushUrl({
             url:"pages/ChatPage"

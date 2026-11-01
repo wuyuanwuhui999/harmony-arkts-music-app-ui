@@ -34,9 +34,9 @@ export default struct MusicSharePage {
 
   @Styles
   blockStyle(){
-    .backgroundColor(colors.blockColor)
-    .borderRadius(size.blockBorderRaduis)
-    .padding(size.pagePadding)
+    .backgroundColor(colors.white)
+    .borderRadius(size.middleBorderRaduis)
+    .padding(size.middleGap)
     .width('100%')
   }
 
@@ -102,60 +102,60 @@ export default struct MusicSharePage {
           .width(size.btnWidth)
           .height(size.inputHeight)
           .borderRadius(size.smallBorderRaduis)
-          .backgroundColor(colors.blockColor)
-          .fontColor(colors.tabNormalColor)
+          .backgroundColor(colors.white)
+          .fontColor(colors.black)
           .border({
             width: 1,
-            color: colors.disableTextColor
+            color: colors.gray
           })
           .onClick(() => router.back())
         Button('发布', { type: ButtonType.Capsule, stateEffect: true })
           .width(size.btnWidth)
           .height(size.inputHeight)
           .borderRadius(size.smallBorderRaduis)
-          .backgroundColor(colors.lineBackgroundColor)
+          .backgroundColor(colors.primary)
           .onClick(this.useSave)
       }
       .width('100%')
       .justifyContent(FlexAlign.SpaceBetween)
-      .padding(size.pagePadding)
-      .backgroundColor(colors.blockColor)
+      .padding(size.middleGap)
+      .backgroundColor(colors.white)
 
-      Column({ space: size.pagePadding }) {
+      Column({ space: size.middleGap }) {
         TextArea({ placeholder: "这一刻的想法" })
           .height(size.movieWidth)
-          .backgroundColor(colors.textareaColor)
+          .backgroundColor(colors.borderColor)
           .borderRadius(size.smallBorderRaduis)
           .onChange((value: string) => this.circlrModel.content = value)
-        Row({ space: size.pagePadding }) {
+        Row({ space: size.middleGap }) {
           MusicAvaterComponent({
             avater: this.musicItem?.cover,
             title: this.musicItem?.songName,
-            dimension: Number(size.middleAvaterSize),
+            dimension: Number(size.middleAvater),
             type: 'music'
           })
           Text(`${this.musicItem?.authorName} - ${this.musicItem?.songName}`).layoutWeight(1)
         }
         .blockStyle()
 
-        Row({ space: size.pagePadding }) {
+        Row({ space: size.middleGap }) {
           Image($r('app.media.icon_permission'))
-            .width(size.middlIconSize)
+            .width(size.middleIcon)
             .aspectRatio(1)
           Text('谁可以看').layoutWeight(1)
           Text(PermissionMap[this.circlrModel.permission])
           Image($r('app.media.icon_arrow'))
             .opacity(size.opacity)
-            .width(size.smallIconSize)
+            .width(size.smallIcon)
             .aspectRatio(1)
         }
         .blockStyle()
         .alignItems(VerticalAlign.Center)
         .onClick(this.usePermission)
-      }.padding(size.pagePadding)
+      }.padding(size.middleGap)
     }
     .width('100%')
     .height('100%')
-    .backgroundColor(colors.pageBackgroundColor)
+    .backgroundColor(colors.pageBackground)
   }
 }

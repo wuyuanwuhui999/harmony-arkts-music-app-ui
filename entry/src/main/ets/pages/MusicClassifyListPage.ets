@@ -25,9 +25,9 @@ export default struct MusicClassifyListComponents {
 
   @Styles
   blockStyle(){
-    .backgroundColor(colors.blockColor)
-    .borderRadius(size.blockBorderRaduis)
-    .padding(size.pagePadding)
+    .backgroundColor(colors.white)
+    .borderRadius(size.middleBorderRaduis)
+    .padding(size.middleGap)
     .width('100%')
   }
 
@@ -126,10 +126,10 @@ export default struct MusicClassifyListComponents {
           })
           Row() {
             Text(this.pageNum * PAGE_SIZE < this.total ? '正在加载更多...' : '已经到底了...')
-          }.width('100%').padding({ top: size.pagePadding, bottom: size.pagePadding })
+          }.width('100%').padding({ top: size.middleGap, bottom: size.middleGap })
         }
       }
-      .padding({ left: size.pagePadding, right: size.pagePadding, bottom: size.pagePadding })
+      .padding({ left: size.middleGap, right: size.middleGap, bottom: size.middleGap })
       .align(Alignment.Top)
       .scrollable(ScrollDirection.Vertical)
       .layoutWeight(1)
@@ -142,6 +142,6 @@ export default struct MusicClassifyListComponents {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor(colors.pageBackgroundColor)
+    .backgroundColor(colors.pageBackground)
   }
 }

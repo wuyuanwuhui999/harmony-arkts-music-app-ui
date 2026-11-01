@@ -92,11 +92,11 @@ export default struct CommentComponent {
             this.focusableInput = true
           })
         Button('发送', { type: ButtonType.Capsule, stateEffect: true })
-          .backgroundColor(colors.lineBackgroundColor)
+          .backgroundColor(colors.primary)
           .width(size.btnWidth)
           .enabled(Boolean(this.text))
           .height(size.inputHeight)
-          .margin({ left: size.pagePadding })
+          .margin({ left: size.middleGap })
           .onClick(() => {
             if (this.loading) {
               return;
@@ -141,7 +141,7 @@ export default struct CommentComponent {
               this.loading = false;
             });
           })
-      }.backgroundColor(colors.blockColor).padding(size.pagePadding)
+      }.backgroundColor(colors.white).padding(size.middleGap)
     }
     .width('100%')
   }
@@ -172,26 +172,26 @@ export default struct CommentComponent {
    */
   @Builder
   buildCommentList(commentParams: CommentParamsInterface) {
-    Column({ space: size.pagePadding }) {
+    Column({ space: size.middleGap }) {
       ForEach(commentParams.commentList, (aItem: CommentInterface, aIndex: number) => {
         Row() {
           Image(aItem.avater ? HOST + aItem.avater : $r('app.media.default_avater'))
-            .width(aItem.topId ? size.smallAvaterSize : size.middleAvaterSize)
-            .height(aItem.topId ? size.smallAvaterSize : size.middleAvaterSize)
-            .borderRadius(aItem.topId ? size.smallAvaterSize : size.middleAvaterSize)
+            .width(aItem.topId ? size.smallAvater : size.middleAvater)
+            .height(aItem.topId ? size.smallAvater : size.middleAvater)
+            .borderRadius(aItem.topId ? size.smallAvater : size.middleAvater)
           Column() {
             Text(aItem.topId ? `${aItem.username}▶${aItem.replyUserName}` : aItem.username)
-              .fontColor(colors.disableTextColor).margin({ bottom: size.miniPadding })
-            Text(aItem.content).margin({ bottom: size.miniPadding })
-            Text(formatTime(aItem.createTime)).fontColor(colors.disableTextColor)
+              .fontColor(colors.gray).margin({ bottom: size.miniGap })
+            Text(aItem.content).margin({ bottom: size.miniGap })
+            Text(formatTime(aItem.createTime)).fontColor(colors.gray)
             if (aItem.replyList?.length > 0) {
-              Blank().height(size.pagePadding)
+              Blank().height(size.middleGap)
               // 参数必须用对象或者接口形式传递，否则参数变化了，视图不更新
               this.buildCommentList({ commentList: aItem.replyList })
             }
           }.layoutWeight(1)
           .alignItems(HorizontalAlign.Start)
-          .margin({ left: size.pagePadding })
+          .margin({ left: size.middleGap })
           .onClick(this.useReply.bind(this, aItem, aIndex))
         }
         .justifyContent(FlexAlign.Start)
@@ -205,14 +205,14 @@ export default struct CommentComponent {
     if (this.commentListStr) {
       Column() {
         if (this.commentList.length > 0) {
-          Blank().height(size.pagePadding)
+          Blank().height(size.middleGap)
         }
         this.buildCommentList({ commentList: this.commentList })
       }
     } else {
       Column() {
         Text(`${this.commentTotal}条评论`)
-          .padding(size.pagePadding)
+          .padding(size.middleGap)
           .textAlign(TextAlign.Center)
           .border({
             width: { bottom: 1 },
@@ -235,7 +235,7 @@ export default struct CommentComponent {
         .scrollable(ScrollDirection.Vertical)
         .layoutWeight(1)
         .align(Alignment.Top)
-        .padding(size.pagePadding)
+        .padding(size.middleGap)
 
         if (!this.commentListStr) {
           Divider().height(1).color(colors.borderColor)

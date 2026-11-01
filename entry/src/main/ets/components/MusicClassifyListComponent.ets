@@ -21,11 +21,11 @@ export default struct MusicClassifyListComponent {
 
   @Styles
   blockStyle(){
-    .backgroundColor(colors.blockColor)
-    .borderRadius(size.blockBorderRaduis)
-    .padding(size.pagePadding)
+    .backgroundColor(colors.white)
+    .borderRadius(size.middleBorderRaduis)
+    .padding(size.middleGap)
     .width('100%')
-    .margin({ top: size.pagePadding })
+    .margin({ top: size.middleGap })
   }
 
   /**
@@ -74,48 +74,48 @@ export default struct MusicClassifyListComponent {
   build() {
     Column() {
       ForEach(this.musicList, (item: MusicInterface, index: number) => {
-        Row({ space: size.pagePadding }) {
+        Row({ space: size.middleGap }) {
           MusicAvaterComponent({
             avater: item.cover?.toString(),
             title: item.songName[0],
-            dimension: Number(size.middleAvaterSize),
+            dimension: Number(size.middleAvater),
             type: 'music'
           })
           Column() {
             Text(item.songName)
               .maxLines(1)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
-            Text(item.authorName).margin({ top: size.smallPadding / 2 })
+            Text(item.authorName).margin({ top: size.smallGap / 2 })
               .maxLines(1)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
-              .fontColor(colors.disableTextColor)
+              .fontColor(colors.gray)
           }.layoutWeight(1).alignItems(HorizontalAlign.Start)
 
           Image(this.musicStorage.musicItem?.id === item.id && this.musicStorage.classifyName === this.classifyName &&
           this.musicStorage.isPlaying ? $r("app.media.icon_music_playing_grey") : $r("app.media.icon_music_play"))
-            .width(size.smallIconSize)
-            .height(size.smallIconSize)
+            .width(size.smallIcon)
+            .height(size.smallIcon)
           Image((this.musicStorage.musicItem?.id === item.id && this.musicStorage.musicItem?.isLike === 1 ||
             item.isLike === 0) ? $r("app.media.icon_like") : $r("app.media.icon_like_active"))
-            .width(size.smallIconSize)
-            .height(size.smallIconSize)
+            .width(size.smallIcon)
+            .height(size.smallIcon)
             .onClick(() => {
               this.useLike(item, index);
             })
           Image($r("app.media.icon_music_menu"))
-            .width(size.smallIconSize)
-            .height(size.smallIconSize)
+            .width(size.smallIcon)
+            .height(size.smallIcon)
         }
         .onClick(() => this.onPlayMusicList(item, index))
         .alignItems(VerticalAlign.Center)
-        .margin({ top: index === 0 ? 0 : size.pagePadding })
-        .padding({ bottom: index === this.musicList.length - 1 ? 0 : size.pagePadding })
+        .margin({ top: index === 0 ? 0 : size.middleGap })
+        .padding({ bottom: index === this.musicList.length - 1 ? 0 : size.middleGap })
         .border({
           width: {
             bottom: index === this.musicList.length - 1 ? 0 : 1,
           },
           color: {
-            bottom: colors.pageBackgroundColor
+            bottom: colors.pageBackground
           },
           style: {
             bottom: BorderStyle.Solid

@@ -89,11 +89,11 @@ class MyDataSource extends BasicDataSource {
 export default struct MusicCircleComponent {
   @Styles
   blockStyle(){
-    .backgroundColor(colors.blockColor)
-    .borderRadius(size.blockBorderRaduis)
-    .padding(size.pagePadding)
+    .backgroundColor(colors.white)
+    .borderRadius(size.middleBorderRaduis)
+    .padding(size.middleGap)
     .width('100%')
-    .margin({ top: size.pagePadding })
+    .margin({ top: size.middleGap })
   }
 
   @State circleList: MyDataSource = new MyDataSource();
@@ -136,23 +136,23 @@ export default struct MusicCircleComponent {
   @Builder
   popupBuilder() {
     Row() {
-      Row({ space: size.smallPadding }) {
+      Row({ space: size.smallGap }) {
         Image($r('app.media.icon_like_white'))
-          .width(size.smallIconSize)
-          .height(size.smallIconSize)
+          .width(size.smallIcon)
+          .height(size.smallIcon)
         Text(
           this.likeIndex !== -1 ? '取消赞' : '赞')
-          .fontColor(colors.blockColor)
+          .fontColor(colors.white)
       }.onClick(() => {
         this.likeController[this.circleIndex].useLike()
         this.circleId = this.likeIndex = -1;
       }).width('50%').justifyContent(FlexAlign.Center)
 
-      Row({ space: size.smallPadding }) {
+      Row({ space: size.smallGap }) {
         Image($r('app.media.icon_comment_white'))
-          .width(size.smallIconSize)
-          .height(size.smallIconSize)
-        Text('评论').fontColor(colors.blockColor).onClick(() => {
+          .width(size.smallIcon)
+          .height(size.smallIcon)
+        Text('评论').fontColor(colors.white).onClick(() => {
           this.circleId = -1;
           this.commentController[this.circleIndex].openInputDialog()
         })
@@ -170,40 +170,40 @@ export default struct MusicCircleComponent {
         LazyForEach(this.circleList, (item: CircleInterface, index: number) => {
           Row() {
             Image(item.useravater ? HOST + item.useravater : $r("app.media.default_avater"))
-              .width(size.middleAvaterSize)
-              .height(size.middleAvaterSize)
-              .borderRadius(size.middleAvaterSize)
-              .margin({ right: size.pagePadding })
-            Column({ space: size.smallPadding }) {
+              .width(size.middleAvater)
+              .height(size.middleAvater)
+              .borderRadius(size.middleAvater)
+              .margin({ right: size.middleGap })
+            Column({ space: size.smallGap }) {
               Text(item.username)
-                .fontColor(colors.blueColor)
+                .fontColor(colors.black)
                 .fontWeight(FontWeight.Bold)
               Text(item.content)
               Row() {
                 Image(HOST + item.musicCover)
-                  .width(size.middleAvaterSize)
-                  .height(size.middleAvaterSize)
-                  .borderRadius(size.middleAvaterSize)
+                  .width(size.middleAvater)
+                  .height(size.middleAvater)
+                  .borderRadius(size.middleAvater)
                 Text(`${item.musicSongName} - ${item.musicAuthorName}`)
                   .layoutWeight(1)
-                  .margin({ left: size.pagePadding })
+                  .margin({ left: size.middleGap })
                 Image($r('app.media.icon_music_play'))
-                  .width(size.smallIconSize)
-                  .height(size.smallIconSize)
-                  .margin({ right: size.pagePadding })
+                  .width(size.smallIcon)
+                  .height(size.smallIcon)
+                  .margin({ right: size.middleGap })
               }
               .width('100%')
-              .height(size.middleAvaterSize)
-              .borderRadius(size.middleAvaterSize)
-              .backgroundColor(colors.pageBackgroundColor)
+              .height(size.middleAvater)
+              .borderRadius(size.middleAvater)
+              .backgroundColor(colors.pageBackground)
 
               Row() {
                 Text(formatTime(item.createTime!))
                   .layoutWeight(1)
-                  .fontColor(colors.disableTextColor)
+                  .fontColor(colors.gray)
                 Image($r('app.media.icon_music_menu'))
-                  .width(size.smallIconSize)
-                  .height(size.smallIconSize)
+                  .width(size.smallIcon)
+                  .height(size.smallIcon)
                   .onClick(() => {
                     this.circleId = item.id!;
                     this.circleIndex = index;
@@ -212,7 +212,7 @@ export default struct MusicCircleComponent {
                   .bindPopup(this.circleId === item.id, {
                     builder: this.popupBuilder, // 气泡的内容
                     placement: Placement.Left, // 气泡的弹出位置
-                    popupColor: colors.disableTextColor // 气泡的背景色
+                    popupColor: colors.gray // 气泡的背景色
                   })
               }.width('100%')
 
@@ -228,23 +228,23 @@ export default struct MusicCircleComponent {
                   relationId: item.id,
                   commentListStr: JSON.stringify(item.circleComments)
                 })
-                Blank().height(size.pagePadding)
-              }.backgroundColor(colors.pageBackgroundColor)
+                Blank().height(size.middleGap)
+              }.backgroundColor(colors.pageBackground)
               .alignItems(HorizontalAlign.Start)
-              .padding({ left: size.pagePadding, right: size.pagePadding })
-              .borderRadius(size.blockBorderRaduis)
+              .padding({ left: size.middleGap, right: size.middleGap })
+              .borderRadius(size.middleBorderRaduis)
             }.layoutWeight(1).alignItems(HorizontalAlign.Start)
           }.alignItems(VerticalAlign.Top).blockStyle()
         })
-        Text('——已经到底了——').fontColor(colors.disableTextColor).padding(size.pagePadding)
+        Text('——已经到底了——').fontColor(colors.gray).padding(size.middleGap)
       }.justifyContent(FlexAlign.Start)
     }
     .scrollable(ScrollDirection.Vertical)
     .width("100%")
     .height("100%")
     .align(Alignment.Top)
-    .backgroundColor(colors.pageBackgroundColor)
-    .padding({ left: size.pagePadding, right: size.pagePadding, })
+    .backgroundColor(colors.pageBackground)
+    .padding({ left: size.middleGap, right: size.middleGap, })
     .onScrollEdge((side: Edge) => {
       if (this.total > this.pageNum * this.pageSize) {
         this.pageNum++;

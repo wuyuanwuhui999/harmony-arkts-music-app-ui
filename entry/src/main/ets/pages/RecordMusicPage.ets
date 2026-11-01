@@ -17,9 +17,9 @@ export default struct RecordMusicPage {
 
   @Styles
   blockStyle(){
-    .backgroundColor(colors.blockColor)
-    .borderRadius(size.blockBorderRaduis)
-    .padding(size.pagePadding)
+    .backgroundColor(colors.white)
+    .borderRadius(size.middleBorderRaduis)
+    .padding(size.middleGap)
     .width('100%')
   }
 
@@ -39,29 +39,29 @@ export default struct RecordMusicPage {
             ForEach(this.myRecordMusicList, (item: MusicInterface, index: number) => {
               Row() {
                 Image(item.cover ? getMusicCover(item.cover) : $r("app.media.default_avater"))
-                  .width(size.middleAvaterSize)
-                  .height(size.middleAvaterSize)
-                  .borderRadius(size.middleAvaterSize)
+                  .width(size.middleAvater)
+                  .height(size.middleAvater)
+                  .borderRadius(size.middleAvater)
                 Column() {
                   Text(item.songName)
-                  Text(`听过${item.times?.toString()}次`).fontColor(colors.disableTextColor)
-                }.margin({ left: size.pagePadding }).alignItems(HorizontalAlign.Start)
+                  Text(`听过${item.times?.toString()}次`).fontColor(colors.gray)
+                }.margin({ left: size.middleGap }).alignItems(HorizontalAlign.Start)
 
                 Blank()
                 Image($r("app.media.icon_music_play"))
-                  .width(size.smallIconSize)
-                  .height(size.smallIconSize)
-                  .margin({ left: size.pagePadding })
+                  .width(size.smallIcon)
+                  .height(size.smallIcon)
+                  .margin({ left: size.middleGap })
                 Image($r("app.media.icon_music_menu"))
-                  .width(size.smallIconSize)
-                  .height(size.smallIconSize)
-                  .margin({ left: size.pagePadding })
+                  .width(size.smallIcon)
+                  .height(size.smallIcon)
+                  .margin({ left: size.middleGap })
               }.width('100%')
 
               if (index !== this.myRecordMusicList.length - 1) {
-                Blank().height(size.pagePadding)
+                Blank().height(size.middleGap)
                 Divider().height(1).color(colors.borderColor)
-                Blank().height(size.pagePadding)
+                Blank().height(size.middleGap)
               }
             })
           }.justifyContent(FlexAlign.Start).blockStyle()
@@ -70,8 +70,8 @@ export default struct RecordMusicPage {
             Text(this.pageNum * PAGE_SIZE < this.myRecordMusicTotal ? "正在加载更多" : "已经到底了")
               .width("100%")
               .textAlign(TextAlign.Center)
-              .padding({ top: size.pagePadding })
-              .fontColor(colors.disableTextColor)
+              .padding({ top: size.middleGap })
+              .fontColor(colors.gray)
           }
         }
       }
@@ -88,13 +88,13 @@ export default struct RecordMusicPage {
           }).finally(() => this.loading = false);
         }
       }) // 滚动方向纵向
-      .padding(size.pagePadding)
+      .padding(size.middleGap)
       .align(Alignment.Top)
       .scrollable(ScrollDirection.Vertical)
       .layoutWeight(1)
     }
     .width('100%')
     .height('100%')
-    .backgroundColor(colors.pageBackgroundColor)
+    .backgroundColor(colors.pageBackground)
   }
 }

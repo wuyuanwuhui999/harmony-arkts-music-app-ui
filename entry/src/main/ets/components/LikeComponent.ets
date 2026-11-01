@@ -61,14 +61,14 @@ export default struct LikeComponent {
   build() {
     Flex({ direction: FlexDirection.Row, wrap: FlexWrap.Wrap }) {
       Image($r('app.media.icon_music_like'))
-        .width(size.smallIconSize)
-        .height(size.smallIconSize)
-        .margin({ top: size.smallPadding, right: size.smallPadding })
+        .width(size.smallIcon)
+        .height(size.smallIcon)
+        .margin({ top: size.smallGap, right: size.smallGap })
       ForEach(this.mLikeList, (cItem: LikeInterface, index: number) => {
         Text(`${cItem.username}${index === this.mLikeList.length - 1 ? '' : '、'}`)
-          .margin({ left: size.smallPadding })
-          .fontColor(colors.blueColor)
-          .margin({ top: size.smallPadding })
+          .margin({ left: size.smallGap })
+          .fontColor(colors.black)
+          .margin({ top: size.smallGap })
       })
     }
   }

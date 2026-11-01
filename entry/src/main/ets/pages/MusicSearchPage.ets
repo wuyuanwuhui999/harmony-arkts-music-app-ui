@@ -28,11 +28,11 @@ export default struct MusicSearchPage {
 
   @Styles
   blockStyle(){
-    .backgroundColor(colors.blockColor)
-    .borderRadius(size.blockBorderRaduis)
-    .padding(size.pagePadding)
+    .backgroundColor(colors.white)
+    .borderRadius(size.middleBorderRaduis)
+    .padding(size.middleGap)
     .width('100%')
-    .margin({ top: size.pagePadding })
+    .margin({ top: size.middleGap })
   }
 
   aboutToAppear() {
@@ -173,13 +173,13 @@ export default struct MusicSearchPage {
 
   build() {
     Column() {
-      Row({ space: size.pagePadding }) {
+      Row({ space: size.middleGap }) {
         Row() {
           TextInput({
             text: this.searchKeyWord,
             placeholder: this.musicItem ? `${this.musicItem.authorName} - ${this.musicItem.songName}` : '请输入歌曲名或者歌手'
           })
-            .height(size.middleAvaterSize)
+            .height(size.middleAvater)
             .layoutWeight(1)
             .backgroundColor(Color.Transparent)
             .onChange((value) => {
@@ -188,24 +188,24 @@ export default struct MusicSearchPage {
 
           if (this.searchKeyWord) {
             Image($r('app.media.icon_clear'))
-              .width(size.smallIconSize)
-              .height(size.smallIconSize)
+              .width(size.smallIcon)
+              .height(size.smallIcon)
               .onClick(() => {
                 this.searchKeyWord = '';
               })
-              .margin({ right: size.pagePadding })
+              .margin({ right: size.middleGap })
               .onClick(() => {
                 this.searchKeyWord = '';
                 this.searching = false;
               })
           }
         }
-        .borderRadius(size.middleAvaterSize)
-        .backgroundColor(colors.pageBackgroundColor)
+        .borderRadius(size.middleAvater)
+        .backgroundColor(colors.pageBackground)
         .layoutWeight(1)
 
         Button('搜索', { type: ButtonType.Capsule, stateEffect: true })
-          .backgroundColor(colors.lineBackgroundColor)
+          .backgroundColor(colors.primary)
           .width(size.btnWidth)
           .height(size.inputHeight)
           .onClick(this.useSearch)
@@ -217,37 +217,37 @@ export default struct MusicSearchPage {
             Column() {
               Text("暂无搜索结果")
                 .width('100%')
-                .height(size.bigAvaterSize)
+                .height(size.bigAvater)
                 .textAlign(TextAlign.Center)
             }.blockStyle()
           } else {
             Scroll() {
-              Column({ space: size.pagePadding }) {
+              Column({ space: size.middleGap }) {
                 ForEach(this.searchMusicList, (item: MusicInterface, index: number) => {
-                  Row({ space: size.pagePadding }) {
+                  Row({ space: size.middleGap }) {
                     Image(/http[s]?:\/\//.test(item.cover) ? item.cover.replace('{size}', '480') : HOST + item.cover)
-                      .width(size.middleAvaterSize)
+                      .width(size.middleAvater)
                       .aspectRatio(1)
-                      .borderRadius(size.middleAvaterSize)
-                    Column({ space: size.smallPadding }) {
+                      .borderRadius(size.middleAvater)
+                    Column({ space: size.smallGap }) {
                       Text(item.songName)
-                      Text(item.authorName).fontColor(colors.disableTextColor)
+                      Text(item.authorName).fontColor(colors.gray)
                     }.layoutWeight(1).alignItems(HorizontalAlign.Start)
 
                     Image(this.musicStorage?.musicItem?.id === item.id ? $r("app.media.icon_music_playing") :
                     $r("app.media.icon_music_play"))
-                      .width(size.smallIconSize)
-                      .height(size.smallIconSize)
+                      .width(size.smallIcon)
+                      .height(size.smallIcon)
                       .onClick(() => {
                       })
                     Image(item.isLike ? $r("app.media.icon_like_active") : $r("app.media.icon_like"))
-                      .width(size.smallIconSize)
-                      .height(size.smallIconSize)
-                      .margin({ left: size.pagePadding })
+                      .width(size.smallIcon)
+                      .height(size.smallIcon)
+                      .margin({ left: size.middleGap })
                       .onClick(() => this.useLike(item, index))
                     Image($r("app.media.icon_music_menu"))
-                      .width(size.smallIconSize)
-                      .height(size.smallIconSize)
+                      .width(size.smallIcon)
+                      .height(size.smallIcon)
                   }
                   .alignItems(VerticalAlign.Center)
                   .onClick(() => this.usePlay(item, index))
@@ -256,7 +256,7 @@ export default struct MusicSearchPage {
                     Divider().height(1).color(colors.borderColor)
                   }
                 })
-              }.blockStyle().margin({ top: 0, bottom: size.pagePadding }).justifyContent(FlexAlign.Start)
+              }.blockStyle().margin({ top: 0, bottom: size.middleGap }).justifyContent(FlexAlign.Start)
             }.layoutWeight(1).onScrollEdge(this.useLoadMore)
           }
         }
@@ -266,13 +266,13 @@ export default struct MusicSearchPage {
           Flex({ wrap: FlexWrap.Wrap, direction: FlexDirection.Row, justifyContent: FlexAlign.SpaceBetween }) {
             ForEach(this.searchRecordList, (item: string) => {
               Button(item)
-                .fontColor(colors.disableTextColor)
-                .margin({ top: size.pagePadding })
+                .fontColor(colors.gray)
+                .margin({ top: size.middleGap })
                 .height(size.inputHeight)
-                .backgroundColor(colors.pageBackgroundColor)
-                .borderRadius(size.blockBorderRaduis * 2)
+                .backgroundColor(colors.pageBackground)
+                .borderRadius(size.middleBorderRaduis * 2)
                 .onClick(() => this.useLabelSearch(item))
-                .padding({ left: size.pagePadding * 2, right: size.pagePadding * 2 })
+                .padding({ left: size.middleGap * 2, right: size.middleGap * 2 })
             })
           }
         }.blockStyle()
@@ -280,7 +280,7 @@ export default struct MusicSearchPage {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor(colors.pageBackgroundColor)
-    .padding({ left: size.pagePadding, right: size.pagePadding, })
+    .backgroundColor(colors.pageBackground)
+    .padding({ left: size.middleGap, right: size.middleGap, })
   }
 }

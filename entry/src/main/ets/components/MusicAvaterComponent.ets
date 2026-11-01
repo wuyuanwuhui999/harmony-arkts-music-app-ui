@@ -24,7 +24,7 @@ export default struct MusicAvaterComponent {
         .textAlign(TextAlign.Center)
         .width(this.dimension)
         .height(this.dimension)
-        .backgroundColor(colors.pageBackgroundColor)
+        .backgroundColor(colors.pageBackground)
         .borderRadius(this.dimension)
     }
   }

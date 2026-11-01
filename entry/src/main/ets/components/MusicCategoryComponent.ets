@@ -5,17 +5,17 @@ import router from '@ohos.router';
 @Component
 export default struct MusicCategoryComponent{
   @Styles blockStyle(){
-    .backgroundColor(colors.blockColor)
-    .borderRadius(size.blockBorderRaduis)
-    .padding(size.pagePadding)
+    .backgroundColor(colors.white)
+    .borderRadius(size.middleBorderRaduis)
+    .padding(size.middleGap)
     .width('100%')
-    .margin({top:size.pagePadding})
+    .margin({top:size.middleGap})
   }
 
   @Styles categoryImgStyle(){
-    .width(size.bigIconSize * 1.5)
-    .height(size.bigIconSize * 1.5)
-    .margin({bottom:size.pagePadding})
+    .width(size.bigIcon * 1.5)
+    .height(size.bigIcon * 1.5)
+    .margin({bottom:size.middleGap})
   }
 
   build(){

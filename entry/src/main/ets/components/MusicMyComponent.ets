@@ -28,7 +28,7 @@ import { getMusicCover } from '../utils/common';
 export default struct MusicMyComponent {
   scroller: Scroller = new Scroller()
   @StorageLink(USER_DATA) userData: UserDataInterface = {} as UserDataInterface;
-  @State dimensions: number = size.middleAvaterSize; // 导入的值不能直接传给组件
+  @State dimensions: number = size.middleAvater; // 导入的值不能直接传给组件
   @State myFavoriteDirectoryList: Array<FavoriteDirectoryInterface> = []; // 我的歌单
   @State myFavoriteAuthorList: Array<MusicAuthorInterface> = []; // 我关注的歌手列表
   @State myRecordMusicList: Array<MusicInterface> = []; // 我听过的歌曲
@@ -46,11 +46,11 @@ export default struct MusicMyComponent {
 
   @Styles
   blockStyle(){
-    .backgroundColor(colors.blockColor)
-    .borderRadius(size.blockBorderRaduis)
-    .padding(size.pagePadding)
+    .backgroundColor(colors.white)
+    .borderRadius(size.middleBorderRaduis)
+    .padding(size.middleGap)
     .width('100%')
-    .margin({ top: size.pagePadding })
+    .margin({ top: size.middleGap })
   }
 
   /**
@@ -94,11 +94,11 @@ export default struct MusicMyComponent {
     Column() {
       Row() {
         Blank()
-          .width(size.smallIconSize)
-          .height(size.smallIconSize)
-          .margin({ right: size.pagePadding })
+          .width(size.smallIcon)
+          .height(size.smallIcon)
+          .margin({ right: size.middleGap })
         Text('创建收藏夹')
-          .padding(size.pagePadding)
+          .padding(size.middleGap)
           .textAlign(TextAlign.Center)
           .border({
             width: { bottom: 1 },
@@ -106,13 +106,13 @@ export default struct MusicMyComponent {
             style: { bottom: BorderStyle.Solid }
           }).layoutWeight(1)
         Image($r("app.media.icon_close"))
-          .width(size.smallIconSize)
-          .height(size.smallIconSize)
+          .width(size.smallIcon)
+          .height(size.smallIcon)
           .opacity(0.5)
           .onClick(() => {
             this.favoriteDialogController?.close()
           })
-          .margin({ right: size.pagePadding })
+          .margin({ right: size.middleGap })
       }.justifyContent(FlexAlign.Center)
 
       CreateFavoriteDirectory({
@@ -160,7 +160,7 @@ export default struct MusicMyComponent {
     .justifyContent(FlexAlign.Center)
     .width(80)
     .height('100%')
-    .backgroundColor(colors.warnColor)
+    .backgroundColor(colors.warn)
     .onClick(() => {
       this.deleteDialogController = new CustomDialogController({
         customStyle: false,
@@ -217,20 +217,20 @@ export default struct MusicMyComponent {
           AvaterComponent({ dimensions: this.dimensions })
           Column() {
             Text(this.userData?.username).fontWeight(FontWeight.Bold)
-            Text(this.userData?.sign).fontColor(colors.disableTextColor)
-          }.layoutWeight(1).alignItems(HorizontalAlign.Start).margin({ left: size.pagePadding })
+            Text(this.userData?.sign).fontColor(colors.gray)
+          }.layoutWeight(1).alignItems(HorizontalAlign.Start).margin({ left: size.middleGap })
 
           Image($r('app.media.icon_edit'))
-            .height(size.bigIconSize)
-            .width(size.bigIconSize)
+            .height(size.bigIcon)
+            .width(size.bigIcon)
             .onClick(() => router.pushUrl({ url: 'pages/UserPage' }))
         }.blockStyle().alignItems(VerticalAlign.Center)
 
         Column() {
           Row() {
             Image($r("app.media.icon_down"))
-              .width(size.smallIconSize)
-              .height(size.smallIconSize)
+              .width(size.smallIcon)
+              .height(size.smallIcon)
               .colorFilter(colors.borderColor)
               .onClick(() => {
                 this.isFoldFavoriteDirectory = !this.isFoldFavoriteDirectory;
@@ -239,50 +239,50 @@ export default struct MusicMyComponent {
                 });
               })
               .rotate({ angle: this.isFoldFavoriteDirectory ? 90 : 0 })
-            Text("我的歌单").margin({ left: size.pagePadding })
+            Text("我的歌单").margin({ left: size.middleGap })
             Blank()
             Image($r("app.media.icon_add"))
-              .width(size.smallIconSize)
-              .height(size.smallIconSize)
+              .width(size.smallIcon)
+              .height(size.smallIcon)
               .onClick(this.useAddDirectory.bind(this))
           }.width('100%')
 
           if (!this.isFoldFavoriteDirectory) {
-            Blank().height(size.pagePadding)
+            Blank().height(size.middleGap)
             List() {
               ForEach(this.myFavoriteDirectoryList, (item: FavoriteDirectoryInterface, index: number) => {
                 ListItem() {
-                  Row({ space: size.pagePadding }) {
+                  Row({ space: size.middleGap }) {
                     MusicAvaterComponent({
                       avater: item.cover?.toString(),
                       title: item.name[0],
-                      dimension: Number(size.middleAvaterSize),
+                      dimension: Number(size.middleAvater),
                       type: 'music'
                     })
                     Column() {
                       Text(item.name)
-                      Text((item?.total ?? 0).toString() + '首').fontColor(colors.disableTextColor)
+                      Text((item?.total ?? 0).toString() + '首').fontColor(colors.gray)
                     }.alignItems(HorizontalAlign.Start)
 
                     Blank()
                     Image($r("app.media.icon_music_play"))
-                      .width(size.smallIconSize)
-                      .height(size.smallIconSize)
+                      .width(size.smallIcon)
+                      .height(size.smallIcon)
                     Image($r("app.media.icon_music_menu"))
-                      .width(size.smallIconSize)
-                      .height(size.smallIconSize)
+                      .width(size.smallIcon)
+                      .height(size.smallIcon)
                   }
                   .width('100%')
                   .padding({
-                    top: index !== 0 ? size.pagePadding : 0,
-                    bottom: index !== this.myFavoriteDirectoryList.length - 1 ? size.pagePadding : 0
+                    top: index !== 0 ? size.middleGap : 0,
+                    bottom: index !== this.myFavoriteDirectoryList.length - 1 ? size.middleGap : 0
                   })
                   .border({
                     width: {
                       bottom: 1
                     },
                     color: {
-                      bottom: index !== this.myFavoriteDirectoryList.length - 1 ? colors.borderColor : colors.blockColor
+                      bottom: index !== this.myFavoriteDirectoryList.length - 1 ? colors.borderColor : colors.white
                     },
                     style: {
                       bottom: BorderStyle.Solid
@@ -302,8 +302,8 @@ export default struct MusicMyComponent {
         Column() {
           Row() {
             Image($r("app.media.icon_down"))
-              .width(size.smallIconSize)
-              .height(size.smallIconSize)
+              .width(size.smallIcon)
+              .height(size.smallIcon)
               .colorFilter(colors.borderColor)
               .onClick(() => {
                 this.isFoldMusicLike = !this.isFoldMusicLike;
@@ -315,12 +315,12 @@ export default struct MusicMyComponent {
                 }
               })
               .rotate({ angle: this.isFoldMusicLike ? 90 : 0 })
-            Text("我喜欢的歌曲").margin({ left: size.pagePadding })
+            Text("我喜欢的歌曲").margin({ left: size.middleGap })
             if (this.myRecordMusicTotal > 5) {
               Blank()
-              Text("更多").fontColor(colors.disableTextColor).decoration({
+              Text("更多").fontColor(colors.gray).decoration({
                 type: TextDecorationType.Underline,
-                color: colors.disableTextColor
+                color: colors.gray
               }).onClick(() => {
 
               })
@@ -329,18 +329,18 @@ export default struct MusicMyComponent {
           }.width('100%')
 
           if (!this.isFoldMusicLike) {
-            Blank().height(size.pagePadding)
+            Blank().height(size.middleGap)
             List() {
               ForEach(this.myLikeMusicList, (item: MusicInterface, index: number) => {
                 ListItem() {
                   Row() {
                     Image(getMusicCover(item.cover))
-                      .width(size.middleAvaterSize)
-                      .height(size.middleAvaterSize)
-                      .borderRadius(size.middleAvaterSize)
+                      .width(size.middleAvater)
+                      .height(size.middleAvater)
+                      .borderRadius(size.middleAvater)
                     Column() {
                       Text(item.authorName)
-                    }.margin({ left: size.pagePadding }).alignItems(HorizontalAlign.Start)
+                    }.margin({ left: size.middleGap }).alignItems(HorizontalAlign.Start)
 
                     Text(`${item.authorName} - ${item.songName}`)
                       .layoutWeight(1)
@@ -350,25 +350,25 @@ export default struct MusicMyComponent {
                       .maxLines(1)
                       .width(0)
                     Image($r("app.media.icon_music_play"))
-                      .width(size.smallIconSize)
-                      .height(size.smallIconSize)
-                      .margin({ left: size.pagePadding })
+                      .width(size.smallIcon)
+                      .height(size.smallIcon)
+                      .margin({ left: size.middleGap })
                     Image($r("app.media.icon_music_menu"))
-                      .width(size.smallIconSize)
-                      .height(size.smallIconSize)
-                      .margin({ left: size.pagePadding })
+                      .width(size.smallIcon)
+                      .height(size.smallIcon)
+                      .margin({ left: size.middleGap })
                   }
                   .width('100%')
                   .padding({
-                    top: index !== 0 ? size.pagePadding : 0,
-                    bottom: index !== this.myLikeMusicList.length - 1 ? size.pagePadding : 0
+                    top: index !== 0 ? size.middleGap : 0,
+                    bottom: index !== this.myLikeMusicList.length - 1 ? size.middleGap : 0
                   })
                   .border({
                     width: {
                       bottom: 1
                     },
                     color: {
-                      bottom: index !== this.myLikeMusicList.length - 1 ? colors.borderColor : colors.blockColor
+                      bottom: index !== this.myLikeMusicList.length - 1 ? colors.borderColor : colors.white
                     },
                     style: {
                       bottom: BorderStyle.Solid
@@ -388,8 +388,8 @@ export default struct MusicMyComponent {
         Column() {
           Row() {
             Image($r("app.media.icon_down"))
-              .width(size.smallIconSize)
-              .height(size.smallIconSize)
+              .width(size.smallIcon)
+              .height(size.smallIcon)
               .colorFilter(colors.borderColor)
               .onClick(() => {
                 this.isFoldFavoriteAuthor = !this.isFoldFavoriteAuthor;
@@ -401,12 +401,12 @@ export default struct MusicMyComponent {
                 }
               })
               .rotate({ angle: this.isFoldFavoriteAuthor ? 90 : 0 })
-            Text("我关注的歌手").margin({ left: size.pagePadding })
+            Text("我关注的歌手").margin({ left: size.middleGap })
             if (this.myFavoriteAuthorTotal > 5) {
               Blank()
-              Text("更多").fontColor(colors.disableTextColor).decoration({
+              Text("更多").fontColor(colors.gray).decoration({
                 type: TextDecorationType.Underline,
-                color: colors.disableTextColor
+                color: colors.gray
               }).onClick(() => {
 
               })
@@ -415,7 +415,7 @@ export default struct MusicMyComponent {
           }.width('100%')
 
           if (!this.isFoldFavoriteAuthor) {
-            Blank().height(size.pagePadding)
+            Blank().height(size.middleGap)
             List() {
               ForEach(this.myFavoriteAuthorList, (item: MusicAuthorInterface, index: number) => {
                 ListItem() {
@@ -423,35 +423,35 @@ export default struct MusicMyComponent {
                     Image(item.avatar ?
                       (/http[s]?:\/\//.test(item.avatar) ? item.avatar.replace('{size}', '480') : HOST + item.avatar) :
                     $r("app.media.default_avater"))
-                      .width(size.middleAvaterSize)
-                      .height(size.middleAvaterSize)
-                      .borderRadius(size.middleAvaterSize)
+                      .width(size.middleAvater)
+                      .height(size.middleAvater)
+                      .borderRadius(size.middleAvater)
                     Column() {
                       Text(item.authorName)
-                      Text(item.total.toString() + '首').fontColor(colors.disableTextColor)
-                    }.margin({ left: size.pagePadding }).alignItems(HorizontalAlign.Start)
+                      Text(item.total.toString() + '首').fontColor(colors.gray)
+                    }.margin({ left: size.middleGap }).alignItems(HorizontalAlign.Start)
 
                     Blank()
                     Image($r("app.media.icon_music_play"))
-                      .width(size.smallIconSize)
-                      .height(size.smallIconSize)
-                      .margin({ left: size.pagePadding })
+                      .width(size.smallIcon)
+                      .height(size.smallIcon)
+                      .margin({ left: size.middleGap })
                     Image($r("app.media.icon_music_menu"))
-                      .width(size.smallIconSize)
-                      .height(size.smallIconSize)
-                      .margin({ left: size.pagePadding })
+                      .width(size.smallIcon)
+                      .height(size.smallIcon)
+                      .margin({ left: size.middleGap })
                   }
                   .width('100%')
                   .padding({
-                    top: index !== 0 ? size.pagePadding : 0,
-                    bottom: index !== this.myFavoriteAuthorList.length - 1 ? size.pagePadding : 0
+                    top: index !== 0 ? size.middleGap : 0,
+                    bottom: index !== this.myFavoriteAuthorList.length - 1 ? size.middleGap : 0
                   })
                   .border({
                     width: {
                       bottom: 1
                     },
                     color: {
-                      bottom: index !== this.myFavoriteAuthorList.length - 1 ? colors.borderColor : colors.blockColor
+                      bottom: index !== this.myFavoriteAuthorList.length - 1 ? colors.borderColor : colors.white
                     },
                     style: {
                       bottom: BorderStyle.Solid
@@ -471,8 +471,8 @@ export default struct MusicMyComponent {
         Column() {
           Row() {
             Image($r("app.media.icon_down"))
-              .width(size.smallIconSize)
-              .height(size.smallIconSize)
+              .width(size.smallIcon)
+              .height(size.smallIcon)
               .colorFilter(colors.borderColor)
               .onClick(() => {
                 this.isFoldRecordMusic = !this.isFoldRecordMusic;
@@ -484,12 +484,12 @@ export default struct MusicMyComponent {
                 }
               })
               .rotate({ angle: this.isFoldRecordMusic ? 90 : 0 })
-            Text("我听过的歌曲").margin({ left: size.pagePadding })
+            Text("我听过的歌曲").margin({ left: size.middleGap })
             if (this.myRecordMusicTotal > 10) {
               Blank()
-              Text("更多").fontColor(colors.disableTextColor).decoration({
+              Text("更多").fontColor(colors.gray).decoration({
                 type: TextDecorationType.Underline,
-                color: colors.disableTextColor
+                color: colors.gray
               }).onClick(() => {
                 router.pushUrl({ url: 'pages/RecordMusicPage' })
               })
@@ -497,48 +497,48 @@ export default struct MusicMyComponent {
           }.width('100%')
 
           if (!this.isFoldRecordMusic) { // 如果是展开状态
-            Blank().height(size.pagePadding)
+            Blank().height(size.middleGap)
             ForEach(this.myRecordMusicList, (item: MusicInterface, index: number) => {
               Row() {
                 Image(item.cover ?
                   (/http[s]?:\/\//.test(item.cover) ? item.cover.replace('{size}', '480') : HOST + item.cover) :
                 $r("app.media.default_avater"))
-                  .width(size.middleAvaterSize)
-                  .height(size.middleAvaterSize)
-                  .borderRadius(size.middleAvaterSize)
+                  .width(size.middleAvater)
+                  .height(size.middleAvater)
+                  .borderRadius(size.middleAvater)
                 Column() {
                   Text(item.songName)
-                  Text(`听过${(item?.times ?? 0).toString()}次`).fontColor(colors.disableTextColor)
-                }.margin({ left: size.pagePadding }).alignItems(HorizontalAlign.Start)
+                  Text(`听过${(item?.times ?? 0).toString()}次`).fontColor(colors.gray)
+                }.margin({ left: size.middleGap }).alignItems(HorizontalAlign.Start)
 
                 Blank()
                 Image($r("app.media.icon_music_play"))
-                  .width(size.smallIconSize)
-                  .height(size.smallIconSize)
-                  .margin({ left: size.pagePadding })
+                  .width(size.smallIcon)
+                  .height(size.smallIcon)
+                  .margin({ left: size.middleGap })
                 Image($r("app.media.icon_music_menu"))
-                  .width(size.smallIconSize)
-                  .height(size.smallIconSize)
-                  .margin({ left: size.pagePadding })
+                  .width(size.smallIcon)
+                  .height(size.smallIcon)
+                  .margin({ left: size.middleGap })
               }.width('100%')
 
               if (index !== this.myRecordMusicList.length - 1) {
-                Blank().height(size.pagePadding)
+                Blank().height(size.middleGap)
                 Divider().height(1).color(colors.borderColor)
-                Blank().height(size.pagePadding)
+                Blank().height(size.middleGap)
               }
             })
           }
         }.blockStyle()
 
-        Blank().height(size.pagePadding)
+        Blank().height(size.middleGap)
       }
     }
     .scrollable(ScrollDirection.Vertical)
     .width("100%")
     .height("100%")
     .align(Alignment.Top)
-    .backgroundColor(colors.pageBackgroundColor)
-    .padding({ left: size.pagePadding, right: size.pagePadding, })
+    .backgroundColor(colors.pageBackground)
+    .padding({ left: size.middleGap, right: size.middleGap, })
   }
 }

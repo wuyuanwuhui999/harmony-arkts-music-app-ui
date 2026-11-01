@@ -22,15 +22,15 @@ export default struct CommentInputComponent {
             this.text = value;
           })
         Button('发送', { type: ButtonType.Capsule, stateEffect: true })
-          .backgroundColor(colors.lineBackgroundColor)
+          .backgroundColor(colors.primary)
           .width(size.btnWidth)
           .enabled(Boolean(this.text))
           .height(size.inputHeight)
-          .margin({ left: size.pagePadding })
+          .margin({ left: size.middleGap })
           .onClick(() => {
             this.onSend(this.text);
           })
-      }.backgroundColor(colors.blockColor).padding(size.pagePadding)
+      }.backgroundColor(colors.white).padding(size.middleGap)
     }
     .height('100%')
     .width('100%')

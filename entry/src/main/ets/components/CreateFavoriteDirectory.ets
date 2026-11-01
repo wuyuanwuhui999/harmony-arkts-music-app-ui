@@ -16,15 +16,15 @@ export default struct CreateFavoriteDirectory {
   };
 
   build() {
-    Column({ space: size.pagePadding }) {
+    Column({ space: size.middleGap }) {
       Row() {
         Text('*').fontColor(Color.Red)
         Text('名称')
         TextInput({ text: this.favoriteName, placeholder: '请输入收藏夹名称' })
-          .height(size.middleAvaterSize)
-          .backgroundColor(colors.pageBackgroundColor)
+          .height(size.middleAvater)
+          .backgroundColor(colors.pageBackground)
           .borderRadius(size.smallBorderRaduis)
-          .margin({ left: size.pagePadding })
+          .margin({ left: size.middleGap })
           .onChange((value) => {
             this.favoriteName = value.trim();
           })
@@ -37,15 +37,15 @@ export default struct CreateFavoriteDirectory {
         Text('封面')
         Row() {
           Image($r('app.media.icon_add'))
-            .width(size.middlIconSize)
+            .width(size.middleIcon)
             .aspectRatio(1)
         }
         .justifyContent(FlexAlign.Center)
         .alignItems(VerticalAlign.Center)
-        .backgroundColor(colors.pageBackgroundColor)
+        .backgroundColor(colors.pageBackground)
         .borderRadius(size.smallBorderRaduis)
-        .margin({ left: size.pagePadding })
-        .width(size.bigAvaterSize)
+        .margin({ left: size.middleGap })
+        .width(size.bigAvater)
         .aspectRatio(1)
       }
       .width('100%')
@@ -53,10 +53,10 @@ export default struct CreateFavoriteDirectory {
 
       Button('创建')
         .width('100%')
-        .padding(size.pagePadding)
-        .backgroundColor(colors.warnColor)
+        .padding(size.middleGap)
+        .backgroundColor(colors.warn)
         .fontColor(Color.White)
-        .borderRadius(size.blockBorderRaduis * 2)
+        .borderRadius(size.middleBorderRaduis * 2)
         .onClick(() => {
           const favoriteDirectory: FavoriteDirectoryInterface = {
             name: this.favoriteName,
@@ -73,14 +73,14 @@ export default struct CreateFavoriteDirectory {
 
       Button('取消')
         .width('100%')
-        .padding(size.pagePadding)
+        .padding(size.middleGap)
         .border({ width: 1, color: colors.borderColor })
         .backgroundColor(Color.Transparent)
         .fontColor(Color.Black)
-        .borderRadius(size.blockBorderRaduis * 2)
+        .borderRadius(size.middleBorderRaduis * 2)
         .onClick(() => {
           this.onCancleCreateDirectory()
         })
-    }.padding(size.pagePadding)
+    }.padding(size.middleGap)
   }
 }

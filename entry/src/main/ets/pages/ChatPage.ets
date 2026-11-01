@@ -58,11 +58,11 @@ export default struct ChatPage {
 
   @Styles
   blockStyle(){
-    .backgroundColor(colors.blockColor)
-    .borderRadius(size.blockBorderRaduis)
-    .padding(size.pagePadding)
+    .backgroundColor(colors.white)
+    .borderRadius(size.middleBorderRaduis)
+    .padding(size.middleGap)
     .width('100%')
-    .margin({ top: size.pagePadding })
+    .margin({ top: size.middleGap })
   }
 
   async aboutToAppear() {
@@ -225,10 +225,10 @@ export default struct ChatPage {
       if (this.showHistory) {
         Row() {
           Scroll() {
-            Column({ space: size.pagePadding }) {
+            Column({ space: size.middleGap }) {
               ForEach(Object.keys(this.chatHistoryGroup), (key: string) => {
-                Column({ space: size.miniPadding }) {
-                  Text(key).fontColor(colors.disableTextColor)
+                Column({ space: size.miniGap }) {
+                  Text(key).fontColor(colors.gray)
                   ForEach(this.chatHistoryGroup[key], (items: ChatHistoryInterface[]) => {
                     Text(items[0].prompt)
                       .maxLines(1)// 限制最大行数为1
@@ -261,15 +261,15 @@ export default struct ChatPage {
             }
           })
           .align(Alignment.TopStart)
-          .padding(size.pagePadding)
+          .padding(size.middleGap)
           .width("70%")
-          .backgroundColor(colors.blockColor)
+          .backgroundColor(colors.white)
           .height("100%")
 
           Row()
             .height("100%")
             .layoutWeight(1)
-            .backgroundColor(colors.tabNormalColor)
+            .backgroundColor(colors.black)
             .opacity(0.5)
             .onClick(() => {
               this.showHistory = false
@@ -281,15 +281,15 @@ export default struct ChatPage {
       }
       Column() {
         Row() {
-          AvaterComponent({dimensions:size.middleAvaterSize,avater:this.userData.avater}).onClick(()=>{
+          AvaterComponent({dimensions:size.middleAvater,avater:this.userData.avater}).onClick(()=>{
             router.pushUrl({
               url: 'pages/UserPage'
             });
           })
           Text("当前接入模型：" + this.activeModelName).layoutWeight(1).textAlign(TextAlign.Center)
           Image($r('app.media.icon_menu'))
-            .width(size.smallIconSize)
-            .height(size.smallIconSize)
+            .width(size.smallIcon)
+            .height(size.smallIcon)
             .opacity(size.opacity)
             .onClick(() => {
               this.showMenu = true;
@@ -297,35 +297,35 @@ export default struct ChatPage {
             .bindPopup(this.showMenu, {
               builder: this.popupBuilder, // 气泡的内容
               placement: Placement.Bottom, // 气泡的弹出位置
-              popupColor: colors.disableTextColor // 气泡的背景色
+              popupColor: colors.gray // 气泡的背景色
             })
         }
         .alignItems(VerticalAlign.Center)
-        .padding(size.pagePadding)
-        .backgroundColor(colors.blockColor)
+        .padding(size.middleGap)
+        .backgroundColor(colors.white)
 
         Scroll(this.scroller) {
-          Column({ space: size.pagePadding }) {
+          Column({ space: size.middleGap }) {
             ForEach(this.chatList, (item: ChatInterface, index: number) => {
               if (item.position == PositionEnum.LEFT) {
                 if (item.thinkContent || item.responseContent) {
                   Row() {
                     Image($r("app.media.icon_ai"))
-                      .width(size.middlIconSize)
-                      .height(size.middlIconSize)
-                      .margin({ right: size.smallIconSize })
+                      .width(size.middleIcon)
+                      .height(size.middleIcon)
+                      .margin({ right: size.smallIcon })
                     Row() {
                       Image($r("app.media.icon_triangle"))
-                        .width(size.smallIconSize)
-                        .height(size.smallIconSize)
+                        .width(size.smallIcon)
+                        .height(size.smallIcon)
                         .alignSelf(ItemAlign.Start)
-                        .position({ x: -size.smallIconSize / 1.5, y: size.smallIconSize / 2 })
+                        .position({ x: -size.smallIcon / 1.5, y: size.smallIcon / 2 })
                       Row() {
                         Row(){
                           Column(){
                             if (item.thinkContent) {
                               Text(item.thinkContent?.replace(/^(<think>)|(<\/think>)$/g, ""))
-                                .fontColor(colors.disableTextColor)
+                                .fontColor(colors.gray)
                             }
                             if (item.responseContent) {
                               Text(item.responseContent)
@@ -334,9 +334,9 @@ export default struct ChatPage {
                           }.alignItems(HorizontalAlign.Start)
                         }
                         .justifyContent(FlexAlign.Start)
-                        .backgroundColor(colors.blockColor)
-                        .borderRadius(size.blockBorderRaduis)
-                        .padding(size.pagePadding)
+                        .backgroundColor(colors.white)
+                        .borderRadius(size.middleBorderRaduis)
+                        .padding(size.middleGap)
                       }.layoutWeight(1)
                     }.layoutWeight(1)
                   }
@@ -348,18 +348,18 @@ export default struct ChatPage {
                 Row() {
                   Row() {
                     Text(item.text)
-                      .backgroundColor(colors.blockColor)
-                      .borderRadius(size.blockBorderRaduis)
-                      .padding(size.pagePadding)
+                      .backgroundColor(colors.white)
+                      .borderRadius(size.middleBorderRaduis)
+                      .padding(size.middleGap)
                     Image($r("app.media.icon_triangle"))
-                      .width(size.smallIconSize)
-                      .height(size.smallIconSize)
+                      .width(size.smallIcon)
+                      .height(size.smallIcon)
                       .alignSelf(ItemAlign.Start)
                       .rotate({ angle: 180 })
-                      .position({ right: -size.smallIconSize / 1.5, top: size.smallIconSize / 2 })
+                      .position({ right: -size.smallIcon / 1.5, top: size.smallIcon / 2 })
                   }.layoutWeight(1).justifyContent(FlexAlign.End)
 
-                  AvaterComponent({ dimensions: size.middlIconSize,avater:this.userData.avater }).margin({ left: size.smallIconSize })
+                  AvaterComponent({ dimensions: size.middleIcon,avater:this.userData.avater }).margin({ left: size.smallIcon })
                 }
                 .width("100%")
               }
@@ -367,22 +367,22 @@ export default struct ChatPage {
             if (this.loading) {
               Row() {
                 Image($r("app.media.icon_ai"))
-                  .width(size.middlIconSize)
-                  .height(size.middlIconSize)
-                  .margin({ right: size.smallIconSize })
+                  .width(size.middleIcon)
+                  .height(size.middleIcon)
+                  .margin({ right: size.smallIcon })
                 Row() {
                   Image($r("app.media.icon_triangle"))
-                    .width(size.smallIconSize)
-                    .height(size.smallIconSize)
+                    .width(size.smallIcon)
+                    .height(size.smallIcon)
                     .alignSelf(ItemAlign.Start)
-                    .position({ x: -size.smallIconSize / 1.5, y: size.smallIconSize / 2 })
+                    .position({ x: -size.smallIcon / 1.5, y: size.smallIcon / 2 })
                   Column() {
                     if (!this.thinkContent && !this.responseContent) {
-                      Text("正在思考中").fontColor(colors.disableTextColor)
+                      Text("正在思考中").fontColor(colors.gray)
                     } else {
                       if (this.thinkContent) {
                         Text(this.thinkContent.replace(/^(<think>)[\s\s\n]?|(<\/think>[\s\S\n]?)$/gi, ""))
-                          .fontColor(colors.disableTextColor)
+                          .fontColor(colors.gray)
                       }
                       if (this.responseContent) {
                         // MarkdownRenderer({markdownText:this.responseContent})
@@ -390,9 +390,9 @@ export default struct ChatPage {
                       }
                     }
                   }
-                }.backgroundColor(colors.blockColor)
-                .borderRadius(size.blockBorderRaduis)
-                .padding(size.pagePadding)
+                }.backgroundColor(colors.white)
+                .borderRadius(size.middleBorderRaduis)
+                .padding(size.middleGap)
                 .layoutWeight(1)
               }
               .width("100%")
@@ -403,53 +403,53 @@ export default struct ChatPage {
           .justifyContent(FlexAlign.Start)
           .alignItems(HorizontalAlign.Start)
         }
-        .padding(size.pagePadding)
+        .padding(size.middleGap)
         .align(Alignment.Top)
         .scrollable(ScrollDirection.Vertical)
         .layoutWeight(1)
-        Row({space:size.pagePadding}){
+        Row({space:size.middleGap}){
           Text("深度思考")
-            .fontColor(this.showThink ? colors.tabSelectedColor :colors.disableTextColor)
+            .fontColor(this.showThink ? colors.primary :colors.gray)
             .borderRadius(size.inputHeight)
             .border({
               width:1,
-              color:this.showThink ? colors.tabSelectedColor :colors.disableTextColor,
+              color:this.showThink ? colors.primary :colors.gray,
               style:BorderStyle.Solid
             })
             .padding({
-              top:size.smallPadding,
-              bottom:size.smallPadding,
-              left:size.pagePadding,
-              right:size.pagePadding
+              top:size.smallGap,
+              bottom:size.smallGap,
+              left:size.middleGap,
+              right:size.middleGap
             })
-            .backgroundColor(colors.blockColor)
+            .backgroundColor(colors.white)
             .onClick(()=>{
               this.showThink = !this.showThink
             })
-          Row({space:size.smallPadding}){
+          Row({space:size.smallGap}){
             Text(this.language == "zh" ? "中文" : "En")
-            Image($r('app.media.icon_switch')).width(size.smallIconSize).height(size.smallPadding)
+            Image($r('app.media.icon_switch')).width(size.smallIcon).height(size.smallGap)
           }
-          .padding(size.smallPadding)
+          .padding(size.smallGap)
           .onClick(()=>{
             this.language = this.language == "zh" ? "en" : "zh";
           })
           .borderRadius(size.inputHeight)
           .border({
             width:1,
-            color: colors.tabNormalColor,
+            color: colors.black,
             style:BorderStyle.Solid
           })
         }
         .width('100%')
-        .backgroundColor(colors.pageBackgroundColor)
-        .padding(size.pagePadding)
+        .backgroundColor(colors.pageBackground)
+        .padding(size.middleGap)
         .justifyContent(FlexAlign.Start)
-        Row({ space: size.pagePadding }) {
+        Row({ space: size.middleGap }) {
           Image($r("app.media.icon_chat"))
             .opacity(size.opacity)
-            .width(size.middlIconSize)
-            .height(size.middlIconSize)
+            .width(size.middleIcon)
+            .height(size.middleIcon)
             .onClick(() => {
               this.chatId = "";
             })
@@ -458,7 +458,7 @@ export default struct ChatPage {
               text: this.prompt,
               placeholder: "有问题，尽管问"
             })
-              .height(size.middleAvaterSize)
+              .height(size.middleAvater)
               .layoutWeight(1)
               .backgroundColor(Color.Transparent)
               .onChange((value) => {
@@ -467,51 +467,51 @@ export default struct ChatPage {
 
             if (this.prompt) {
               Image($r('app.media.icon_clear'))
-                .width(size.smallIconSize)
-                .height(size.smallIconSize)
+                .width(size.smallIcon)
+                .height(size.smallIcon)
                 .onClick(() => {
                   this.prompt = '';
                 })
-                .margin({ right: size.pagePadding })
+                .margin({ right: size.middleGap })
                 .onClick(() => {
                   this.prompt = '';
                 })
             }
           }
-          .borderRadius(size.middleAvaterSize)
-          .backgroundColor(colors.pageBackgroundColor)
+          .borderRadius(size.middleAvater)
+          .backgroundColor(colors.pageBackground)
           .layoutWeight(1)
 
           Row() {
             if (this.loading) {
               Row()
-                .height(size.smallIconSize)
-                .width(size.smallIconSize)
-                .backgroundColor(colors.disableTextColor)
+                .height(size.smallIcon)
+                .width(size.smallIcon)
+                .backgroundColor(colors.gray)
                 .borderRadius(size.smallBorderRaduis / 2)
             } else {
               Image($r("app.media.icon_send"))
                 .opacity(size.opacity)
-                .width(size.middlIconSize)
-                .height(size.middlIconSize)
+                .width(size.middleIcon)
+                .height(size.middleIcon)
                 .onClick(this.onSend)
             }
 
           }
-          .width(size.middleAvaterSize)
-          .height(size.middleAvaterSize)
-          .borderRadius(size.middleAvaterSize)
-          .backgroundColor(colors.pageBackgroundColor)
+          .width(size.middleAvater)
+          .height(size.middleAvater)
+          .borderRadius(size.middleAvater)
+          .backgroundColor(colors.pageBackground)
           .alignItems(VerticalAlign.Center)
           .justifyContent(FlexAlign.Center)
         }
-        .backgroundColor(colors.blockColor)
-        .padding(size.pagePadding)
+        .backgroundColor(colors.white)
+        .padding(size.middleGap)
         .alignItems(VerticalAlign.Center)
       }
       .width('100%')
       .height('100%')
-      .backgroundColor(colors.pageBackgroundColor)
+      .backgroundColor(colors.pageBackground)
 
     }.width("100%").height("100%")
   }

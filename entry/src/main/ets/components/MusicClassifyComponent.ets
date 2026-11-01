@@ -18,11 +18,11 @@ export default struct MusicClassifyComponent {
 
   @Styles
   blockStyle(){
-    .backgroundColor(colors.blockColor)
-    .borderRadius(size.blockBorderRaduis)
-    .padding(size.pagePadding)
+    .backgroundColor(colors.white)
+    .borderRadius(size.middleBorderRaduis)
+    .padding(size.middleGap)
     .width('100%')
-    .margin({ top: size.pagePadding })
+    .margin({ top: size.middleGap })
   }
 
   aboutToAppear() {
@@ -66,10 +66,10 @@ export default struct MusicClassifyComponent {
     Column() {
       Row() {
         Image($r('app.media.icon_down'))
-          .width(size.smallIconSize)
-          .height(size.smallIconSize)
+          .width(size.smallIcon)
+          .height(size.smallIcon)
           .opacity(0.5)
-        Text(this.classifyName).margin({ left: size.pagePadding }).layoutWeight(1)
+        Text(this.classifyName).margin({ left: size.middleGap }).layoutWeight(1)
         Text("更多").onClick(() => {
           router.pushUrl({
             url: 'pages/MusicClassifyListPage',
@@ -82,45 +82,45 @@ export default struct MusicClassifyComponent {
 
       Column() {
         ForEach(this.musicList, (item: MusicInterface, index: number) => {
-          Row({ space: size.pagePadding }) {
+          Row({ space: size.middleGap }) {
             MusicAvaterComponent({
               avater: item.cover?.toString(),
               title: item.songName.toString(),
-              dimension: Number(size.middleAvaterSize),
+              dimension: Number(size.middleAvater),
               type: 'music'
             })
             Column() {
               Text(item.songName)
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
-              Text(item.authorName).margin({ top: size.smallPadding / 2 })
+              Text(item.authorName).margin({ top: size.smallGap / 2 })
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
-                .fontColor(colors.disableTextColor)
+                .fontColor(colors.gray)
             }.layoutWeight(1).alignItems(HorizontalAlign.Start)
 
             Image(this.musicStorage.musicItem?.id === item.id && this.musicStorage.classifyName === this.classifyName &&
             this.musicStorage.isPlaying ? $r("app.media.icon_music_playing_grey") : $r("app.media.icon_music_play"))
-              .width(size.smallIconSize)
-              .height(size.smallIconSize)
+              .width(size.smallIcon)
+              .height(size.smallIcon)
               .onClick(() => this.usePlayMusicList(item, index))
             Image((this.musicStorage.musicItem?.id === item.id && this.musicStorage.musicItem?.isLike === 1 ||
               item.isLike === 0) ? $r("app.media.icon_like") : $r("app.media.icon_like_active"))
-              .width(size.smallIconSize)
-              .height(size.smallIconSize)
+              .width(size.smallIcon)
+              .height(size.smallIcon)
             Image($r("app.media.icon_music_menu"))
-              .width(size.smallIconSize)
-              .height(size.smallIconSize)
+              .width(size.smallIcon)
+              .height(size.smallIcon)
           }
           .alignItems(VerticalAlign.Center)
-          .margin({ top: size.pagePadding })
-          .padding({ bottom: index === this.musicList.length - 1 ? 0 : size.pagePadding })
+          .margin({ top: size.middleGap })
+          .padding({ bottom: index === this.musicList.length - 1 ? 0 : size.middleGap })
           .border({
             width: {
               bottom: index === this.musicList.length - 1 ? 0 : 1,
             },
             color: {
-              bottom: colors.pageBackgroundColor
+              bottom: colors.pageBackground
             },
             style: {
               bottom: BorderStyle.Solid

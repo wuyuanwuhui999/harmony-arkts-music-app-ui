@@ -11,11 +11,11 @@ import MusicAuthorComponent from './MusicAuthorComponent';
 export default struct MusicHomeComponent {
   @Styles
   blockStyle(){
-    .backgroundColor(colors.blockColor)
-    .borderRadius(size.blockBorderRaduis)
-    .padding(size.pagePadding)
+    .backgroundColor(colors.white)
+    .borderRadius(size.middleBorderRaduis)
+    .padding(size.middleGap)
     .width('100%')
-    .margin({ top: size.pagePadding })
+    .margin({ top: size.middleGap })
   }
 
   @State allClassifyList: Array<MusicCategoryInterface> = [];
@@ -43,7 +43,7 @@ export default struct MusicHomeComponent {
           })
           Row() {
             Text(this.pageNum == this.allClassifyList.length ? '已经到底了...' : '正在加载更多...')
-          }.padding({ top: size.pagePadding, bottom: size.pagePadding })
+          }.padding({ top: size.middleGap, bottom: size.middleGap })
         }
       }
       .scrollable(ScrollDirection.Vertical)
@@ -55,7 +55,7 @@ export default struct MusicHomeComponent {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor(colors.pageBackgroundColor)
-    .padding({ left: size.pagePadding, right: size.pagePadding, })
+    .backgroundColor(colors.pageBackground)
+    .padding({ left: size.middleGap, right: size.middleGap, })
   }
 }

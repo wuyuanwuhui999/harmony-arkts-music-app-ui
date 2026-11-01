@@ -216,10 +216,10 @@ struct MusicPlayerPage {
     Column(){
       Row(){
         Image($r('app.media.icon_music_order'))
-          .width(size.smallIconSize)
+          .width(size.smallIcon)
           .aspectRatio(1)
-        Text('顺序播放').margin({left:size.smallPadding}).fontColor(colors.blockColor)
-      }.padding(size.pagePadding).onClick(()=>{
+        Text('顺序播放').margin({left:size.smallGap}).fontColor(colors.white)
+      }.padding(size.middleGap).onClick(()=>{
         this.showPopupLoopMode = false;
         if(this.musicStorage.audio)this.musicStorage.audio.loop = false;
         this.musicStorage.loop = LoopMode.ORDER;
@@ -227,10 +227,10 @@ struct MusicPlayerPage {
       })
       Row(){
         Image($r('app.media.icon_music_loop'))
-          .width(size.smallIconSize)
+          .width(size.smallIcon)
           .aspectRatio(1)
-        Text('单曲循环').margin({left:size.smallPadding}).fontColor(colors.blockColor)
-      }.padding(size.pagePadding).onClick(()=>{
+        Text('单曲循环').margin({left:size.smallGap}).fontColor(colors.white)
+      }.padding(size.middleGap).onClick(()=>{
         this.showPopupLoopMode = false;
         if(this.musicStorage.audio)this.musicStorage.audio.loop = true;
         this.musicStorage.loop = LoopMode.REPEAT;
@@ -238,10 +238,10 @@ struct MusicPlayerPage {
       })
       Row(){
         Image($r('app.media.icon_music_random'))
-          .width(size.smallIconSize)
+          .width(size.smallIcon)
           .aspectRatio(1)
-        Text('随机播放').margin({left:size.smallPadding}).fontColor(colors.blockColor)
-      }.padding(size.pagePadding).onClick(()=>{
+        Text('随机播放').margin({left:size.smallGap}).fontColor(colors.white)
+      }.padding(size.middleGap).onClick(()=>{
         this.showPopupLoopMode = false;
         if(this.musicStorage.audio)this.musicStorage.audio.loop = false
         this.musicStorage.loop = LoopMode.RANDOM;
@@ -388,30 +388,30 @@ struct MusicPlayerPage {
 
   build(){
     Stack(){
-      Column({space:size.pagePadding}){
+      Column({space:size.middleGap}){
         Text(this.musicStorage.musicItem?.songName)
-          .margin({top:size.pagePadding,bottom:size.pagePadding})
-          .fontColor(colors.blockColor)
-          .fontSize(size.bigFontSize)
+          .margin({top:size.middleGap,bottom:size.middleGap})
+          .fontColor(colors.white)
+          .fontSize(size.bigFont)
         Row(){
           Row(){
             Image(HOST + this.musicStorage.musicItem?.cover)
               .width('100%')
               .aspectRatio(1)
-              .borderRadius(this.circleSize - size.smallPadding * 12)
+              .borderRadius(this.circleSize - size.smallGap * 12)
           }.linearGradient({
             direction: GradientDirection.Top, // 渐变方向
             repeating: true, // 渐变颜色是否重复
             colors: [[0x000000, 0.0], [0x333333, 0.5], [0x000000, 1]] // 数组末尾元素占比小于1时满足重复着色效果
           })
-          .width(this.circleSize - size.smallPadding * 2)
+          .width(this.circleSize - size.smallGap * 2)
           .aspectRatio(1)
           .rotate({ angle: this.angle })
-          .padding(size.smallPadding * 5)
-          .borderRadius(this.circleSize - size.smallPadding * 2)
+          .padding(size.smallGap * 5)
+          .borderRadius(this.circleSize - size.smallGap * 2)
         }
         .border({
-          width: size.smallPadding,
+          width: size.smallGap,
           color: colors.playerOuterCircleColor,
           style: BorderStyle.Solid
         })
@@ -422,11 +422,11 @@ struct MusicPlayerPage {
         // 歌词
         if(this.lyric?.lines?.length??0 > 0){
           // 歌词列表
-          List({space:size.miniPadding,scroller:this.scroller}) {
+          List({space:size.miniGap,scroller:this.scroller}) {
             ForEach(this.lyric?.lines, (item: LineInterface, index: number) => {
               ListItem(){
                 Text(item.txt)
-                  .fontColor(colors.blockColor)
+                  .fontColor(colors.white)
                   .opacity(this.currentLineNum === index ? 1 : size.opacity)
                   .alignSelf(ItemAlign.Center)
               }.width('100%')
@@ -436,51 +436,51 @@ struct MusicPlayerPage {
           .layoutWeight(1)
         }else{
           Row(){
-            Text("暂无歌词").fontColor(colors.blockColor).opacity(size.opacity)
+            Text("暂无歌词").fontColor(colors.white).opacity(size.opacity)
           }
           .width('100%')
           .layoutWeight(1)
           .justifyContent(FlexAlign.Center)
           .alignItems(VerticalAlign.Center)
         }
-        Text(this.musicStorage.musicItem?.authorName).width('80%').fontColor(colors.blockColor)
+        Text(this.musicStorage.musicItem?.authorName).width('80%').fontColor(colors.white)
         Row(){
           Image(this.musicModel.isLike ? $r('app.media.icon_collection_active') : $r('app.media.icon_music_collect'))
-            .width(size.middlIconSize)
+            .width(size.middleIcon)
             .aspectRatio(1)
             .onClick(this.useLike)
           Image($r('app.media.icon_share_music'))
-            .width(size.middlIconSize)
+            .width(size.middleIcon)
             .aspectRatio(1)
             .onClick(this.useShare)
           Image($r('app.media.icon_music_comments'))
-            .width(size.middlIconSize)
+            .width(size.middleIcon)
             .aspectRatio(1)
             .onClick(this.useComment)
           Image(this.isFavorite ? $r('app.media.icon_full_star') : $r('app.media.icon_favorite'))
-            .width(size.middlIconSize)
+            .width(size.middleIcon)
             .aspectRatio(1)
             .onClick(this.useFavorite)
         }.width('80%').justifyContent(FlexAlign.SpaceBetween)
-        Row({space:size.smallPadding}){
-          Text(this.currentTime ? formatSecond(this.currentTime/1000) : '00:00').fontColor(colors.blockColor)
+        Row({space:size.smallGap}){
+          Text(this.currentTime ? formatSecond(this.currentTime/1000) : '00:00').fontColor(colors.white)
           Slider({value:this.progress})
-            .selectedColor(colors.blockColor)
+            .selectedColor(colors.white)
             .layoutWeight(1)
             .onChange((value:number) => this.useChangeProgress(value))
-          Text(this.duration ? formatSecond(this.duration/1000) : '00:00').fontColor(colors.blockColor)
+          Text(this.duration ? formatSecond(this.duration/1000) : '00:00').fontColor(colors.white)
         }.width('80%').alignItems(VerticalAlign.Center)
 
         Row(){
           Image(this.loopMode[this.musicStorage.loop])
-            .width(size.middlIconSize)
+            .width(size.middleIcon)
             .aspectRatio(1)
             .onClick(()=>{
               this.showPopupLoopMode = true;
             }).bindPopup(this.showPopupLoopMode, {
             builder: this.popupBuilder,
             placement: Placement.Top,
-            popupColor: colors.blackBackgroundColor,
+            popupColor: colors.popupBackgroundColor,
             enableArrow: true,
             showInSubWindow: false,
             onStateChange: (e) => {
@@ -490,34 +490,34 @@ struct MusicPlayerPage {
             }
           })
           Image($r('app.media.icon_music_prev'))
-            .width(size.middlIconSize)
+            .width(size.middleIcon)
             .aspectRatio(1)
             .onClick(this.useTabPrevMusic)
           Row(){
-            Image(this.musicStorage.isPlaying ? $r('app.media.icon_music_playing') : $r('app.media.icon_music_play_white')).width(size.middlIconSize).aspectRatio(1)
+            Image(this.musicStorage.isPlaying ? $r('app.media.icon_music_playing') : $r('app.media.icon_music_play_white')).width(size.middleIcon).aspectRatio(1)
           }
           .justifyContent(FlexAlign.Center)
           .alignItems(VerticalAlign.Center)
-          .width(size.bigAvaterSize)
+          .width(size.bigAvater)
           .aspectRatio(1)
-          .borderRadius(size.bigAvaterSize)
+          .borderRadius(size.bigAvater)
           .border({
             width: 2,
-            color: colors.blockColor,
+            color: colors.white,
             style: BorderStyle.Solid
           }).onClick(()=>{
             this.musicStorage.isPlaying = !this.musicStorage.isPlaying;
             this.musicStorage.isPlaying ? this.musicStorage.audio?.play() : this.musicStorage.audio?.pause()
           })
           Image($r('app.media.icon_music_next'))
-            .width(size.middlIconSize)
+            .width(size.middleIcon)
             .aspectRatio(1)
             .onClick(this.useTabNextMusic)
-          Image($r('app.media.icon_music_play_menu')).width(size.middlIconSize).aspectRatio(1)
+          Image($r('app.media.icon_music_play_menu')).width(size.middleIcon).aspectRatio(1)
         }
         .width('100%')
         .justifyContent(FlexAlign.SpaceAround)
-        .margin({bottom:size.pagePadding})
+        .margin({bottom:size.middleGap})
       }
       .backgroundImage(HOST + this.musicStorage.musicItem?.cover,ImageRepeat.NoRepeat)
       .backgroundImagePosition({x:0,y:0})
@@ -528,9 +528,9 @@ struct MusicPlayerPage {
       .width('100%')
 
       Image($r("app.media.icon_back"))
-        .width(size.smallIconSize)
-        .height(size.smallIconSize)
-        .position({x:size.pagePadding,y:size.pagePadding})
+        .width(size.smallIcon)
+        .height(size.smallIcon)
+        .position({x:size.middleGap,y:size.middleGap})
         .opacity(size.opacity)
         .onClick(()=>{
         router.back()

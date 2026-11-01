@@ -87,11 +87,11 @@ class MyDataSource extends BasicDataSource {
 export default struct MusicRecommendComponent {
   @Styles
   blockStyle(){
-    .backgroundColor(colors.blockColor)
-    .borderRadius(size.blockBorderRaduis)
-    .padding(size.pagePadding)
+    .backgroundColor(colors.white)
+    .borderRadius(size.middleBorderRaduis)
+    .padding(size.middleGap)
     .width('100%')
-    .margin({ top: size.pagePadding })
+    .margin({ top: size.middleGap })
   }
 
   @State musicList: MyDataSource = new MyDataSource();
@@ -139,60 +139,60 @@ export default struct MusicRecommendComponent {
       Scroll(this.scroller) {
         Column() {
           LazyForEach(this.musicList, (item: MusicInterface, index: number) => {
-            Row({ space: size.pagePadding }) {
+            Row({ space: size.middleGap }) {
               if (index === 0) {
                 Image($r("app.media.icon_no1"))
-                  .width(size.smallIconSize)
-                  .height(size.smallIconSize)
+                  .width(size.smallIcon)
+                  .height(size.smallIcon)
               } else if (index === 1) {
                 Image($r("app.media.icon_no2"))
-                  .width(size.smallIconSize)
-                  .height(size.smallIconSize)
+                  .width(size.smallIcon)
+                  .height(size.smallIcon)
               } else if (index === 2) {
                 Image($r("app.media.icon_no3"))
-                  .width(size.smallIconSize)
-                  .height(size.smallIconSize)
+                  .width(size.smallIcon)
+                  .height(size.smallIcon)
               } else {
                 Text(index + 1 + "")
-                  .width(size.smallIconSize)
-                  .height(size.smallIconSize)
+                  .width(size.smallIcon)
+                  .height(size.smallIcon)
                   .textAlign(TextAlign.Center)
               }
               MusicAvaterComponent({
                 avater: item.cover?.toString(),
                 title: item.songName[0],
-                dimension: Number(size.middleAvaterSize),
+                dimension: Number(size.middleAvater),
                 type: 'music'
               })
               Column() {
                 Text(item.songName).maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
                 Text(item.authorName)
-                  .fontColor(colors.disableTextColor)
-                  .margin({ top: size.smallPadding / 2 })
+                  .fontColor(colors.gray)
+                  .margin({ top: size.smallGap / 2 })
                   .maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
               }.layoutWeight(1).alignItems(HorizontalAlign.Start)
 
               Image(this.musicStorage.musicItem?.id === item.id &&
                 this.musicStorage.classifyName === this.classifyName && this.musicStorage.isPlaying ?
               $r("app.media.icon_music_playing_grey") : $r("app.media.icon_music_play"))
-                .width(size.smallIconSize)
-                .height(size.smallIconSize)
+                .width(size.smallIcon)
+                .height(size.smallIcon)
                 .onClick(() => this.usePlayMusicList(item, index))
               Image(item.isLike ? $r("app.media.icon_like_active") : $r("app.media.icon_like"))
-                .width(size.smallIconSize)
-                .height(size.smallIconSize)
+                .width(size.smallIcon)
+                .height(size.smallIcon)
               Image($r("app.media.icon_music_menu"))
-                .width(size.smallIconSize)
-                .height(size.smallIconSize)
+                .width(size.smallIcon)
+                .height(size.smallIcon)
             }.blockStyle().alignItems(VerticalAlign.Center)
           })
           Row() {
             Text(this.total <= this.pageSize * this.pageNum ? '已经到底了...' : '正在加载更多...')
-          }.padding({ top: size.pagePadding, bottom: size.pagePadding })
+          }.padding({ top: size.middleGap, bottom: size.middleGap })
         }
       }
       .scrollable(ScrollDirection.Vertical)
-      .backgroundColor(colors.pageBackgroundColor)
+      .backgroundColor(colors.pageBackground)
       .width("100%")
       .height("100%")
 
@@ -204,8 +204,8 @@ export default struct MusicRecommendComponent {
       })
     }.width('100%')
     .height('100%')
-    .backgroundColor(colors.pageBackgroundColor)
-    .padding({ left: size.pagePadding, right: size.pagePadding, })
+    .backgroundColor(colors.pageBackground)
+    .padding({ left: size.middleGap, right: size.middleGap, })
 
   }
 }
