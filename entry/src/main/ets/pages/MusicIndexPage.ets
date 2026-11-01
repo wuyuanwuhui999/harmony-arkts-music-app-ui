@@ -122,9 +122,7 @@ struct MusicIndexPage {
   useCenterMusic() {
     if (this.musicStorage?.musicItem) {
       router.pushUrl({ url: 'pages/MusicPlayerPage' });
-      return;
-    }
-    if (this.recommendMusic) {
+    } else if (this.recommendMusic) {
       usePlayerRouter(this.musicStorage, [this.recommendMusic], this.recommendMusic, '推荐音乐', 0);
     }
   }
