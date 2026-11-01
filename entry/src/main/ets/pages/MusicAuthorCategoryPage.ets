@@ -32,12 +32,13 @@ export default struct MusicAuthorCategoryPage {
 
   aboutToAppear() {
     getMusicAuthorCategoryService().then((res) => {
+      // 进入页面默认选中第一个分类页签
+      if (res.data.length > 0) {
+        this.activeCategoryItem = res.data[0];
+      }
       for (let i = 0; i < Math.ceil(res.data.length / 4); i++) {
         const items: Array<MusicAuthorCategoryInterface> = res.data.slice(i * 4, (i + 1) * 4)
         const length = items.length;
-        if (this.activeCategoryItem === null) {
-          this.activeCategoryItem = res.data[i];
-        }
         if (length < 4) {
           for (let j = 0; j < 4 - length; j++) {
             items.push({
