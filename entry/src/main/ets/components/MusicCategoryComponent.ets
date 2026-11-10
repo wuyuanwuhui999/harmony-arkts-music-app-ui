@@ -44,6 +44,14 @@ export default struct MusicCategoryComponent{
         Image($r('app.media.icon_music_classics')).categoryImgStyle()
         Text("经典老歌")
       }.width('25%').alignItems(HorizontalAlign.Center)
+      .onClick(()=>{
+        router.pushUrl({
+          url: 'pages/MusicClassifyListPage', // 目标url
+          params: {
+            musicClassify: { id: 2, category: '经典老歌' }
+          }
+        });
+      })
       Column(){
         Image($r('app.media.icon_music_rank')).categoryImgStyle()
         Text("热门榜单")
