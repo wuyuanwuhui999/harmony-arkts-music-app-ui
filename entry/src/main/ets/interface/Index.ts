@@ -51,7 +51,7 @@ export interface MusicInterface  {
   bigPackId : number, // 未使用字段
   finalId : number, // 未使用字段
   audioId : number, // 音频id
-  similarAudioId : number, // 未使用字段
+  similarAudioId : string, // 未使用字段
   isHot : number, // 是否热门
   albumAudioId : number, // 音频专辑id
   audioGroupId : number, // 歌曲组id
