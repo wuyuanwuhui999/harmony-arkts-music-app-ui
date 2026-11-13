@@ -54,13 +54,13 @@ export default struct MusicCategoryComponent{
       })
       Column(){
         Image($r('app.media.icon_music_rank')).categoryImgStyle()
-        Text("热门榜单")
+        Text("热门歌曲")
       }.width('25%').alignItems(HorizontalAlign.Center)
       .onClick(()=>{
         router.pushUrl({
           url: 'pages/MusicClassifyListPage', // 目标url
           params: {
-            musicClassify: { id: 1, category: '热门榜单' }
+            musicClassify: { id: 1, category: '热门歌曲' }
           }
         });
       })
