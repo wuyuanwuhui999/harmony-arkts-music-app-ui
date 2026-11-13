@@ -9,3 +9,6 @@
 /.clang-format
 /.clang-tidy
 **/.test
+# macOS 目录显示属性缓存（Finder 自动生成，与代码无关）
+.DS_Store
+**/.DS_Store
