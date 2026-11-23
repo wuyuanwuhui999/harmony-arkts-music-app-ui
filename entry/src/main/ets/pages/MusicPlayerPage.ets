@@ -44,6 +44,8 @@ struct MusicPlayerPage {
   async aboutToAppear() {
     if(this.musicStorage.audio == null){
       this.musicStorage.audio = await media.createAVPlayer();
+      // 恢复上次选择的循环模式：单曲循环依赖原生 loop 自动重播，重启 App 后需要重新设置
+      this.musicStorage.audio.loop = this.musicStorage.loop === LoopMode.REPEAT;
       this.setAVPlayerCallback();
       this.musicStorage.audio.url = HOST + this.musicStorage.musicItem?.localPlayUrl;
       this.musicStorage.recordList.push(this.musicStorage.musicItem as MusicInterface)
@@ -114,7 +116,12 @@ struct MusicPlayerPage {
             this.musicStorage.isPlaying = false;
             break;
           case 'completed': // 播放结束后触发该状态机上报
-            this.useTabNextMusic();
+            if (this.musicStorage.loop === LoopMode.REPEAT) {
+              // 单曲循环：原生 loop 会自动重播当前歌曲，每循环一遍上报一次播放记录
+              insertMusicRecordService(this.musicStorage.musicItem?.id ?? -1);
+            } else {
+              this.useTabNextMusic();
+            }
             break;
           case 'stopped': // stop接口成功调用后触发该状态机上报
             this.musicStorage.isPlaying = false;
